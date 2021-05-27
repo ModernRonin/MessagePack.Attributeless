@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using AutoBogus;
-using Bogus;
 using FluentAssertions;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
@@ -12,7 +11,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
 {
     public class SubTypeFormatterTests
     {
-        public interface IAnimal 
+        public interface IAnimal
         {
             string Name { get; set; }
             IExtremity[] Extremities { get; set; }
@@ -23,18 +22,25 @@ namespace MessagePack.Contractless.Subtypes.Tests
             public string Name { get; set; }
             public IExtremity[] Extremities { get; set; }
         }
+
         public class Mammal : AnAnimal
         {
             public TimeSpan Gestation { get; set; }
-            
+
         }
+
         public class Bird : AnAnimal
         {
             public TimeSpan IncubationPeriod { get; set; }
         }
 
-        public enum Side {Left, Right}
-        public interface IExtremity 
+        public enum Side
+        {
+            Left,
+            Right
+        }
+
+        public interface IExtremity
         {
             Side Side { get; set; }
         }
@@ -43,6 +49,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
         {
             public Side Side { get; set; }
         }
+
         public class Arm : AnExtremity
         {
             public byte NumberOfFingers { get; set; }
@@ -57,6 +64,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
         {
             public int Span { get; set; }
         }
+
         static IEnumerable<IAnimal> AnimalCases
         {
             get
@@ -67,10 +75,26 @@ namespace MessagePack.Contractless.Subtypes.Tests
                     Gestation = TimeSpan.FromDays(7 * 40),
                     Extremities = new IExtremity[]
                     {
-                        new Arm(){Side = Side.Left, NumberOfFingers = 5},
-                        new Arm(){Side = Side.Right, NumberOfFingers = 5},
-                        new Leg(){Side = Side.Left, NumberOfToes = 5},
-                        new Leg(){Side = Side.Right, NumberOfToes = 5},
+                        new Arm()
+                        {
+                            Side = Side.Left,
+                            NumberOfFingers = 5
+                        },
+                        new Arm()
+                        {
+                            Side = Side.Right,
+                            NumberOfFingers = 5
+                        },
+                        new Leg()
+                        {
+                            Side = Side.Left,
+                            NumberOfToes = 5
+                        },
+                        new Leg()
+                        {
+                            Side = Side.Right,
+                            NumberOfToes = 5
+                        },
                     }
                 };
                 yield return new Bird()
@@ -79,10 +103,26 @@ namespace MessagePack.Contractless.Subtypes.Tests
                     IncubationPeriod = TimeSpan.FromDays(30),
                     Extremities = new IExtremity[]
                     {
-                        new Wing(){Side = Side.Left, Span = 120},
-                        new Wing(){Side = Side.Right, Span = 120},
-                        new Leg(){Side = Side.Left, NumberOfToes = 4},
-                        new Leg(){Side = Side.Right, NumberOfToes = 4}
+                        new Wing()
+                        {
+                            Side = Side.Left,
+                            Span = 120
+                        },
+                        new Wing()
+                        {
+                            Side = Side.Right,
+                            Span = 120
+                        },
+                        new Leg()
+                        {
+                            Side = Side.Left,
+                            NumberOfToes = 4
+                        },
+                        new Leg()
+                        {
+                            Side = Side.Right,
+                            NumberOfToes = 4
+                        }
                     }
                 };
             }
@@ -97,6 +137,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 yield return AutoFaker.Generate<Wing>();
             }
         }
+
         [TestCaseSource(nameof(ExtremityCases))]
         public void Roundtrip_of_interface(IExtremity input)
         {
@@ -106,7 +147,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
             formatter.RegisterSubType<Wing>(2);
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(MessagePack.Resolvers.CompositeResolver
-                    .Create(new []{formatter}, new []{ContractlessStandardResolver.Instance}));
+                    .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
 
             using var stream = new MemoryStream();
             MessagePackSerializer.Serialize(stream, input, options);
@@ -131,7 +172,11 @@ namespace MessagePack.Contractless.Subtypes.Tests
 
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(MessagePack.Resolvers.CompositeResolver
-                    .Create(new IMessagePackFormatter[]{extremityFormatter, animalFormatter}, new []{ContractlessStandardResolver.Instance}));
+                    .Create(new IMessagePackFormatter[]
+                    {
+                        extremityFormatter,
+                        animalFormatter
+                    }, new[] {ContractlessStandardResolver.Instance}));
 
             using var stream = new MemoryStream();
             MessagePackSerializer.Serialize(stream, input, options);
@@ -140,7 +185,9 @@ namespace MessagePack.Contractless.Subtypes.Tests
             var output = MessagePackSerializer.Deserialize<IAnimal>(stream, options);
 
             output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
-            
+
         }
+
+        // TODO: test with compression, look at MessagePackSerializer.cs:223
     }
 }
