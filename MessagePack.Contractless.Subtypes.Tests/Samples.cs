@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoBogus;
+using NUnit.Framework;
 
 namespace MessagePack.Contractless.Subtypes.Tests
 {
@@ -156,12 +157,13 @@ namespace MessagePack.Contractless.Subtypes.Tests
             }
         }
 
-        public static IEnumerable<PersonWithPet> PeopleWithTheirPets =>
+        public static IEnumerable<TestCaseData> PeopleWithTheirPets =>
             AnimalCases.ToArray()
-            .Select(a => new PersonWithPet
-            {
-                Pet = a,
-                Human = AutoFaker.Generate<Person>()
-            });
+                .Select(a => new PersonWithPet
+                {
+                    Pet = a,
+                    Human = AutoFaker.Generate<Person>()
+                })
+                .Select((x, i) => new TestCaseData(x).SetName("{m} Case #" + i));
     }
 }
