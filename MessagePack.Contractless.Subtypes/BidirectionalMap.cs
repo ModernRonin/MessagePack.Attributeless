@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MessagePack.Contractless.Subtypes
 {
@@ -35,8 +34,8 @@ namespace MessagePack.Contractless.Subtypes
         public bool ContainsLeft(TLeft left) => _leftToRight.ContainsKey(left);
         public bool ContainsRight(TRight right) => _rightToLeft.ContainsKey(right);
 
-        public ILookup<TLeft, TRight> ToLookupForLeft() => _leftToRight.ToLookup();
-        public ILookup<TRight, TLeft> ToLookupForRight() => _rightToLeft.ToLookup();
+        public IReadOnlyDictionary<TLeft, TRight> LeftToRightView() => _leftToRight;
+        public IReadOnlyDictionary<TRight, TLeft> RightToLeftView() => _rightToLeft;
 
         public int Count => _leftToRight.Count;
     }

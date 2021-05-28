@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace MessagePack.Contractless.Subtypes
     {
         readonly BidirectionalMap<PropertyInfo, int> _map = new BidirectionalMap<PropertyInfo, int>();
 
-        public ILookup<PropertyInfo, int> Mappings => _map.ToLookupForLeft();
+        public IReadOnlyDictionary<PropertyInfo, int> Mappings => _map.LeftToRightView();
 
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {

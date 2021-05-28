@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace MessagePack.Contractless.Subtypes
 {
     interface IToKeyMapping<T>
     {
-        ILookup<T, int> Mappings { get; }
+        IReadOnlyDictionary<T, int> Mappings { get; }
     }
 }

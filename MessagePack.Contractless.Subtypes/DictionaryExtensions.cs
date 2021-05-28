@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace MessagePack.Contractless.Subtypes
 {
@@ -15,8 +14,5 @@ namespace MessagePack.Contractless.Subtypes
             key = tuple.Key;
             value = tuple.Value;
         }
-
-        public static ILookup<TKey, TValue> ToLookup<TKey, TValue>(this IDictionary<TKey, TValue> self) =>
-            self.ToLookup(kvp => kvp.Key, kvp => kvp.Value);
     }
 }

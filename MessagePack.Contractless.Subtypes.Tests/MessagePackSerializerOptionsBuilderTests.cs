@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using ApprovalTests;
+using NUnit.Framework;
 
 namespace MessagePack.Contractless.Subtypes.Tests
 {
@@ -23,6 +24,16 @@ namespace MessagePack.Contractless.Subtypes.Tests
             var options = Configure().Build();
 
             options.TestRoundtrip(input);
+        }
+
+        [Test]
+        public void KeyTable()
+        {
+            var builder = Configure();
+            var keytable = builder.KeyTable;
+            // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
+            var asText = string.Join('\n', keytable);
+            Approvals.Verify(asText);
         }
     }
 }

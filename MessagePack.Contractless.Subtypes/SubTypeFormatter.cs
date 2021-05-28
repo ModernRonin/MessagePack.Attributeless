@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using MessagePack.Formatters;
 
 namespace MessagePack.Contractless.Subtypes
@@ -8,7 +8,7 @@ namespace MessagePack.Contractless.Subtypes
     {
         readonly BidirectionalMap<Type, int> _map = new BidirectionalMap<Type, int>();
         int _nextKey;
-        public ILookup<Type, int> Mappings => _map.ToLookupForLeft();
+        public IReadOnlyDictionary<Type, int> Mappings => _map.LeftToRightView();
 
         public TBase Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {

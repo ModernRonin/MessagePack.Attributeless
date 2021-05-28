@@ -77,5 +77,27 @@ namespace MessagePack.Contractless.Subtypes
                 return result;
             }
         }
+
+        public IEnumerable<string> KeyTable
+        {
+            get
+            {
+                yield return "---Subtypes---";
+                foreach (var (type, mapping) in _subTypeMappedTypes.OrderBy(kvp => kvp.Key.FullName))
+                {
+                    yield return type.FullName;
+                    foreach (var (subtype, key) in mapping.Mappings.OrderBy(kvp => kvp.Key.FullName))
+                        yield return $"  - {subtype.FullName} : {key}";
+                }
+
+                yield return "---Properties---";
+                foreach (var (type, mapping) in _propertyMappedTypes.OrderBy(kvp => kvp.Key.FullName))
+                {
+                    yield return type.FullName;
+                    foreach (var (property, key) in mapping.Mappings.OrderBy(kvp => kvp.Key.Name))
+                        yield return $"  - {property.Name} : {key}";
+                }
+            }
+        }
     }
 }
