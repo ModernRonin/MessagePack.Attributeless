@@ -76,5 +76,17 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 StreetAddress = "1st Avenue 13"
             });
         }
+
+        [Test]
+        public void Roundtrip_with_builder_configuration()
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .AutoKeyed<Samples.Address>()
+                .AutoKeyed<Samples.Person>()
+                .AddNativeFormatters()
+                .Build();
+
+            options.TestRoundtrip(AutoFaker.Generate<Samples.Person>());
+        }
     }
 }
