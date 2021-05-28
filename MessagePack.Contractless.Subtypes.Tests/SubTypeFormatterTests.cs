@@ -80,7 +80,5 @@ namespace MessagePack.Contractless.Subtypes.Tests
 
             options.TestRoundtrip(input);
         }
-
-        // TODO: test with compression, look at MessagePackSerializer.cs:223
     }
 }

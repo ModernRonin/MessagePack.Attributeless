@@ -7,8 +7,10 @@ namespace MessagePack.Contractless.Subtypes.Tests
     [TestFixture]
     public class MessagePackSerializerOptionsBuilderTests
     {
-        MessagePackSerializerOptionsBuilder Configure() =>
-            MessagePackSerializer.DefaultOptions.Configure()
+        MessagePackSerializerOptionsBuilder Configure() => Configure(MessagePackSerializer.DefaultOptions);
+
+        MessagePackSerializerOptionsBuilder Configure(MessagePackSerializerOptions options) =>
+            options.Configure()
                 .AutoKeyed<Samples.Address>()
                 .AutoKeyed<Samples.Person>()
                 .AddNativeFormatters()
@@ -34,6 +36,17 @@ namespace MessagePack.Contractless.Subtypes.Tests
         public void Roundtrip_with(Samples.PersonWithPet input)
         {
             var options = Configure().Build();
+
+            options.TestRoundtrip(input);
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void Roundtrip_with_compression(Samples.PersonWithPet input)
+        {
+            var options =
+                Configure(MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression
+                        .Lz4BlockArray))
+                    .Build();
 
             options.TestRoundtrip(input);
         }
