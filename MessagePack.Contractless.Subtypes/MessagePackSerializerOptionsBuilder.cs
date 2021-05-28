@@ -54,5 +54,23 @@ namespace MessagePack.Contractless.Subtypes
                 new[] {_options.Resolver});
             return _options.WithResolver(composite);
         }
+
+        public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase
+        {
+            var formatter = getOrCreate();
+            formatter.RegisterSubType<TSub>();
+
+            return this;
+
+            SubTypeFormatter<TBase> getOrCreate()
+            {
+                var result = _formatters.OfType<SubTypeFormatter<TBase>>().FirstOrDefault();
+                if (result != default) return result;
+                result = new SubTypeFormatter<TBase>();
+                _subTypeMappedTypes.Add(typeof(TBase), result);
+                _formatters.Add(result);
+                return result;
+            }
+        }
     }
 }

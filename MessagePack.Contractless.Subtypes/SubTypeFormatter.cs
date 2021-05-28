@@ -7,7 +7,7 @@ namespace MessagePack.Contractless.Subtypes
     public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeToKeyMapping
     {
         readonly BidirectionalMap<Type, int> _map = new BidirectionalMap<Type, int>();
-
+        int _nextKey;
         public ILookup<Type, int> Mappings => _map.ToLookupForLeft();
 
         public TBase Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
@@ -36,6 +36,8 @@ namespace MessagePack.Contractless.Subtypes
             writer.Write(key);
             MessagePackSerializer.Serialize(subType, ref writer, value, options);
         }
+
+        public void RegisterSubType<TSub>() where TSub : TBase => RegisterSubType<TSub>(_nextKey++);
 
         public void RegisterSubType<TSub>(int key) where TSub : TBase
         {

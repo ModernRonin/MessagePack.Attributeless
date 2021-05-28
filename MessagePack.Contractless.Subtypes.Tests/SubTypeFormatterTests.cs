@@ -46,6 +46,43 @@ namespace MessagePack.Contractless.Subtypes.Tests
             options.TestRoundtrip(input);
         }
 
+        [TestCaseSource(nameof(AnimalCases))]
+        public void Roundtrip_of_nested_hierarchy_with_automatic_keys(Samples.IAnimal input)
+        {
+            var extremityFormatter = new SubTypeFormatter<Samples.IExtremity>();
+            extremityFormatter.RegisterSubType<Samples.Arm>();
+            extremityFormatter.RegisterSubType<Samples.Leg>();
+            extremityFormatter.RegisterSubType<Samples.Wing>();
+
+            var animalFormatter = new SubTypeFormatter<Samples.IAnimal>();
+            animalFormatter.RegisterSubType<Samples.Mammal>();
+            animalFormatter.RegisterSubType<Samples.Bird>();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new IMessagePackFormatter[]
+                    {
+                        extremityFormatter,
+                        animalFormatter
+                    }, new[] {ContractlessStandardResolver.Instance}));
+
+            options.TestRoundtrip(input);
+        }
+
+        [TestCaseSource(nameof(AnimalCases))]
+        public void Roundtrip_with_builder_configuration(Samples.IAnimal input)
+        {
+            var options = ContractlessStandardResolver.Options.Configure()
+                .SubType<Samples.IExtremity, Samples.Arm>()
+                .SubType<Samples.IExtremity, Samples.Leg>()
+                .SubType<Samples.IExtremity, Samples.Wing>()
+                .SubType<Samples.IAnimal, Samples.Mammal>()
+                .SubType<Samples.IAnimal, Samples.Bird>()
+                .Build();
+
+            options.TestRoundtrip(input);
+        }
+
         static IEnumerable<Samples.IAnimal> AnimalCases
         {
             get
