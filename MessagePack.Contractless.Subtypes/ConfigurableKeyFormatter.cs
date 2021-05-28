@@ -7,10 +7,13 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Contractless.Subtypes
 {
-    public class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T> where T : new()
+    public class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyToKeyMapping
+        where T : new()
     {
         readonly Dictionary<int, PropertyInfo> _keyToProperties = new Dictionary<int, PropertyInfo>();
         readonly Dictionary<PropertyInfo, int> _propertiesToKeys = new Dictionary<PropertyInfo, int>();
+
+        public ILookup<PropertyInfo, int> Mappings => _propertiesToKeys.ToLookup();
 
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
@@ -37,10 +40,8 @@ namespace MessagePack.Contractless.Subtypes
         public void Serialize(ref MessagePackWriter writer, T value, MessagePackSerializerOptions options)
         {
             writer.Write(_propertiesToKeys.Count);
-            foreach (var kvp in _propertiesToKeys)
+            foreach (var (property, key) in _propertiesToKeys)
             {
-                var property = kvp.Key;
-                var key = kvp.Value;
                 var propertValue = property.GetValue(value);
                 writer.Write(key);
                 MessagePackSerializer.Serialize(property.PropertyType, ref writer, propertValue, options);

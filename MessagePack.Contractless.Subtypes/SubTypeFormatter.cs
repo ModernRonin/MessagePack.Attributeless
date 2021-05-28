@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MessagePack.Formatters;
 
 namespace MessagePack.Contractless.Subtypes
 {
-    public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>
+    public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeToKeyMapping
     {
         readonly Dictionary<int, Type> _keysToTypes = new Dictionary<int, Type>();
         readonly Dictionary<Type, int> _typesToKeys = new Dictionary<Type, int>();
+
+        public ILookup<Type, int> Mappings => _typesToKeys.ToLookup();
 
         public TBase Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
