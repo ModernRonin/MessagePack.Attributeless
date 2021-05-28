@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using AutoBogus;
-using FluentAssertions;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
@@ -11,161 +9,34 @@ namespace MessagePack.Contractless.Subtypes.Tests
 {
     public class SubTypeFormatterTests
     {
-        public interface IAnimal
-        {
-            string Name { get; set; }
-            IExtremity[] Extremities { get; set; }
-        }
-
-        public abstract class AnAnimal : IAnimal
-        {
-            public string Name { get; set; }
-            public IExtremity[] Extremities { get; set; }
-        }
-
-        public class Mammal : AnAnimal
-        {
-            public TimeSpan Gestation { get; set; }
-
-        }
-
-        public class Bird : AnAnimal
-        {
-            public TimeSpan IncubationPeriod { get; set; }
-        }
-
-        public enum Side
-        {
-            Left,
-            Right
-        }
-
-        public interface IExtremity
-        {
-            Side Side { get; set; }
-        }
-
-        public abstract class AnExtremity : IExtremity
-        {
-            public Side Side { get; set; }
-        }
-
-        public class Arm : AnExtremity
-        {
-            public byte NumberOfFingers { get; set; }
-        }
-
-        public class Leg : AnExtremity
-        {
-            public byte NumberOfToes { get; set; }
-        }
-
-        public class Wing : AnExtremity
-        {
-            public int Span { get; set; }
-        }
-
-        static IEnumerable<IAnimal> AnimalCases
-        {
-            get
-            {
-                yield return new Mammal()
-                {
-                    Name = "Homo sapiens",
-                    Gestation = TimeSpan.FromDays(7 * 40),
-                    Extremities = new IExtremity[]
-                    {
-                        new Arm()
-                        {
-                            Side = Side.Left,
-                            NumberOfFingers = 5
-                        },
-                        new Arm()
-                        {
-                            Side = Side.Right,
-                            NumberOfFingers = 5
-                        },
-                        new Leg()
-                        {
-                            Side = Side.Left,
-                            NumberOfToes = 5
-                        },
-                        new Leg()
-                        {
-                            Side = Side.Right,
-                            NumberOfToes = 5
-                        },
-                    }
-                };
-                yield return new Bird()
-                {
-                    Name = "Falco peregrinus",
-                    IncubationPeriod = TimeSpan.FromDays(30),
-                    Extremities = new IExtremity[]
-                    {
-                        new Wing()
-                        {
-                            Side = Side.Left,
-                            Span = 120
-                        },
-                        new Wing()
-                        {
-                            Side = Side.Right,
-                            Span = 120
-                        },
-                        new Leg()
-                        {
-                            Side = Side.Left,
-                            NumberOfToes = 4
-                        },
-                        new Leg()
-                        {
-                            Side = Side.Right,
-                            NumberOfToes = 4
-                        }
-                    }
-                };
-            }
-        }
-
-        static IEnumerable<IExtremity> ExtremityCases
-        {
-            get
-            {
-                yield return AutoFaker.Generate<Arm>();
-                yield return AutoFaker.Generate<Leg>();
-                yield return AutoFaker.Generate<Wing>();
-            }
-        }
-
         [TestCaseSource(nameof(ExtremityCases))]
-        public void Roundtrip_of_interface(IExtremity input)
+        public void Roundtrip_of_interface(Samples.IExtremity input)
         {
-            var formatter = new SubTypeFormatter<IExtremity>();
-            formatter.RegisterSubType<Arm>(0);
-            formatter.RegisterSubType<Leg>(1);
-            formatter.RegisterSubType<Wing>(2);
+            var formatter = new SubTypeFormatter<Samples.IExtremity>();
+            formatter.RegisterSubType<Samples.Arm>(0);
+            formatter.RegisterSubType<Samples.Leg>(1);
+            formatter.RegisterSubType<Samples.Wing>(2);
             var options =
-                MessagePackSerializer.DefaultOptions.WithResolver(MessagePack.Resolvers.CompositeResolver
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
                     .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
 
             options.TestRoundtrip(input);
         }
 
         [TestCaseSource(nameof(AnimalCases))]
-        public void Roundtrip_of_nested_hierarchy(IAnimal input)
+        public void Roundtrip_of_nested_hierarchy(Samples.IAnimal input)
         {
-            var extremityFormatter = new SubTypeFormatter<IExtremity>();
-            extremityFormatter.RegisterSubType<Arm>(0);
-            extremityFormatter.RegisterSubType<Leg>(1);
-            extremityFormatter.RegisterSubType<Wing>(2);
+            var extremityFormatter = new SubTypeFormatter<Samples.IExtremity>();
+            extremityFormatter.RegisterSubType<Samples.Arm>(0);
+            extremityFormatter.RegisterSubType<Samples.Leg>(1);
+            extremityFormatter.RegisterSubType<Samples.Wing>(2);
 
-            var animalFormatter = new SubTypeFormatter<IAnimal>();
-            animalFormatter.RegisterSubType<Mammal>(0);
-            animalFormatter.RegisterSubType<Bird>(1);
+            var animalFormatter = new SubTypeFormatter<Samples.IAnimal>();
+            animalFormatter.RegisterSubType<Samples.Mammal>(0);
+            animalFormatter.RegisterSubType<Samples.Bird>(1);
 
             var options =
-                MessagePackSerializer.DefaultOptions.WithResolver(MessagePack.Resolvers.CompositeResolver
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
                     .Create(new IMessagePackFormatter[]
                     {
                         extremityFormatter,
@@ -173,6 +44,79 @@ namespace MessagePack.Contractless.Subtypes.Tests
                     }, new[] {ContractlessStandardResolver.Instance}));
 
             options.TestRoundtrip(input);
+        }
+
+        static IEnumerable<Samples.IAnimal> AnimalCases
+        {
+            get
+            {
+                yield return new Samples.Mammal
+                {
+                    Name = "Homo sapiens",
+                    Gestation = TimeSpan.FromDays(7 * 40),
+                    Extremities = new Samples.IExtremity[]
+                    {
+                        new Samples.Arm
+                        {
+                            Side = Samples.Side.Left,
+                            NumberOfFingers = 5
+                        },
+                        new Samples.Arm
+                        {
+                            Side = Samples.Side.Right,
+                            NumberOfFingers = 5
+                        },
+                        new Samples.Leg
+                        {
+                            Side = Samples.Side.Left,
+                            NumberOfToes = 5
+                        },
+                        new Samples.Leg
+                        {
+                            Side = Samples.Side.Right,
+                            NumberOfToes = 5
+                        }
+                    }
+                };
+                yield return new Samples.Bird
+                {
+                    Name = "Falco peregrinus",
+                    IncubationPeriod = TimeSpan.FromDays(30),
+                    Extremities = new Samples.IExtremity[]
+                    {
+                        new Samples.Wing
+                        {
+                            Side = Samples.Side.Left,
+                            Span = 120
+                        },
+                        new Samples.Wing
+                        {
+                            Side = Samples.Side.Right,
+                            Span = 120
+                        },
+                        new Samples.Leg
+                        {
+                            Side = Samples.Side.Left,
+                            NumberOfToes = 4
+                        },
+                        new Samples.Leg
+                        {
+                            Side = Samples.Side.Right,
+                            NumberOfToes = 4
+                        }
+                    }
+                };
+            }
+        }
+
+        static IEnumerable<Samples.IExtremity> ExtremityCases
+        {
+            get
+            {
+                yield return AutoFaker.Generate<Samples.Arm>();
+                yield return AutoFaker.Generate<Samples.Leg>();
+                yield return AutoFaker.Generate<Samples.Wing>();
+            }
         }
 
         // TODO: test with compression, look at MessagePackSerializer.cs:223
