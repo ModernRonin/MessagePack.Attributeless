@@ -149,13 +149,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 MessagePackSerializer.DefaultOptions.WithResolver(MessagePack.Resolvers.CompositeResolver
                     .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
 
-            using var stream = new MemoryStream();
-            MessagePackSerializer.Serialize(stream, input, options);
-
-            stream.Position = 0;
-            var output = MessagePackSerializer.Deserialize<IExtremity>(stream, options);
-
-            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
+            options.TestRoundtrip(input);
         }
 
         [TestCaseSource(nameof(AnimalCases))]
@@ -178,14 +172,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                         animalFormatter
                     }, new[] {ContractlessStandardResolver.Instance}));
 
-            using var stream = new MemoryStream();
-            MessagePackSerializer.Serialize(stream, input, options);
-
-            stream.Position = 0;
-            var output = MessagePackSerializer.Deserialize<IAnimal>(stream, options);
-
-            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
-
+            options.TestRoundtrip(input);
         }
 
         // TODO: test with compression, look at MessagePackSerializer.cs:223

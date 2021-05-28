@@ -6,12 +6,12 @@ namespace MessagePack.Contractless.Subtypes
 {
     public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>
     {
-        readonly Dictionary<byte, Type> _keysToTypes = new Dictionary<byte, Type>();
-        readonly Dictionary<Type, byte> _typesToKeys = new Dictionary<Type, byte>();
+        readonly Dictionary<int, Type> _keysToTypes = new Dictionary<int, Type>();
+        readonly Dictionary<Type, int> _typesToKeys = new Dictionary<Type, int>();
 
         public TBase Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
-            var key = reader.ReadByte();
+            var key = reader.ReadInt32();
             if (!_keysToTypes.ContainsKey(key))
             {
                 throw new InvalidOperationException(
@@ -36,7 +36,7 @@ namespace MessagePack.Contractless.Subtypes
             MessagePackSerializer.Serialize(subType, ref writer, value, options);
         }
 
-        public void RegisterSubType<TSub>(byte key) where TSub : TBase
+        public void RegisterSubType<TSub>(int key) where TSub : TBase
         {
             _typesToKeys[typeof(TSub)] = key;
             _keysToTypes[key] = typeof(TSub);
