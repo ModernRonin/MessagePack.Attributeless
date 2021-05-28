@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using MessagePack.Formatters;
@@ -52,13 +53,25 @@ namespace MessagePack.Contractless.Subtypes
             precondition(property != default, "must be a property accessor");
             precondition(property.CanWrite, "must be a writeable property");
 
-            _propertiesToKeys[property] = key;
-            _keyToProperties[key] = property;
+            SetKeyFor(key, property);
 
             void precondition(bool condition, string message)
             {
                 if (!condition) throw new ArgumentException(message, nameof(accessor));
             }
+        }
+
+        public void UseAutomaticKeys()
+        {
+            var key = 0;
+            foreach (var property in typeof(T).GetProperties().Where(p => p.CanWrite).OrderBy(p => p.Name))
+                SetKeyFor(key++, property);
+        }
+
+        void SetKeyFor(int key, PropertyInfo property)
+        {
+            _propertiesToKeys[property] = key;
+            _keyToProperties[key] = property;
         }
     }
 }

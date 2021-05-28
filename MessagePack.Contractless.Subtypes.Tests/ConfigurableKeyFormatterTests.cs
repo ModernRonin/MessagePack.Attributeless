@@ -41,7 +41,6 @@ namespace MessagePack.Contractless.Subtypes.Tests
             personFormatter.SetKeyFor(2, p => p.Email);
             personFormatter.SetKeyFor(3, p => p.GivenName);
             personFormatter.SetKeyFor(4, p => p.Surname);
-            var input = AutoFaker.Generate<Person>();
 
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
@@ -52,7 +51,27 @@ namespace MessagePack.Contractless.Subtypes.Tests
                         new NativeDateTimeFormatter()
                     }, new[] {ContractlessStandardResolver.Instance}));
 
-            options.TestRoundtrip(input);
+            options.TestRoundtrip(AutoFaker.Generate<Person>());
+        }
+
+        [Test]
+        public void Roundtrip_complex_object_with_automatic_keys()
+        {
+            var addressFormatter = new ConfigurableKeyFormatter<Address>();
+            var personFormatter = new ConfigurableKeyFormatter<Person>();
+            addressFormatter.UseAutomaticKeys();
+            personFormatter.UseAutomaticKeys();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new IMessagePackFormatter[]
+                    {
+                        addressFormatter,
+                        personFormatter,
+                        new NativeDateTimeFormatter()
+                    }, new[] {ContractlessStandardResolver.Instance}));
+
+            options.TestRoundtrip(AutoFaker.Generate<Person>());
         }
 
         [Test]
@@ -63,19 +82,18 @@ namespace MessagePack.Contractless.Subtypes.Tests
             formatter.SetKeyFor(1, a => a.Country);
             formatter.SetKeyFor(2, a => a.ZipCode);
             formatter.SetKeyFor(3, a => a.StreetAddress);
-            var input = new Address
-            {
-                ZipCode = "10000",
-                Country = "USA",
-                City = "NYC",
-                StreetAddress = "1st Avenue 13"
-            };
 
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
                     .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
 
-            options.TestRoundtrip(input);
+            options.TestRoundtrip(new Address
+            {
+                ZipCode = "10000",
+                Country = "USA",
+                City = "NYC",
+                StreetAddress = "1st Avenue 13"
+            });
         }
     }
 }
