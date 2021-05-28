@@ -1,5 +1,4 @@
-﻿using AutoBogus;
-using MessagePack.Formatters;
+﻿using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
@@ -20,8 +19,8 @@ namespace MessagePack.Contractless.Subtypes.Tests
             personFormatter.SetKeyFor(0, p => p.Addresses);
             personFormatter.SetKeyFor(1, p => p.Birthday);
             personFormatter.SetKeyFor(2, p => p.Email);
-            personFormatter.SetKeyFor(3, p => p.GivenName);
-            personFormatter.SetKeyFor(4, p => p.Surname);
+            personFormatter.SetKeyFor(3, p => p.FirstName);
+            personFormatter.SetKeyFor(4, p => p.LastName);
 
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
@@ -32,7 +31,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                         new NativeDateTimeFormatter()
                     }, new[] {ContractlessStandardResolver.Instance}));
 
-            options.TestRoundtrip(AutoFaker.Generate<Samples.Person>());
+            options.TestRoundtrip(Samples.MakePerson());
         }
 
         [Test]
@@ -52,7 +51,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                         new NativeDateTimeFormatter()
                     }, new[] {ContractlessStandardResolver.Instance}));
 
-            options.TestRoundtrip(AutoFaker.Generate<Samples.Person>());
+            options.TestRoundtrip(Samples.MakePerson());
         }
 
         [Test]
@@ -86,7 +85,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 .AddNativeFormatters()
                 .Build();
 
-            options.TestRoundtrip(AutoFaker.Generate<Samples.Person>());
+            options.TestRoundtrip(Samples.MakePerson());
         }
     }
 }

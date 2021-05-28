@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoBogus;
+using AutoBogus.Conventions;
 using NUnit.Framework;
 
 namespace MessagePack.Contractless.Subtypes.Tests
 {
     public static class Samples
     {
+        static Samples() => AutoFaker.Configure(builder => { builder.WithConventions(); });
+
         public class Address
         {
             public string City { get; set; }
@@ -52,8 +55,8 @@ namespace MessagePack.Contractless.Subtypes.Tests
             public IList<Address> Addresses { get; set; }
             public DateTime Birthday { get; set; }
             public string Email { get; set; }
-            public string GivenName { get; set; }
-            public string Surname { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
         }
 
         public class PersonWithPet
@@ -83,6 +86,8 @@ namespace MessagePack.Contractless.Subtypes.Tests
         {
             Side Side { get; set; }
         }
+
+        public static Person MakePerson() => AutoFaker.Generate<Person>();
 
         public static IEnumerable<IAnimal> AnimalCases
         {
@@ -162,7 +167,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 .Select(a => new PersonWithPet
                 {
                     Pet = a,
-                    Human = AutoFaker.Generate<Person>()
+                    Human = MakePerson()
                 })
                 .Select((x, i) => new TestCaseData(x).SetName("{m} Case #" + i));
     }
