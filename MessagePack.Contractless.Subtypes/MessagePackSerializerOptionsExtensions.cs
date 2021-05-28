@@ -2,7 +2,8 @@
 {
     public static class MessagePackSerializerOptionsExtensions
     {
-        public static MessagePackSerializerOptionsBuilder Configure(this MessagePackSerializerOptions self) =>
-            new MessagePackSerializerOptionsBuilder(self);
+        public static MessagePackSerializerOptionsBuilder Configure(this MessagePackSerializerOptions self,
+            bool doImplicitlyAutokeySubtypes = true) =>
+            new MessagePackSerializerOptionsBuilder(self, doImplicitlyAutokeySubtypes);
     }
 }

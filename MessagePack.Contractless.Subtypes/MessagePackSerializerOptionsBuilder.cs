@@ -16,6 +16,8 @@ namespace MessagePack.Contractless.Subtypes
             NativeGuidFormatter.Instance
         };
 
+        readonly bool _doImplicitlyAutokeySubtypes;
+
         readonly List<IMessagePackFormatter> _formatters = new List<IMessagePackFormatter>();
         readonly MessagePackSerializerOptions _options;
 
@@ -27,8 +29,12 @@ namespace MessagePack.Contractless.Subtypes
 
         bool _doesUseNativeResolvers;
 
-        public MessagePackSerializerOptionsBuilder(MessagePackSerializerOptions options) =>
+        public MessagePackSerializerOptionsBuilder(MessagePackSerializerOptions options,
+            bool doImplicitlyAutokeySubtypes)
+        {
             _options = options;
+            _doImplicitlyAutokeySubtypes = doImplicitlyAutokeySubtypes;
+        }
 
         public MessagePackSerializerOptionsBuilder AddNativeFormatters()
         {
@@ -55,12 +61,11 @@ namespace MessagePack.Contractless.Subtypes
             return _options.WithResolver(composite);
         }
 
-        public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase
+        public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new()
         {
             var formatter = getOrCreate();
             formatter.RegisterSubType<TSub>();
-
-            return this;
+            return _doImplicitlyAutokeySubtypes ? AutoKeyed<TSub>() : this;
 
             SubTypeFormatter<TBase> getOrCreate()
             {
