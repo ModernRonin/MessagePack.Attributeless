@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 
@@ -77,6 +79,9 @@ namespace MessagePack.Contractless.Subtypes
                 return result;
             }
         }
+
+        public byte[] Checksum =>
+            new SHA512Managed().ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", KeyTable)));
 
         public IEnumerable<string> KeyTable
         {
