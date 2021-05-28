@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessagePack.Contractless.Subtypes\MessagePack.Contractless.Subtypes.csproj" />
+    <ProjectReference Include="..\MessagePack.Attributeless\MessagePack.Attributeless.csproj" />
   </ItemGroup>
 
 </Project>
