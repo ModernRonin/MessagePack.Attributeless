@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoBogus;
 
 namespace MessagePack.Contractless.Subtypes.Tests
 {
@@ -73,6 +74,79 @@ namespace MessagePack.Contractless.Subtypes.Tests
         public interface IExtremity
         {
             Side Side { get; set; }
+        }
+
+        public static IEnumerable<IAnimal> AnimalCases
+        {
+            get
+            {
+                yield return new Mammal
+                {
+                    Name = "Homo sapiens",
+                    Gestation = TimeSpan.FromDays(7 * 40),
+                    Extremities = new IExtremity[]
+                    {
+                        new Arm
+                        {
+                            Side = Side.Left,
+                            NumberOfFingers = 5
+                        },
+                        new Arm
+                        {
+                            Side = Side.Right,
+                            NumberOfFingers = 5
+                        },
+                        new Leg
+                        {
+                            Side = Side.Left,
+                            NumberOfToes = 5
+                        },
+                        new Leg
+                        {
+                            Side = Side.Right,
+                            NumberOfToes = 5
+                        }
+                    }
+                };
+                yield return new Bird
+                {
+                    Name = "Falco peregrinus",
+                    IncubationPeriod = TimeSpan.FromDays(30),
+                    Extremities = new IExtremity[]
+                    {
+                        new Wing
+                        {
+                            Side = Side.Left,
+                            Span = 120
+                        },
+                        new Wing
+                        {
+                            Side = Side.Right,
+                            Span = 120
+                        },
+                        new Leg
+                        {
+                            Side = Side.Left,
+                            NumberOfToes = 4
+                        },
+                        new Leg
+                        {
+                            Side = Side.Right,
+                            NumberOfToes = 4
+                        }
+                    }
+                };
+            }
+        }
+
+        public static IEnumerable<IExtremity> ExtremityCases
+        {
+            get
+            {
+                yield return AutoFaker.Generate<Arm>();
+                yield return AutoFaker.Generate<Leg>();
+                yield return AutoFaker.Generate<Wing>();
+            }
         }
     }
 }

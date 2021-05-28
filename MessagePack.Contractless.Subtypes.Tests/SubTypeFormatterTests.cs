@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using AutoBogus;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
 namespace MessagePack.Contractless.Subtypes.Tests
 {
+    [TestFixture]
     public class SubTypeFormatterTests
     {
-        [TestCaseSource(nameof(ExtremityCases))]
+        [TestCaseSource(typeof(Samples), nameof(Samples.ExtremityCases))]
         public void Roundtrip_of_interface(Samples.IExtremity input)
         {
             var formatter = new SubTypeFormatter<Samples.IExtremity>();
@@ -23,7 +21,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
             options.TestRoundtrip(input);
         }
 
-        [TestCaseSource(nameof(AnimalCases))]
+        [TestCaseSource(typeof(Samples), nameof(Samples.AnimalCases))]
         public void Roundtrip_of_nested_hierarchy(Samples.IAnimal input)
         {
             var extremityFormatter = new SubTypeFormatter<Samples.IExtremity>();
@@ -46,7 +44,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
             options.TestRoundtrip(input);
         }
 
-        [TestCaseSource(nameof(AnimalCases))]
+        [TestCaseSource(typeof(Samples), nameof(Samples.AnimalCases))]
         public void Roundtrip_of_nested_hierarchy_with_automatic_keys(Samples.IAnimal input)
         {
             var extremityFormatter = new SubTypeFormatter<Samples.IExtremity>();
@@ -69,7 +67,7 @@ namespace MessagePack.Contractless.Subtypes.Tests
             options.TestRoundtrip(input);
         }
 
-        [TestCaseSource(nameof(AnimalCases))]
+        [TestCaseSource(typeof(Samples), nameof(Samples.AnimalCases))]
         public void Roundtrip_with_builder_configuration(Samples.IAnimal input)
         {
             var options = ContractlessStandardResolver.Options.Configure()
@@ -81,79 +79,6 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 .Build();
 
             options.TestRoundtrip(input);
-        }
-
-        static IEnumerable<Samples.IAnimal> AnimalCases
-        {
-            get
-            {
-                yield return new Samples.Mammal
-                {
-                    Name = "Homo sapiens",
-                    Gestation = TimeSpan.FromDays(7 * 40),
-                    Extremities = new Samples.IExtremity[]
-                    {
-                        new Samples.Arm
-                        {
-                            Side = Samples.Side.Left,
-                            NumberOfFingers = 5
-                        },
-                        new Samples.Arm
-                        {
-                            Side = Samples.Side.Right,
-                            NumberOfFingers = 5
-                        },
-                        new Samples.Leg
-                        {
-                            Side = Samples.Side.Left,
-                            NumberOfToes = 5
-                        },
-                        new Samples.Leg
-                        {
-                            Side = Samples.Side.Right,
-                            NumberOfToes = 5
-                        }
-                    }
-                };
-                yield return new Samples.Bird
-                {
-                    Name = "Falco peregrinus",
-                    IncubationPeriod = TimeSpan.FromDays(30),
-                    Extremities = new Samples.IExtremity[]
-                    {
-                        new Samples.Wing
-                        {
-                            Side = Samples.Side.Left,
-                            Span = 120
-                        },
-                        new Samples.Wing
-                        {
-                            Side = Samples.Side.Right,
-                            Span = 120
-                        },
-                        new Samples.Leg
-                        {
-                            Side = Samples.Side.Left,
-                            NumberOfToes = 4
-                        },
-                        new Samples.Leg
-                        {
-                            Side = Samples.Side.Right,
-                            NumberOfToes = 4
-                        }
-                    }
-                };
-            }
-        }
-
-        static IEnumerable<Samples.IExtremity> ExtremityCases
-        {
-            get
-            {
-                yield return AutoFaker.Generate<Samples.Arm>();
-                yield return AutoFaker.Generate<Samples.Leg>();
-                yield return AutoFaker.Generate<Samples.Wing>();
-            }
         }
 
         // TODO: test with compression, look at MessagePackSerializer.cs:223
