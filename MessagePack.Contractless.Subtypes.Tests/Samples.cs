@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoBogus;
 
 namespace MessagePack.Contractless.Subtypes.Tests
@@ -54,6 +55,12 @@ namespace MessagePack.Contractless.Subtypes.Tests
             public string Surname { get; set; }
         }
 
+        public class PersonWithPet
+        {
+            public Person Human { get; set; }
+            public IAnimal Pet { get; set; }
+        }
+
         public class Wing : AnExtremity
         {
             public int Span { get; set; }
@@ -82,8 +89,8 @@ namespace MessagePack.Contractless.Subtypes.Tests
             {
                 yield return new Mammal
                 {
-                    Name = "Homo sapiens",
-                    Gestation = TimeSpan.FromDays(7 * 40),
+                    Name = "Papio (Baboon)",
+                    Gestation = TimeSpan.FromDays(6 * 30),
                     Extremities = new IExtremity[]
                     {
                         new Arm
@@ -148,5 +155,13 @@ namespace MessagePack.Contractless.Subtypes.Tests
                 yield return AutoFaker.Generate<Wing>();
             }
         }
+
+        public static IEnumerable<PersonWithPet> PeopleWithTheirPets =>
+            AnimalCases.ToArray()
+            .Select(a => new PersonWithPet
+            {
+                Pet = a,
+                Human = AutoFaker.Generate<Person>()
+            });
     }
 }
