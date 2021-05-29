@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagePack.Attributeless", "MessagePack.Attributeless\MessagePack.Attributeless.csproj", "{DC55232D-AD0D-41C8-AAEE-35FA3DFEE03E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagePack.Attributeless", "MessagePack.Attributeless\MessagePack.Attributeless.csproj", "{DC55232D-AD0D-41C8-AAEE-35FA3DFEE03E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagePack.Attributeless.Tests", "MessagePack.Attributeless.Tests\MessagePack.Attributeless.Tests.csproj", "{6B02439F-9591-48BE-84E1-CA0FFA51756A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagePack.Attributeless.Tests", "MessagePack.Attributeless.Tests\MessagePack.Attributeless.Tests.csproj", "{6B02439F-9591-48BE-84E1-CA0FFA51756A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{746FB62F-9560-4B56-A891-E7DBB61B8EC2}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.md = TODO.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
