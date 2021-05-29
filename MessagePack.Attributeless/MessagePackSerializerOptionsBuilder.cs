@@ -67,8 +67,17 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder GraphOf(Type type)
         {
+            var types = type.GetProperties()
+                .Select(p => p.PropertyType)
+                .Distinct()
+                .Where(t => t.Assembly == type.Assembly)
+                .ToArray();
 
-            return this;
+            return types.Aggregate(this, addType);
+
+            MessagePackSerializerOptionsBuilder
+                addType(MessagePackSerializerOptionsBuilder builder, Type t) =>
+                t.IsAbstract ? builder.AllSubTypesOf(t) : builder.AutoKeyed(t);
         }
 
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
