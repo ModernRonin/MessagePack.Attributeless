@@ -36,11 +36,7 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder AllSubTypesOf(Type baseType, params Assembly[] assemblies)
         {
-            if (assemblies.Length == 0) assemblies = new[] {baseType.Assembly};
-
-            var subTypes = assemblies.SelectMany(a => a.GetTypes())
-                .Where(t => !t.IsAbstract && t.IsDerivedFrom(baseType));
-            foreach (var subType in subTypes) SubType(baseType, subType);
+            foreach (var subType in baseType.GetSubTypes(assemblies)) SubType(baseType, subType);
 
             return this;
         }
