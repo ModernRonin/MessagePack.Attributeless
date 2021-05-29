@@ -63,7 +63,7 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder GraphOf(Type type, params Assembly[] assemblies)
         {
-            var allTypes = type.GetReferencedUserTypes(assemblies).ToArray();
+            var allTypes = type.GetReferencedUserTypes(assemblies).OrderBy(t => t.Name);
             foreach (var t in allTypes)
             {
                 if (t.IsAbstract) AllSubTypesOf(t);

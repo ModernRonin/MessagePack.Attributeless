@@ -6,10 +6,6 @@
 
 
 ## MUST - usable at work
-### Allow overrides
-- register all implementations of a type, then override specifics for one implementation (for example, other formatter)
-- autokeyed type, but override for one property, eg ignore
-- add optional Func<PropertyInfo, bool> predicate to AutoKeyed
 
 ### size comparisons
 - with attributed msgpack
@@ -21,9 +17,38 @@
 - with contractless
 - with typeless
 
+
 ### test on huge data-structure, lots of types and properties, work stuff, separate private repo
 
+### Tests
+- Write tests proving that all automatic config actions create sorted, ie guaranteed repeatable config
+  - Autokey
+  - AllSubTypesOf
+  - GraphOf
+- Tests for equivalence of different config methods using keytable 
+- Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
+
+### Overrides
+- Allow to override formatter for type 
+- Allow null-formatter, doesn't even write out property key, is not used as subtype 
+- Allow to ignore property, directly by expression, and via predicate 
+
+### Keytable
+- Must contain which native formatters
+- Any override info 
+- Should have a different, better name 
+
+### add easy way to validate configuration in a unit-test
+
+### revisit all exceptions being thrown
+- do they give good info
+- test
+
 ### make all types sealed
+
+### tidy up namespace
+- move stuff that is not really relevant to users into sub-namespaces
+- hide user-relevant types behind interfaces
 
 ### documentation comments
 
@@ -41,25 +66,13 @@ if prototype solution works out
 - remove the attributes from model
 - remove the *direct* dependency on msgpack
 
-
-
-## SHOULD
 ### announce it
 - blog article
 - post in gitter channel
 
-### revisit all exceptions being thrown
-- do they give good info
-- test
-
-### add easy way to validate configuration in a unit-test
-
-### tidy up namespace
-- move stuff that is not really relevant to users into sub-namespaces
-- hide user-relevant types behind interfaces
 
 
-## COULD
+## FUTURE
 
 ### get coverage as high as possible
 
@@ -68,5 +81,4 @@ if prototype solution works out
 - potentially in the Build() step, compile it to a better lookup structure
 - abstract it behind interface
 
-## WOULD
 
