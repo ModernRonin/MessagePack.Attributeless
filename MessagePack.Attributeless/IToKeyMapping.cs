@@ -2,7 +2,7 @@
 
 namespace MessagePack.Attributeless
 {
-    interface IToKeyMapping<T>
+    public interface IToKeyMapping<T>
     {
         IReadOnlyDictionary<T, int> Mappings { get; }
     }

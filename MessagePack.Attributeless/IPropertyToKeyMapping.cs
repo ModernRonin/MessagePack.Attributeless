@@ -2,5 +2,5 @@
 
 namespace MessagePack.Attributeless
 {
-    interface IPropertyToKeyMapping : IToKeyMapping<PropertyInfo> { }
+    public interface IPropertyToKeyMapping : IToKeyMapping<PropertyInfo> { }
 }

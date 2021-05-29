@@ -25,6 +25,8 @@
 
 ### test on huge data-structure, lots of types and properties, work stuff, separate private repo
 
+### make all types sealed
+
 ### documentation comments
 
 ### readme
@@ -40,6 +42,7 @@ if prototype solution works out
 - adapt DeflateMessagePackSerializer
 - remove the attributes from model
 - remove the *direct* dependency on msgpack
+
 
 
 ## SHOULD

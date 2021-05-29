@@ -24,8 +24,8 @@ namespace MessagePack.Attributeless
         readonly List<IMessagePackFormatter> _formatters = new List<IMessagePackFormatter>();
         readonly MessagePackSerializerOptions _options;
 
-        readonly Dictionary<Type, IPropertyToKeyMapping> _propertyMappedTypes =
-            new Dictionary<Type, IPropertyToKeyMapping>();
+        readonly PropertyMappedFormatterCollection _propertyMappedTypes =
+            new PropertyMappedFormatterCollection();
 
         readonly Dictionary<Type, ISubTypeToKeyMapping> _subTypeMappedTypes =
             new Dictionary<Type, ISubTypeToKeyMapping>();
@@ -54,15 +54,8 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder AutoKeyed(Type type)
         {
-            type.MustBeDefaultConstructable();
-
-            var formatterType = typeof(ConfigurableKeyFormatter<>).MakeGenericType(type);
-            var formatter = Activator.CreateInstance(formatterType);
-            // ReSharper disable once PossibleNullReferenceException
-            formatterType.GetMethod(nameof(ConfigurableKeyFormatter<object>.UseAutomaticKeys))
-                .Invoke(formatter, Array.Empty<object>());
-            _propertyMappedTypes.Add(type, (IPropertyToKeyMapping) formatter);
-            _formatters.Add((IMessagePackFormatter) formatter);
+            var formatter = _propertyMappedTypes.Add(type);
+            _formatters.Add(formatter);
 
             return this;
         }
