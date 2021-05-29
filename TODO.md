@@ -6,8 +6,6 @@
 
 
 ## MUST - usable at work
-### automatically configure all implementations of interface
-
 ### Allow overrides
 - register all implementations of a type, then override specifics for one implementation (for example, other formatter)
 - autokeyed type, but override for one property, eg ignore
