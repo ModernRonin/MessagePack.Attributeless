@@ -34,12 +34,19 @@ namespace MessagePack.Attributeless
             return this;
         }
 
-        public MessagePackSerializerOptionsBuilder AllSubTypesOf<TBase>(params Assembly[] assemblies)
+        public MessagePackSerializerOptionsBuilder AllSubTypesOf(Type baseType, params Assembly[] assemblies)
         {
-            if (assemblies.Length == 0) assemblies = new[] {typeof(TBase).Assembly};
+            if (assemblies.Length == 0) assemblies = new[] {baseType.Assembly};
+
+            var subTypes = assemblies.SelectMany(a => a.GetTypes())
+                .Where(t => !t.IsAbstract && t.IsDerivedFrom(baseType));
+            foreach (var subType in subTypes) SubType(baseType, subType);
 
             return this;
         }
+
+        public MessagePackSerializerOptionsBuilder AllSubTypesOf<TBase>(params Assembly[] assemblies) =>
+            AllSubTypesOf(typeof(TBase), assemblies);
 
         public MessagePackSerializerOptionsBuilder AutoKeyed(Type type)
         {
