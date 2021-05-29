@@ -2,5 +2,5 @@
 
 namespace MessagePack.Attributeless
 {
-    interface ISubTypeToKeyMapping : IToKeyMapping<Type> { }
+    public interface ISubTypeToKeyMapping : IToKeyMapping<Type> { }
 }

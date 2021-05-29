@@ -27,8 +27,8 @@ namespace MessagePack.Attributeless
         readonly PropertyMappedFormatterCollection _propertyMappedTypes =
             new PropertyMappedFormatterCollection();
 
-        readonly Dictionary<Type, ISubTypeToKeyMapping> _subTypeMappedTypes =
-            new Dictionary<Type, ISubTypeToKeyMapping>();
+        readonly SubTypeMappedFormatterCollection _subTypeMappedTypes =
+            new SubTypeMappedFormatterCollection();
 
         bool _doesUseNativeResolvers;
 
@@ -73,29 +73,9 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
-            subType.MustBeDefaultConstructable();
-            subType.MustBeDerivedFrom(baseType);
-
-            var formatterType = typeof(SubTypeFormatter<>).MakeGenericType(baseType);
-            var formatter = getOrCreate();
-            // ReSharper disable once PossibleNullReferenceException
-            formatterType.GetMethods()
-                .Single(m =>
-                    m.Name                   == nameof(SubTypeFormatter<object>.RegisterSubType) &&
-                    m.GetParameters().Length == 0)
-                .MakeGenericMethod(subType)
-                .Invoke(formatter, Array.Empty<object>());
+            var formatter = _subTypeMappedTypes.Add(baseType, subType);
+            _formatters.Add(formatter);
             return _doImplicitlyAutokeySubtypes ? AutoKeyed(subType) : this;
-
-            IMessagePackFormatter getOrCreate()
-            {
-                var result = _formatters.FirstOrDefault(f => f.GetType() == formatterType);
-                if (result != default) return result;
-                result = (IMessagePackFormatter) Activator.CreateInstance(formatterType);
-                _subTypeMappedTypes.Add(baseType, (ISubTypeToKeyMapping) result);
-                _formatters.Add(result);
-                return result;
-            }
         }
 
         public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new() =>
@@ -109,7 +89,7 @@ namespace MessagePack.Attributeless
             get
             {
                 yield return "---Subtypes---";
-                foreach (var (type, mapping) in _subTypeMappedTypes.OrderBy(kvp => kvp.Key.FullName))
+                foreach (var (type, mapping) in _subTypeMappedTypes)
                 {
                     yield return type.FullName;
                     foreach (var (subtype, key) in mapping.Mappings.OrderBy(kvp => kvp.Key.FullName))
@@ -117,7 +97,7 @@ namespace MessagePack.Attributeless
                 }
 
                 yield return "---Properties---";
-                foreach (var (type, mapping) in _propertyMappedTypes.OrderBy(kvp => kvp.Key.FullName))
+                foreach (var (type, mapping) in _propertyMappedTypes)
                 {
                     yield return type.FullName;
                     foreach (var (property, key) in mapping.Mappings.OrderBy(kvp => kvp.Key.Name))
