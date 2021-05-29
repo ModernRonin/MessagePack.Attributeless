@@ -65,6 +65,14 @@ namespace MessagePack.Attributeless
             return _options.WithResolver(composite);
         }
 
+        public MessagePackSerializerOptionsBuilder GraphOf(Type type)
+        {
+
+            return this;
+        }
+
+        public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
+
         public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
             _configuration.AddSubType(baseType, subType);

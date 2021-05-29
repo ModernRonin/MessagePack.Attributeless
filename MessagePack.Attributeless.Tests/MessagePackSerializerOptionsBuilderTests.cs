@@ -1,4 +1,5 @@
-﻿using ApprovalTests;
+﻿using System.Linq;
+using ApprovalTests;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -34,6 +35,16 @@ namespace MessagePack.Attributeless.Tests
                 .AutoKeyed<Samples.Person>()
                 .AddNativeFormatters();
 
+        MessagePackSerializerOptionsBuilder
+            ConfigureWithGraphOf() =>
+            ConfigureWithGraphOf(MessagePackSerializer.DefaultOptions);
+
+        MessagePackSerializerOptionsBuilder
+            ConfigureWithGraphOf(MessagePackSerializerOptions options) =>
+            options.Configure()
+                .GraphOf<Samples.PersonWithPet>()
+                .AddNativeFormatters();
+
         MessagePackSerializerOptionsBuilder ConfigureWithDifference() =>
             MessagePackSerializer.DefaultOptions.Configure()
                 .AutoKeyed<Samples.Address>()
@@ -54,7 +65,15 @@ namespace MessagePack.Attributeless.Tests
         }
 
         [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
-        public void Roundtrip_most_AllSubTypesOf_configuration_with(Samples.PersonWithPet input)
+        public void Roundtrip_with_GraphOf_configuration_with(Samples.PersonWithPet input)
+        {
+            var options = ConfigureWithGraphOf().Build();
+
+            options.TestRoundtrip(input);
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void Roundtrip_with_AllSubTypesOf_configuration_with(Samples.PersonWithPet input)
         {
             var options = ConfigureWithAllSubTypesOf().Build();
 
@@ -98,6 +117,35 @@ namespace MessagePack.Attributeless.Tests
             // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
             var asText = string.Join('\n', keytable);
             Approvals.Verify(asText);
+        }
+
+        [Test]
+        public void Roundtrip_with_GraphOf_configuration_with_abstract_root()
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.AnAnimal>()
+                .Build();
+
+            var input = Samples.AnimalCases.Cast<Samples.AnAnimal>().First();
+            options.TestRoundtrip(input);
+        }
+
+        [Test]
+        public void Roundtrip_with_GraphOf_configuration_with_concrete_root()
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure().GraphOf<Samples.Person>().Build();
+
+            var input = Samples.MakePerson();
+            options.TestRoundtrip(input);
+        }
+
+        [Test]
+        public void Roundtrip_with_GraphOf_configuration_with_interface_root()
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure().GraphOf<Samples.IAnimal>().Build();
+
+            var input = Samples.AnimalCases.First();
+            options.TestRoundtrip(input);
         }
     }
 }
