@@ -12,8 +12,7 @@ namespace MessagePack.Attributeless
 
         public static void MustBeDerivedFrom(this Type self, Type baseType)
         {
-            if (!baseType.IsAssignableFrom(self) || self == baseType)
-                Throw(self, $"be derive from {baseType.Name}");
+            if (!self.IsDerivedFrom(baseType)) Throw(self, $"be derive from {baseType.Name}");
         }
 
         static void Throw(Type self, string msg)
