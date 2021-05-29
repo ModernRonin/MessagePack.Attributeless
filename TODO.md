@@ -58,6 +58,7 @@ if prototype solution works out
 
 ### tidy up namespace
 - move stuff that is not really relevant to users into sub-namespaces
+- hide user-relevant types behind interfaces
 
 
 ## COULD
