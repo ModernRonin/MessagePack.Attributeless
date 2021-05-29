@@ -1,4 +1,4 @@
-﻿namespace MessagePack.Contractless.Subtypes
+﻿namespace MessagePack.Attributeless
 {
     public static class MessagePackSerializerOptionsExtensions
     {

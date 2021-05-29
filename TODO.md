@@ -6,6 +6,8 @@
 
 
 ## MUST - usable at work
+### automatically configure all implementations of interface
+
 ### size comparisons
 - with attributed msgpack
 - with contractless
@@ -17,8 +19,6 @@
 - with typeless
 
 ### test on huge data-structure, lots of types and properties, work stuff, separate private repo
-
-### automatically configure all implementations of interface
 
 ### documentation comments
 

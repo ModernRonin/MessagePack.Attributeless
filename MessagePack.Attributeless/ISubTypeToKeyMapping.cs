@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     interface ISubTypeToKeyMapping : IToKeyMapping<Type> { }
 }

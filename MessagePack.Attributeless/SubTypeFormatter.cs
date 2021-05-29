@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MessagePack.Formatters;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeToKeyMapping
     {

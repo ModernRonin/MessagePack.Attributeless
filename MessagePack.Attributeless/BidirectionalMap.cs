@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     public class BidirectionalMap<TLeft, TRight> : IEnumerable<KeyValuePair<TLeft, TRight>>
     {

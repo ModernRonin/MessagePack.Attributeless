@@ -6,7 +6,7 @@ using System.Text;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     public class MessagePackSerializerOptionsBuilder
     {

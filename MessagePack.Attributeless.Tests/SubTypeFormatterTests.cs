@@ -2,7 +2,7 @@ using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
-namespace MessagePack.Contractless.Subtypes.Tests
+namespace MessagePack.Attributeless.Tests
 {
     [TestFixture]
     public class SubTypeFormatterTests

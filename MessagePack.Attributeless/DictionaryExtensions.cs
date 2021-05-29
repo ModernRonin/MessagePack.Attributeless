@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     public static class DictionaryExtensions
     {

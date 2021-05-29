@@ -1,7 +1,7 @@
 using System.IO;
 using FluentAssertions;
 
-namespace MessagePack.Contractless.Subtypes.Tests
+namespace MessagePack.Attributeless.Tests
 {
     public static class TestExtensions
     {
@@ -15,6 +15,5 @@ namespace MessagePack.Contractless.Subtypes.Tests
 
             output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
         }
-
     }
 }

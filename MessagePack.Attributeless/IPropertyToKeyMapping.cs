@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     interface IPropertyToKeyMapping : IToKeyMapping<PropertyInfo> { }
 }

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using MessagePack.Formatters;
 
-namespace MessagePack.Contractless.Subtypes
+namespace MessagePack.Attributeless
 {
     public class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyToKeyMapping
         where T : new()

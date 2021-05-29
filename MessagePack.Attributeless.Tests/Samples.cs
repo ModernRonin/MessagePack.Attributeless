@@ -5,7 +5,7 @@ using AutoBogus;
 using AutoBogus.Conventions;
 using NUnit.Framework;
 
-namespace MessagePack.Contractless.Subtypes.Tests
+namespace MessagePack.Attributeless.Tests
 {
     public static class Samples
     {
