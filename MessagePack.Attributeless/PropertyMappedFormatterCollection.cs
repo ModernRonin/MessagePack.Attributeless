@@ -20,6 +20,8 @@ namespace MessagePack.Attributeless
         {
             type.MustBeDefaultConstructable();
 
+            if (_propertyMappedTypes.ContainsKey(type)) return default;
+
             var formatterType = typeof(ConfigurableKeyFormatter<>).MakeGenericType(type);
             var result = Activator.CreateInstance(formatterType);
             // ReSharper disable once PossibleNullReferenceException

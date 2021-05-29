@@ -133,7 +133,10 @@ namespace MessagePack.Attributeless.Tests
         [Test]
         public void Roundtrip_with_GraphOf_configuration_with_concrete_root()
         {
-            var options = MessagePackSerializer.DefaultOptions.Configure().GraphOf<Samples.Person>().Build();
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.Person>()
+                .AddNativeFormatters()
+                .Build();
 
             var input = Samples.MakePerson();
             options.TestRoundtrip(input);

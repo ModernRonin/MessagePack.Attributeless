@@ -61,19 +61,16 @@ namespace MessagePack.Attributeless
             return _options.WithResolver(composite);
         }
 
-        public MessagePackSerializerOptionsBuilder GraphOf(Type type)
+        public MessagePackSerializerOptionsBuilder GraphOf(Type type, params Assembly[] assemblies)
         {
-            var types = type.GetProperties()
-                .Select(p => p.PropertyType)
-                .Distinct()
-                .Where(t => t.Assembly == type.Assembly)
-                .ToArray();
+            var allTypes = type.GetReferencedUserTypes(assemblies).ToArray();
+            foreach (var t in allTypes)
+            {
+                if (t.IsAbstract) AllSubTypesOf(t);
+                else AutoKeyed(t);
+            }
 
-            return types.Aggregate(this, addType);
-
-            MessagePackSerializerOptionsBuilder
-                addType(MessagePackSerializerOptionsBuilder builder, Type t) =>
-                t.IsAbstract ? builder.AllSubTypesOf(t) : builder.AutoKeyed(t);
+            return this;
         }
 
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
