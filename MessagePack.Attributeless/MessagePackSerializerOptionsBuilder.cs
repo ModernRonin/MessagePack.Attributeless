@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using MessagePack.Formatters;
@@ -44,15 +45,29 @@ namespace MessagePack.Attributeless
             return this;
         }
 
-        public MessagePackSerializerOptionsBuilder AutoKeyed<T>() where T : new()
+        public MessagePackSerializerOptionsBuilder AllSubTypesOf<TBase>(params Assembly[] assemblies)
         {
-            var formatter = new ConfigurableKeyFormatter<T>();
-            formatter.UseAutomaticKeys();
-            _propertyMappedTypes.Add(typeof(T), formatter);
-            _formatters.Add(formatter);
+            if (assemblies.Length == 0) assemblies = new[] {typeof(TBase).Assembly};
 
             return this;
         }
+
+        public MessagePackSerializerOptionsBuilder AutoKeyed(Type type)
+        {
+            type.MustBeDefaultConstructable();
+
+            var formatterType = typeof(ConfigurableKeyFormatter<>).MakeGenericType(type);
+            var formatter = Activator.CreateInstance(formatterType);
+            // ReSharper disable once PossibleNullReferenceException
+            formatterType.GetMethod(nameof(ConfigurableKeyFormatter<object>.UseAutomaticKeys))
+                .Invoke(formatter, Array.Empty<object>());
+            _propertyMappedTypes.Add(type, (IPropertyToKeyMapping) formatter);
+            _formatters.Add((IMessagePackFormatter) formatter);
+
+            return this;
+        }
+
+        public MessagePackSerializerOptionsBuilder AutoKeyed<T>() where T : new() => AutoKeyed(typeof(T));
 
         public MessagePackSerializerOptions Build()
         {
@@ -63,22 +78,35 @@ namespace MessagePack.Attributeless
             return _options.WithResolver(composite);
         }
 
-        public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new()
+        public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
-            var formatter = getOrCreate();
-            formatter.RegisterSubType<TSub>();
-            return _doImplicitlyAutokeySubtypes ? AutoKeyed<TSub>() : this;
+            subType.MustBeDefaultConstructable();
+            subType.MustBeDerivedFrom(baseType);
 
-            SubTypeFormatter<TBase> getOrCreate()
+            var formatterType = typeof(SubTypeFormatter<>).MakeGenericType(baseType);
+            var formatter = getOrCreate();
+            // ReSharper disable once PossibleNullReferenceException
+            formatterType.GetMethods()
+                .Single(m =>
+                    m.Name                   == nameof(SubTypeFormatter<object>.RegisterSubType) &&
+                    m.GetParameters().Length == 0)
+                .MakeGenericMethod(subType)
+                .Invoke(formatter, Array.Empty<object>());
+            return _doImplicitlyAutokeySubtypes ? AutoKeyed(subType) : this;
+
+            IMessagePackFormatter getOrCreate()
             {
-                var result = _formatters.OfType<SubTypeFormatter<TBase>>().FirstOrDefault();
+                var result = _formatters.FirstOrDefault(f => f.GetType() == formatterType);
                 if (result != default) return result;
-                result = new SubTypeFormatter<TBase>();
-                _subTypeMappedTypes.Add(typeof(TBase), result);
+                result = (IMessagePackFormatter) Activator.CreateInstance(formatterType);
+                _subTypeMappedTypes.Add(baseType, (ISubTypeToKeyMapping) result);
                 _formatters.Add(result);
                 return result;
             }
         }
+
+        public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new() =>
+            SubType(typeof(TBase), typeof(TSub));
 
         public byte[] Checksum =>
             new SHA512Managed().ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", KeyTable)));

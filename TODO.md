@@ -8,6 +8,11 @@
 ## MUST - usable at work
 ### automatically configure all implementations of interface
 
+### Allow overrides
+- register all implementations of a type, then override specifics for one implementation (for example, other formatter)
+- autokeyed type, but override for one property, eg ignore
+- add optional Func<PropertyInfo, bool> predicate to AutoKeyed
+
 ### size comparisons
 - with attributed msgpack
 - with contractless
@@ -42,8 +47,19 @@ if prototype solution works out
 - blog article
 - post in gitter channel
 
+### revisit all exceptions being thrown
+- do they give good info
+- test
+
+### add easy way to validate configuration in a unit-test
+
+### tidy up namespace
+- move stuff that is not really relevant to users into sub-namespaces
+
 
 ## COULD
+
+### get coverage as high as possible
 
 ### performance check BidirectionalMapping
 - is it really faster than just a single dictionary with reverse lookup

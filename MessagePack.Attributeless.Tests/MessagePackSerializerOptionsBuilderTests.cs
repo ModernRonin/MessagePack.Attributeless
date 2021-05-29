@@ -21,6 +21,15 @@ namespace MessagePack.Attributeless.Tests
                 .SubType<Samples.IAnimal, Samples.Bird>()
                 .AutoKeyed<Samples.PersonWithPet>();
 
+        MessagePackSerializerOptionsBuilder ConfigureMostSimply() =>
+            ConfigureMostSimply(MessagePackSerializer.DefaultOptions);
+
+        MessagePackSerializerOptionsBuilder ConfigureMostSimply(MessagePackSerializerOptions options) =>
+            options.Configure()
+                .AllSubTypesOf<Samples.IExtremity>()
+                .AllSubTypesOf<Samples.IAnimal>()
+                .AutoKeyed<Samples.PersonWithPet>();
+
         MessagePackSerializerOptionsBuilder ConfigureWithDifference() =>
             MessagePackSerializer.DefaultOptions.Configure()
                 .AutoKeyed<Samples.Address>()
@@ -36,6 +45,14 @@ namespace MessagePack.Attributeless.Tests
         public void Roundtrip_with(Samples.PersonWithPet input)
         {
             var options = Configure().Build();
+
+            options.TestRoundtrip(input);
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void Roundtrip_most_simple_configuration_with(Samples.PersonWithPet input)
+        {
+            var options = ConfigureMostSimply().Build();
 
             options.TestRoundtrip(input);
         }
