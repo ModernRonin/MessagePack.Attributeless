@@ -71,8 +71,8 @@ namespace MessagePack.Attributeless.Tests
         [Test]
         public void Checksum_is_LIKELY_to_be_different_for_a_modified_configuration()
         {
-            var oldVersion = Configure().Checksum;
-            var newVersion = ConfigureWithDifference().Checksum;
+            var oldVersion = Configure().Validation.Checksum;
+            var newVersion = ConfigureWithDifference().Validation.Checksum;
 
             newVersion.Should().NotEqual(oldVersion);
         }
@@ -80,8 +80,8 @@ namespace MessagePack.Attributeless.Tests
         [Test]
         public void Checksum_is_the_same_for_the_same_configuration()
         {
-            var oldVersion = Configure().Checksum;
-            var newVersion = Configure().Checksum;
+            var oldVersion = Configure().Validation.Checksum;
+            var newVersion = Configure().Validation.Checksum;
 
             newVersion.Should().Equal(oldVersion);
         }
@@ -90,7 +90,7 @@ namespace MessagePack.Attributeless.Tests
         public void KeyTable()
         {
             var builder = Configure();
-            var keytable = builder.KeyTable;
+            var keytable = (IEnumerable) builder.Validation.KeyTable;
             // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
             var asText = string.Join('\n', keytable);
             Approvals.Verify(asText);
