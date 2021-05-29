@@ -66,7 +66,7 @@ namespace MessagePack.Attributeless
         {
             var formatters = _formatters.ToList();
             if (_doesUseNativeResolvers) formatters.AddRange(_nativeFormatters);
-            var composite = CompositeResolver.Create(_formatters.Concat(_nativeFormatters).ToArray(),
+            var composite = CompositeResolver.Create(formatters.ToArray(),
                 new[] {_options.Resolver});
             return _options.WithResolver(composite);
         }
