@@ -46,6 +46,17 @@ namespace MessagePack.Attributeless.Tests
             public Samples.Side? Side { get; set; }
         }
 
+        class Inside
+        {
+            public int Number { get; set; }
+        }
+
+        class Outside
+        {
+            public Inside Nested { get; set; }
+            public string Text { get; set; }
+        }
+
         [Test]
         public void Roundtrip_complex_object()
         {
@@ -93,16 +104,6 @@ namespace MessagePack.Attributeless.Tests
             options.TestRoundtrip(Samples.MakePerson());
         }
 
-        class Inside
-        {
-            public int Number { get; set; }
-        }
-
-        class Outside
-        {
-            public string Text { get; set; }
-            public Inside Nested { get; set; }
-        }
         [Test]
         public void Roundtrip_if_complex_properties_are_null()
         {
@@ -113,15 +114,17 @@ namespace MessagePack.Attributeless.Tests
 
             var options =
                 MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
-                    .Create(new IMessagePackFormatter[] {outsideFormatter, insideFormatter}, new[] {ContractlessStandardResolver.Instance}));
+                    .Create(new IMessagePackFormatter[]
+                    {
+                        outsideFormatter,
+                        insideFormatter
+                    }, new[] {ContractlessStandardResolver.Instance}));
 
-            var input = new Outside
-            {
-                Text = "bla"
-            };
+            var input = new Outside {Text = "bla"};
 
             options.TestRoundtrip(input);
         }
+
         [Test]
         public void Roundtrip_if_some_properties_are_null()
         {

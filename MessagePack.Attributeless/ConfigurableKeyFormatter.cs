@@ -16,8 +16,9 @@ namespace MessagePack.Attributeless
 
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
-            var result = new T();
+            if (reader.TryReadNil()) return default;
             var numberOfProperties = reader.ReadInt32();
+            var result = new T();
             for (var i = 0; i < numberOfProperties; ++i)
             {
                 var key = reader.ReadInt32();
@@ -38,6 +39,12 @@ namespace MessagePack.Attributeless
 
         public void Serialize(ref MessagePackWriter writer, T value, MessagePackSerializerOptions options)
         {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
             writer.Write(_map.Count);
             foreach (var (property, key) in _map)
             {
