@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using MessagePack.Resolvers;
 using ModernRonin.FluentArgumentParser;
@@ -23,6 +24,10 @@ namespace MessagePack.Attributeless.Microbenchmark
             benchmark.Parameter(b => b.NumberOfRecords)
                 .WithHelp("size of the array of complex objects to be used");
             benchmark.Parameter(b => b.Repetitions).WithHelp("how often to repeat the run");
+            benchmark.Parameter(b => b.DontIncludeOthermethods)
+                .WithLongName("only-attributeless")
+                .WithShortName("oa")
+                .WithHelp("don't benchmark other methods, only attributeless");
             var profiling = parser.AddVerb<Profile>()
                 .WithHelp("run only attributeless with 100 records and 100 repetitions for profiling");
             profiling.Parameter(p => p.DontPromptForProfiler)
@@ -47,13 +52,14 @@ namespace MessagePack.Attributeless.Microbenchmark
 
         static void Run(BenchmarkConfiguration benchmarkConfiguration)
         {
-            var methods = new Func<int, int, Result>[]
+            var methods = new List<Func<int, int, Result>> {RunAttributeless};
+            if (!benchmarkConfiguration.DontIncludeOthermethods)
             {
-                RunFullyAttributed,
-                RunContractless,
-                RunTypeless,
-                RunAttributeless
-            };
+                methods.Add(RunFullyAttributed);
+                methods.Add(RunContractless);
+                methods.Add(RunTypeless);
+            }
+
             foreach (var method in methods)
             {
                 method.Invoke(benchmarkConfiguration.Repetitions, benchmarkConfiguration.NumberOfRecords);
