@@ -7,17 +7,6 @@
 
 ## MUST - usable at work
 
-### size comparisons
-- with attributed msgpack
-- with contractless
-- with typeless
-
-### speed comparisons
-- with attributed msgpack
-- with contractless
-- with typeless
-
-
 ### test on huge data-structure, lots of types and properties, work stuff, separate private repo
 
 ### Tests
