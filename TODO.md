@@ -7,8 +7,6 @@
 
 ## MUST - usable at work
 
-### test on huge data-structure, lots of types and properties, work stuff, separate private repo
-
 ### Tests
 - Write tests proving that all automatic config actions create sorted, ie guaranteed repeatable config
   - Autokey
