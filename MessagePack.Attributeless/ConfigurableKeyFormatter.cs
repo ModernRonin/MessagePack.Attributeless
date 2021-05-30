@@ -17,6 +17,7 @@ namespace MessagePack.Attributeless
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil()) return default;
+
             var numberOfProperties = reader.ReadInt32();
             var result = new T();
             for (var i = 0; i < numberOfProperties; ++i)

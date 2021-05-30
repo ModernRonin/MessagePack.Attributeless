@@ -12,6 +12,8 @@ namespace MessagePack.Attributeless
 
         public TBase Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
+            if (reader.TryReadNil()) return default;
+
             var key = reader.ReadInt32();
             if (!_map.ContainsRight(key))
             {
@@ -25,6 +27,12 @@ namespace MessagePack.Attributeless
 
         public void Serialize(ref MessagePackWriter writer, TBase value, MessagePackSerializerOptions options)
         {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
             var subType = value.GetType();
             if (!_map.ContainsLeft(subType))
             {
