@@ -1,16 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using MessagePack.Resolvers;
 using ModernRonin.FluentArgumentParser;
 using ModernRonin.FluentArgumentParser.Help;
 
 namespace MessagePack.Attributeless.Microbenchmark
 {
-    public class Options
-    {
-        public int NumberOfRecords { get; set; } = 1000;
-        public int Repetitions { get; set; } = 100;
-    }
-
     class Program
     {
         static int Main(string[] args)
@@ -41,6 +36,7 @@ namespace MessagePack.Attributeless.Microbenchmark
             {
                 RunFullyAttributed,
                 RunContractless,
+                RunTypeless,
                 RunAttributeless
             };
             foreach (var method in methods)
@@ -49,45 +45,41 @@ namespace MessagePack.Attributeless.Microbenchmark
                 Logger.Log("--------------------------------------------------------");
             }
 
-            Logger.Log("Press <Enter> to exit...");
-            Console.ReadLine();
+            if (Debugger.IsAttached)
+            {
+                Logger.Log("Press <Enter> to exit...");
+                Console.ReadLine();
+            }
         }
 
-        static Result RunAttributeless(int repetitions, int size)
-        {
-            var name = "Attributeless";
-            Logger.Log($"Method {name}");
-            Logger.Log($"Creating {size} input records");
-            Logger.Log("Setting up messagepack");
-            var input = AttributelessSamples.Create(size);
-            var options = MessagePackSerializer.DefaultOptions.Configure()
+        static Result RunAttributeless(int repetitions, int size) =>
+            RunMethod(repetitions, size, "Attributeless", AttributelessSamples.Create, MessagePackSerializer
+                .DefaultOptions.Configure()
                 .GraphOf<AttributelessSamples.PersonWithPet>()
-                .Build();
-            return new Benchmark<AttributelessSamples.PersonWithPet[]>(name, options, input)
-                .Run(repetitions);
-        }
+                .Build());
 
-        static Result RunContractless(int repetitions, int size)
+        static Result RunContractless(int repetitions, int size) =>
+            RunMethod(repetitions, size, "Contractless", ContractlessSamples.Create,
+                ContractlessStandardResolver.Options);
+
+        static Result RunFullyAttributed(int repetitions, int size) =>
+            RunMethod(repetitions, size, "Fully attributed", FullyAttributedSamples.Create,
+                MessagePackSerializer.DefaultOptions);
+
+        static Result RunMethod<T>(int repetitions,
+            int size,
+            string name,
+            Func<int, T[]> producer,
+            MessagePackSerializerOptions options)
         {
-            var name = "Contractless";
             Logger.Log($"Method {name}");
             Logger.Log($"Creating {size} input records");
-            Logger.Log("Setting up messagepack");
-            var input = ContractlessSamples.Create(size);
-            var options = ContractlessStandardResolver.Options;
-            return new Benchmark<ContractlessSamples.PersonWithPet[]>(name, options, input).Run(repetitions);
+            var input = producer(size);
+            return new Benchmark<T[]>(name, options, input).Run(repetitions);
         }
 
-        static Result RunFullyAttributed(int repetitions, int size)
-        {
-            var name = "Fully attributed";
-            Logger.Log($"Method {name}");
-            Logger.Log($"Creating {size} input records");
-            Logger.Log("Setting up messagepack");
-            var input = FullyAttributedSamples.Create(size);
-            var options = MessagePackSerializer.DefaultOptions;
-            return new Benchmark<FullyAttributedSamples.PersonWithPet[]>(name, options, input)
-                .Run(repetitions);
-        }
+        static Result RunTypeless(int repetitions, int size) =>
+            RunMethod(repetitions, size, "Typeless", AttributelessSamples.Create,
+                MessagePackSerializer.Typeless.DefaultOptions);
     }
 }
