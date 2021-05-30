@@ -93,6 +93,35 @@ namespace MessagePack.Attributeless.Tests
             options.TestRoundtrip(Samples.MakePerson());
         }
 
+        class Inside
+        {
+            public int Number { get; set; }
+        }
+
+        class Outside
+        {
+            public string Text { get; set; }
+            public Inside Nested { get; set; }
+        }
+        [Test]
+        public void Roundtrip_if_complex_properties_are_null()
+        {
+            var insideFormatter = new ConfigurableKeyFormatter<Inside>();
+            insideFormatter.UseAutomaticKeys();
+            var outsideFormatter = new ConfigurableKeyFormatter<Outside>();
+            outsideFormatter.UseAutomaticKeys();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new IMessagePackFormatter[] {outsideFormatter, insideFormatter}, new[] {ContractlessStandardResolver.Instance}));
+
+            var input = new Outside
+            {
+                Text = "bla"
+            };
+
+            options.TestRoundtrip(input);
+        }
         [Test]
         public void Roundtrip_if_some_properties_are_null()
         {
