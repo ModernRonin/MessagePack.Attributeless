@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ApprovalTests;
 using FluentAssertions;
 using NUnit.Framework;
@@ -20,6 +21,16 @@ namespace MessagePack.Attributeless.Tests
         public class UserOfGenericWithTypeParameterOutsideAssembly
         {
             public Generic<string> Elements { get; set; }
+        }
+
+        public class Node
+        {
+            public ICollection<Node> Children { get; set; }
+        }
+
+        class TypeUsingExternalGeneric
+        {
+            public List<Element> Elements { get; set; }
         }
 
         [Test]
@@ -49,11 +60,21 @@ namespace MessagePack.Attributeless.Tests
         }
 
         [Test]
+        public void GetReferencedUserTypes_with_external_generic_doesnt_include_that()
+        {
+            var type = typeof(TypeUsingExternalGeneric);
+
+            type.GetReferencedUserTypes().Should().BeEquivalentTo(type, typeof(Element));
+        }
+
+        [Test]
         public void GetReferencedUserTypes_with_generic_type_with_type_parameter_in_assembly()
         {
             var type = typeof(UserOfGenericWithTypeParameterInAssembly);
 
-            type.GetReferencedUserTypes().Should().BeEquivalentTo(type, typeof(Element));
+            type.GetReferencedUserTypes()
+                .Should()
+                .BeEquivalentTo(type, typeof(Element), typeof(Generic<Element>));
         }
 
         [Test]
@@ -61,7 +82,7 @@ namespace MessagePack.Attributeless.Tests
         {
             var type = typeof(UserOfGenericWithTypeParameterOutsideAssembly);
 
-            type.GetReferencedUserTypes().Should().BeEquivalentTo(type);
+            type.GetReferencedUserTypes().Should().BeEquivalentTo(type, typeof(Generic<string>));
         }
 
         [Test]
@@ -111,6 +132,13 @@ namespace MessagePack.Attributeless.Tests
             var type = typeof(Samples.Person);
 
             type.GetReferencedUserTypes().Should().BeEquivalentTo(type, typeof(Samples.Address));
+        }
+
+        [Test]
+        [Timeout(500)]
+        public void GetReferencedUserTypes_with_self_referential_structure()
+        {
+            typeof(Node).GetReferencedUserTypes().Should().Equal(typeof(Node));
         }
     }
 }

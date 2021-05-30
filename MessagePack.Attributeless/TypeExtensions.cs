@@ -10,20 +10,37 @@ namespace MessagePack.Attributeless
         public static IEnumerable<Type> GetReferencedUserTypes(this Type self, params Assembly[] assemblies)
         {
             assemblies = GetAssemblies(self, assemblies);
-            if (self.IsConstructedGenericType)
-                return self.GenericTypeArguments.SelectMany(t => t.GetReferencedUserTypes(assemblies));
-            if (self.IsArray) return self.GetElementType().GetReferencedUserTypes(assemblies);
-            if (!assemblies.Contains(self.Assembly)) return Enumerable.Empty<Type>();
-            var children =
-                self.GetProperties()
-                    .Select(p => p.PropertyType)
-                    .Distinct()
-                    .Where(x => !x.IsEnum);
-            var derivations = self.GetSubTypes();
-            return children.Concat(derivations)
-                .SelectMany(t => t.GetReferencedUserTypes(assemblies))
-                .Distinct()
-                .Append(self);
+
+            var result = new List<Type>();
+            add(self);
+            return result;
+
+            void add(Type type)
+            {
+                if (result.Contains(type)) return;
+
+                if (type.IsConstructedGenericType)
+                    foreach (var t in type.GenericTypeArguments)
+                        add(t);
+
+                if (type.IsArray)
+                {
+                    add(type.GetElementType());
+                    return;
+                }
+
+                if (!assemblies.Contains(type.Assembly)) return;
+
+                result.Add(type);
+                var children =
+                    type.GetProperties()
+                        .Select(p => p.PropertyType)
+                        .Distinct()
+                        .Where(x => !x.IsEnum);
+                var derivations = type.GetSubTypes();
+
+                foreach (var t in children.Concat(derivations)) add(t);
+            }
         }
 
         public static IEnumerable<Type> GetSubTypes(this Type self, params Assembly[] assemblies)
