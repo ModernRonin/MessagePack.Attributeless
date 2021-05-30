@@ -1,27 +1,51 @@
 ﻿using System;
 using MessagePack.Resolvers;
+using ModernRonin.FluentArgumentParser;
+using ModernRonin.FluentArgumentParser.Help;
 
 namespace MessagePack.Attributeless.Microbenchmark
 {
+    public class Options
+    {
+        public int NumberOfRecords { get; set; } = 1000;
+        public int Repetitions { get; set; } = 100;
+    }
+
     class Program
     {
-        static void Main()
+        static int Main(string[] args)
         {
 #if DEBUG
             Logger.Warning(
                 "You are running a DEBUG configuration - performance results in DEBUG may be misleading.");
 #endif
+            var parser = ParserFactory.Create("MessagePack.Attributeless Microbenchmark",
+                "size and speed comparison of Attributeless vs Fully Attributed, Contractless and Typeless");
+            parser.DefaultVerb<Options>();
+            switch (parser.Parse(args))
+            {
+                case HelpResult help:
+                    Console.WriteLine(help.Text);
+                    return help.IsResultOfInvalidInput ? -1 : 0;
+                case Options options:
+                    Run(options);
+                    return 0;
+            }
+
+            return 0;
+        }
+
+        static void Run(Options options)
+        {
             var methods = new Func<int, int, Result>[]
             {
                 RunFullyAttributed,
                 RunContractless,
                 RunAttributeless
             };
-            const int repetitions = 100;
-            const int size = 1000;
             foreach (var method in methods)
             {
-                method.Invoke(repetitions, size);
+                method.Invoke(options.Repetitions, options.NumberOfRecords);
                 Logger.Log("--------------------------------------------------------");
             }
 
