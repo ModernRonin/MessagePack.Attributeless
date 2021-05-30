@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using static MessagePack.Attributeless.Microbenchmark.Logger;
 
@@ -22,41 +21,45 @@ namespace MessagePack.Attributeless.Microbenchmark
         {
             Log($"Running {_name}...");
             long serializedSize;
+            Log("Warming up method..."); // to make sure whatever caches etc are initialized
             using (var stream = new MemoryStream())
             {
                 MessagePackSerializer.Serialize(stream, _input, _options);
                 serializedSize = stream.Length;
                 stream.Position = 0;
-                var roundTripped = MessagePackSerializer.Deserialize<T>(stream, _options);
-                // the following is just to ensure that the optimizer cannot
-                // throw away the method call; actually, if we compared
-                // roundtripped to the input, it would not match
-                // unless we added native datetime resolvers, but this is
-                // not relevant for the benchmark so we leave it out
-                if (roundTripped == null)
-                {
-                    Error("Roundtrip not successful");
-                    return new Result(_name, -1, TimeSpan.Zero, -1);
-                }
+                MessagePackSerializer.Deserialize<T>(stream, _options);
             }
 
-            Log($"Running {repetitions} iterations...");
+            Log($"Running {repetitions} serializations...");
             var watch = new Stopwatch();
             watch.Start();
             for (var i = 0; i < repetitions; ++i)
             {
-                using (var stream = new MemoryStream())
+                using var stream = new MemoryStream();
+                MessagePackSerializer.Serialize(stream, _input, _options);
+            }
+
+            watch.Stop();
+            var serializeDuration = watch.Elapsed;
+
+            Log($"Running {repetitions} deserializations...");
+            watch.Restart();
+            using (var stream = new MemoryStream())
+            {
+                MessagePackSerializer.Serialize(stream, _input, _options);
+                for (var i = 0; i < repetitions; ++i)
                 {
-                    MessagePackSerializer.Serialize(stream, _input, _options);
                     stream.Position = 0;
-                    MessagePackSerializer.Deserialize<T>(stream, _options);
+                    var deserialized = MessagePackSerializer.Deserialize<T>(stream, _options);
                 }
             }
 
             watch.Stop();
+            var deserializeDuration = watch.Elapsed;
+
             Log(
-                $"Finished method {_name} with a size of {serializedSize} and duration of {watch.ElapsedMilliseconds:0.}ms for {repetitions} repetitions");
-            return new Result(_name, serializedSize, watch.Elapsed, repetitions);
+                $"Finished method {_name} with a size of {serializedSize}, serialize-duration of {serializeDuration.TotalMilliseconds:0.}ms and deserialize-duration of {deserializeDuration.TotalMilliseconds:0.}ms for {repetitions} repetitions");
+            return new Result(_name, serializedSize, serializeDuration, deserializeDuration, repetitions);
         }
     }
 }
