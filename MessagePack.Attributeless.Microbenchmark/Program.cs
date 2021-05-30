@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Bogus;
 using MessagePack.Resolvers;
 using ModernRonin.FluentArgumentParser;
 using ModernRonin.FluentArgumentParser.Help;
@@ -10,6 +11,8 @@ namespace MessagePack.Attributeless.Microbenchmark
 {
     class Program
     {
+        const int Seed = 2326;
+
         static int Main(string[] args)
         {
 #if DEBUG
@@ -43,7 +46,7 @@ namespace MessagePack.Attributeless.Microbenchmark
                     Run(options);
                     return 0;
                 case Profile:
-                    RunProfile();
+                    RunProfile(100, 100);
                     return 0;
             }
 
@@ -95,21 +98,24 @@ namespace MessagePack.Attributeless.Microbenchmark
         {
             Logger.Log($"Method {name}");
             Logger.Log($"Creating {size} input records");
+            Randomizer.Seed = new Random(Seed);
             var input = producer(size);
             return new Benchmark<T[]>(name, options, input).Run(repetitions);
         }
 
-        static void RunProfile()
+        static void RunProfile(int repetitions, int size)
         {
             var options = MessagePackSerializer
                 .DefaultOptions.Configure()
                 .GraphOf<AttributelessSamples.PersonWithPet>()
                 .Build();
-            Logger.Log($"Creating {100} input records");
-            var input = AttributelessSamples.Create(100);
+            Logger.Log($"Creating {size} input records");
+            Randomizer.Seed = new Random(Seed);
+            var input = AttributelessSamples.Create(size);
             Logger.Warning("Attach the profiler and press <Enter>");
             Console.ReadLine();
-            new Benchmark<AttributelessSamples.PersonWithPet[]>("Attributeless", options, input).Run(100);
+            new Benchmark<AttributelessSamples.PersonWithPet[]>("Attributeless", options, input).Run(
+                repetitions);
             Logger.Log("Exiting...");
         }
 
