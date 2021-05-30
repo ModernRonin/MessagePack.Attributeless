@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="AutoBogus" Version="2.13.0" />
     <PackageReference Include="AutoBogus.Conventions" Version="2.13.0" />
+    <PackageReference Include="JsonSubTypes" Version="1.8.0" />
     <PackageReference Include="ModernRonin.FluentArgumentParser" Version="1.0.0" />
   </ItemGroup>
 

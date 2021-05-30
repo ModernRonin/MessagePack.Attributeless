@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Bogus;
+using JsonSubTypes;
 using MessagePack.Resolvers;
 using ModernRonin.FluentArgumentParser;
 using ModernRonin.FluentArgumentParser.Help;
 using ModernRonin.FluentArgumentParser.Parsing;
+using Newtonsoft.Json;
+using static MessagePack.Attributeless.Microbenchmark.Logger;
 
 namespace MessagePack.Attributeless.Microbenchmark
 {
@@ -31,6 +34,10 @@ namespace MessagePack.Attributeless.Microbenchmark
                 .WithLongName("only-attributeless")
                 .WithShortName("oa")
                 .WithHelp("don't benchmark other methods, only attributeless");
+            benchmark.Parameter(b => b.DoIncludeJson)
+                .WithShortName("j")
+                .WithLongName("with-json")
+                .WithHelp("run the benchmark with JSON, too, as a reference");
             var profiling = parser.AddVerb<Profile>()
                 .WithHelp("run only attributeless with 100 records and 100 repetitions for profiling");
             profiling.Parameter(p => p.DontPromptForProfiler)
@@ -53,25 +60,27 @@ namespace MessagePack.Attributeless.Microbenchmark
             return 0;
         }
 
-        static void Run(BenchmarkConfiguration benchmarkConfiguration)
+        static void Run(BenchmarkConfiguration options)
         {
             var methods = new List<Func<int, int, Result>> {RunAttributeless};
-            if (!benchmarkConfiguration.DontIncludeOthermethods)
+            if (!options.DontIncludeOthermethods)
             {
                 methods.Add(RunFullyAttributed);
                 methods.Add(RunContractless);
                 methods.Add(RunTypeless);
             }
 
+            if (options.DoIncludeJson) methods.Add(RunJson);
+
             foreach (var method in methods)
             {
-                method.Invoke(benchmarkConfiguration.Repetitions, benchmarkConfiguration.NumberOfRecords);
-                Logger.Log("--------------------------------------------------------");
+                method.Invoke(options.Repetitions, options.NumberOfRecords);
+                Log("--------------------------------------------------------");
             }
 
             if (Debugger.IsAttached)
             {
-                Logger.Log("Press <Enter> to exit...");
+                Log("Press <Enter> to exit...");
                 Console.ReadLine();
             }
         }
@@ -90,14 +99,64 @@ namespace MessagePack.Attributeless.Microbenchmark
             RunMethod(repetitions, size, "Fully attributed", FullyAttributedSamples.Create,
                 MessagePackSerializer.DefaultOptions);
 
+        static Result RunJson(int repetitions, int size)
+        {
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(JsonSubtypesConverterBuilder
+                .Of<AttributelessSamples.IExtremity>("extremity")
+                .RegisterSubtype<AttributelessSamples.Arm>("arm")
+                .RegisterSubtype<AttributelessSamples.Leg>("leg")
+                .RegisterSubtype<AttributelessSamples.Wing>("wing")
+                .SerializeDiscriminatorProperty()
+                .Build());
+            settings.Converters.Add(JsonSubtypesConverterBuilder.Of<AttributelessSamples.IAnimal>("animal")
+                .RegisterSubtype<AttributelessSamples.Mammal>("mammal")
+                .RegisterSubtype<AttributelessSamples.Bird>("bird")
+                .SerializeDiscriminatorProperty()
+                .Build());
+            Log($"Creating {size} input records");
+            Randomizer.Seed = new Random(Seed);
+            var input = AttributelessSamples.Create(size);
+
+            Log("Running json...");
+            Log("Warming up method...");
+            var serialized = JsonConvert.SerializeObject(input, settings);
+            long serializedSize = serialized.Length;
+            JsonConvert.DeserializeObject<AttributelessSamples.PersonWithPet[]>(serialized, settings);
+
+            Log($"Running {repetitions} serializations...");
+            var watch = new Stopwatch();
+            watch.Start();
+            for (var i = 0; i < repetitions; ++i) JsonConvert.SerializeObject(input, settings);
+
+            watch.Stop();
+            var serializeDuration = watch.Elapsed;
+
+            Log($"Running {repetitions} deserializations...");
+            watch.Restart();
+            JsonConvert.SerializeObject(input, settings);
+            for (var i = 0; i < repetitions; ++i)
+            {
+                var deserialized =
+                    JsonConvert.DeserializeObject<AttributelessSamples.PersonWithPet[]>(serialized, settings);
+            }
+
+            watch.Stop();
+            var deserializeDuration = watch.Elapsed;
+
+            Log(
+                $"Finished method JSON with a size of {serializedSize}, serialize-duration of {serializeDuration.TotalMilliseconds:0.}ms and deserialize-duration of {deserializeDuration.TotalMilliseconds:0.}ms for {repetitions} repetitions");
+            return new Result("JSON", serializedSize, serializeDuration, deserializeDuration, repetitions);
+        }
+
         static Result RunMethod<T>(int repetitions,
             int size,
             string name,
             Func<int, T[]> producer,
             MessagePackSerializerOptions options)
         {
-            Logger.Log($"Method {name}");
-            Logger.Log($"Creating {size} input records");
+            Log($"Method {name}");
+            Log($"Creating {size} input records");
             Randomizer.Seed = new Random(Seed);
             var input = producer(size);
             return new Benchmark<T[]>(name, options, input).Run(repetitions);
@@ -109,14 +168,14 @@ namespace MessagePack.Attributeless.Microbenchmark
                 .DefaultOptions.Configure()
                 .GraphOf<AttributelessSamples.PersonWithPet>()
                 .Build();
-            Logger.Log($"Creating {size} input records");
+            Log($"Creating {size} input records");
             Randomizer.Seed = new Random(Seed);
             var input = AttributelessSamples.Create(size);
-            Logger.Warning("Attach the profiler and press <Enter>");
+            Warning("Attach the profiler and press <Enter>");
             Console.ReadLine();
             new Benchmark<AttributelessSamples.PersonWithPet[]>("Attributeless", options, input).Run(
                 repetitions);
-            Logger.Log("Exiting...");
+            Log("Exiting...");
         }
 
         static Result RunTypeless(int repetitions, int size) =>
