@@ -17,8 +17,8 @@ namespace MessagePack.Attributeless.Microbenchmark
                 RunContractless,
                 RunAttributeless
             };
-            const int repetitions = 10;
-            const int size = 100;
+            const int repetitions = 100;
+            const int size = 1000;
             foreach (var method in methods)
             {
                 method.Invoke(repetitions, size);
