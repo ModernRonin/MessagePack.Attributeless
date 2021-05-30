@@ -33,6 +33,20 @@ namespace MessagePack.Attributeless.Tests
             public List<Element> Elements { get; set; }
         }
 
+        class ContainsNullable
+        {
+            public int? Count { get; set; }
+            public Samples.Side? Side { get; set; }
+        }
+
+        [Test]
+        public void GetReferencedUserTypes_deals_correctly_with_nullables()
+        {
+            typeof(ContainsNullable).GetReferencedUserTypes()
+                .Should()
+                .BeEquivalentTo(typeof(ContainsNullable), typeof(Samples.Side));
+        }
+
         [Test]
         public void GetReferencedUserTypes_with_abstract_class()
         {

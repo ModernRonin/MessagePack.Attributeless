@@ -1,4 +1,5 @@
-﻿using MessagePack.Formatters;
+﻿using System.Collections.Generic;
+using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
@@ -7,6 +8,44 @@ namespace MessagePack.Attributeless.Tests
     [TestFixture]
     public class ConfigurableKeyFormatterTests
     {
+        class Something
+        {
+            public int Count { get; set; }
+            public string Text { get; set; }
+            public Samples.Person Who { get; set; }
+        }
+
+        static IEnumerable<TestCaseData> ContainsNullableCases
+        {
+            get
+            {
+                yield return new TestCaseData(new ContainsNullable()).SetName("{m} when all are null");
+                yield return new TestCaseData(new ContainsNullable {Count = 13}).SetName(
+                    "{m} when all non-user-defined is null");
+                yield return new TestCaseData(new ContainsNullable {Side = Samples.Side.Right}).SetName(
+                    "{m} when all user-defined is null");
+            }
+        }
+
+        [TestCaseSource(nameof(ContainsNullableCases))]
+        public void Roundtrip_on_type_with_nullable_primitive_properties(ContainsNullable input)
+        {
+            var formatter = new ConfigurableKeyFormatter<ContainsNullable>();
+            formatter.UseAutomaticKeys();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
+
+            options.TestRoundtrip(input);
+        }
+
+        public class ContainsNullable
+        {
+            public int? Count { get; set; }
+            public Samples.Side? Side { get; set; }
+        }
+
         [Test]
         public void Roundtrip_complex_object()
         {
@@ -52,6 +91,25 @@ namespace MessagePack.Attributeless.Tests
                     }, new[] {ContractlessStandardResolver.Instance}));
 
             options.TestRoundtrip(Samples.MakePerson());
+        }
+
+        [Test]
+        public void Roundtrip_if_some_properties_are_null()
+        {
+            var formatter = new ConfigurableKeyFormatter<Something>();
+            formatter.UseAutomaticKeys();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
+
+            var input = new Something
+            {
+                Count = 13,
+                Text = "bla"
+            };
+
+            options.TestRoundtrip(input);
         }
 
         [Test]
