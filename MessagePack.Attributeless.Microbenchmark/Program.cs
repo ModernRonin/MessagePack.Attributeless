@@ -3,6 +3,7 @@ using System.Diagnostics;
 using MessagePack.Resolvers;
 using ModernRonin.FluentArgumentParser;
 using ModernRonin.FluentArgumentParser.Help;
+using ModernRonin.FluentArgumentParser.Parsing;
 
 namespace MessagePack.Attributeless.Microbenchmark
 {
@@ -16,21 +17,35 @@ namespace MessagePack.Attributeless.Microbenchmark
 #endif
             var parser = ParserFactory.Create("MessagePack.Attributeless Microbenchmark",
                 "size and speed comparison of Attributeless vs Fully Attributed, Contractless and Typeless");
-            parser.DefaultVerb<Options>();
+            var benchmark = parser.AddVerb<BenchmarkConfiguration>()
+                .WithHelp("run benchmark")
+                .Rename("benchmark");
+            benchmark.Parameter(b => b.NumberOfRecords)
+                .WithHelp("size of the array of complex objects to be used");
+            benchmark.Parameter(b => b.Repetitions).WithHelp("how often to repeat the run");
+            var profiling = parser.AddVerb<Profile>()
+                .WithHelp("run only attributeless with 100 records and 100 repetitions for profiling");
+            profiling.Parameter(p => p.DontPromptForProfiler)
+                .WithLongName("no-prompt")
+                .WithShortName("np")
+                .WithHelp("don't prompt you to attach the profiler");
             switch (parser.Parse(args))
             {
                 case HelpResult help:
                     Console.WriteLine(help.Text);
                     return help.IsResultOfInvalidInput ? -1 : 0;
-                case Options options:
+                case BenchmarkConfiguration options:
                     Run(options);
+                    return 0;
+                case Profile:
+                    RunProfile();
                     return 0;
             }
 
             return 0;
         }
 
-        static void Run(Options options)
+        static void Run(BenchmarkConfiguration benchmarkConfiguration)
         {
             var methods = new Func<int, int, Result>[]
             {
@@ -41,7 +56,7 @@ namespace MessagePack.Attributeless.Microbenchmark
             };
             foreach (var method in methods)
             {
-                method.Invoke(options.Repetitions, options.NumberOfRecords);
+                method.Invoke(benchmarkConfiguration.Repetitions, benchmarkConfiguration.NumberOfRecords);
                 Logger.Log("--------------------------------------------------------");
             }
 
@@ -76,6 +91,20 @@ namespace MessagePack.Attributeless.Microbenchmark
             Logger.Log($"Creating {size} input records");
             var input = producer(size);
             return new Benchmark<T[]>(name, options, input).Run(repetitions);
+        }
+
+        static void RunProfile()
+        {
+            var options = MessagePackSerializer
+                .DefaultOptions.Configure()
+                .GraphOf<AttributelessSamples.PersonWithPet>()
+                .Build();
+            Logger.Log($"Creating {100} input records");
+            var input = AttributelessSamples.Create(100);
+            Logger.Warning("Attach the profiler and press <Enter>");
+            Console.ReadLine();
+            new Benchmark<AttributelessSamples.PersonWithPet[]>("Attributeless", options, input).Run(100);
+            Logger.Log("Exiting...");
         }
 
         static Result RunTypeless(int repetitions, int size) =>
