@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Bogus;
 using JsonSubTypes;
 using MessagePack.Resolvers;
@@ -38,6 +40,8 @@ namespace MessagePack.Attributeless.Microbenchmark
                 .WithShortName("j")
                 .WithLongName("with-json")
                 .WithHelp("run the benchmark with JSON, too, as a reference");
+            benchmark.Parameter(b => b.CsvPath)
+                .WithHelp("where to write the results as CSV; if set to empty, no CSV is written");
             var profiling = parser.AddVerb<Profile>()
                 .WithHelp("run only attributeless with 100 records and 100 repetitions for profiling");
             profiling.Parameter(p => p.DontPromptForProfiler)
@@ -72,10 +76,19 @@ namespace MessagePack.Attributeless.Microbenchmark
 
             if (options.DoIncludeJson) methods.Add(RunJson);
 
-            foreach (var method in methods)
+            var results = methods.Select(m => m.Invoke(options.Repetitions, options.NumberOfRecords))
+                .ToArray();
+
+            if (!string.IsNullOrWhiteSpace(options.CsvPath))
             {
-                method.Invoke(options.Repetitions, options.NumberOfRecords);
-                Log("--------------------------------------------------------");
+                var lines = results.Select(format)
+                    .Prepend(
+                        "Name;Size (bytes);TotalSerializeDuration (ms);TotalDeserializeDuration (ms);Repetitions");
+
+                File.WriteAllLines(options.CsvPath, lines);
+
+                string format(Result r) =>
+                    $"{r.Name};{r.Size};{r.SerializeDuration.TotalMilliseconds};{r.DeserializeDuration.TotalMilliseconds};{r.Repetitions}";
             }
 
             if (Debugger.IsAttached)
@@ -146,6 +159,7 @@ namespace MessagePack.Attributeless.Microbenchmark
 
             Log(
                 $"Finished method JSON with a size of {serializedSize}, serialize-duration of {serializeDuration.TotalMilliseconds:0.}ms and deserialize-duration of {deserializeDuration.TotalMilliseconds:0.}ms for {repetitions} repetitions");
+            Log("--------------------------------------------------------");
             return new Result("JSON", serializedSize, serializeDuration, deserializeDuration, repetitions);
         }
 
@@ -159,6 +173,7 @@ namespace MessagePack.Attributeless.Microbenchmark
             Log($"Creating {size} input records");
             Randomizer.Seed = new Random(Seed);
             var input = producer(size);
+            Log("--------------------------------------------------------");
             return new Benchmark<T[]>(name, options, input).Run(repetitions);
         }
 
