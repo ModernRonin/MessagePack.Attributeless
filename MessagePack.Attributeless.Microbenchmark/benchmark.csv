@@ -1,0 +1,6 @@
+Name;Size (bytes);TotalSerializeDuration (ms);TotalDeserializeDuration (ms);Repetitions
+Attributeless;287066;918.1524;1196.4241;100
+Fully attributed;261539;216.1039;203.0505;100
+Contractless;517050;297.1649;273.1441;100
+Typeless;1358353;540.9209;510.1755;100
+JSON;763207;3492.0147;6261.0565;100
