@@ -75,6 +75,10 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
 
+        public MessagePackSerializerOptionsBuilder Ignore(Type type) => this;
+
+        public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
+
         public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
             _configuration.AddSubType(baseType, subType);
