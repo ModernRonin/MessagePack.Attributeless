@@ -57,16 +57,8 @@ namespace MessagePack.Attributeless
 
         public void SetKeyFor<TProperty>(int key, Expression<Func<T, TProperty>> accessor)
         {
-            var property = (accessor.Body as MemberExpression)?.Member as PropertyInfo;
-            precondition(property != default, "must be a property accessor");
-            precondition(property.CanWrite, "must be a writeable property");
-
+            var property = accessor.WriteablePropertyInfo();
             _map[key] = property;
-
-            void precondition(bool condition, string message)
-            {
-                if (!condition) throw new ArgumentException(message, nameof(accessor));
-            }
         }
 
         public void UseAutomaticKeys()
