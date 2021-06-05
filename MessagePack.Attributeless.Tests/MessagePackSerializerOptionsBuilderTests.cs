@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using ApprovalTests;
 using FluentAssertions;
 using MessagePack.Formatters;
+using MoreLinq;
 using NUnit.Framework;
 
 namespace MessagePack.Attributeless.Tests
@@ -81,6 +84,94 @@ namespace MessagePack.Attributeless.Tests
                 MessagePackSerializer.Serialize(typeof(string), ref writer, value.ToUpperInvariant(),
                     options);
             }
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void GraphOf_configuration_with_type_override_for_non_user_type_with(
+            Samples.PersonWithPet input)
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.PersonWithPet>()
+                .AddNativeFormatters()
+                .OverrideFormatter<string, UppercasingStringFormatter>()
+                .Build();
+
+            var output = options.Roundtrip(input);
+
+            setAllStringPropertiesToUppercase(input);
+            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
+
+            void setAllStringPropertiesToUppercase(object obj)
+            {
+                if (obj is IEnumerable enumerable and not null)
+                {
+                    foreach (var element in enumerable) setAllStringPropertiesToUppercase(element);
+                    return;
+                }
+
+                var type = obj.GetType();
+                var (stringProperties, otherProperties) = type
+                    .GetProperties()
+                    .Where(p => p.CanWrite)
+                    .Partition(p => p.PropertyType == typeof(string));
+                stringProperties.ForEach(
+                    p => p.SetValue(obj, p.GetValue(obj)?.ToString()?.ToUpperInvariant()));
+                foreach (var p in otherProperties) setAllStringPropertiesToUppercase(p.GetValue(obj));
+            }
+        }
+
+        class OverridingExtremityFormatter : IMessagePackFormatter<Samples.IExtremity>
+        {
+            public Samples.IExtremity Deserialize(ref MessagePackReader reader,
+                MessagePackSerializerOptions options)
+            {
+                WasUsed = true;
+                var (code, val, side) = (reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+                Samples.IExtremity result = code switch
+                {
+                    0 => new Samples.Arm {NumberOfFingers = (byte) val},
+                    1 => new Samples.Leg {NumberOfToes = (byte) val},
+                    2 => new Samples.Wing {Span = val},
+                    _ => throw new InvalidOperationException("couldn't deserialize")
+                };
+                result.Side = (Samples.Side) side;
+                return result;
+            }
+
+            public void Serialize(ref MessagePackWriter writer,
+                Samples.IExtremity value,
+                MessagePackSerializerOptions options)
+            {
+                WasUsed = true;
+                var (code, val) = value switch
+                {
+                    Samples.Arm arm => (0, arm.NumberOfFingers),
+                    Samples.Leg leg => (1, (int) leg.NumberOfToes),
+                    Samples.Wing wing => (2, wing.Span),
+                    _ => throw new InvalidOperationException("couldn't serialize")
+                };
+                writer.Write(code);
+                writer.Write(val);
+                writer.Write((int) value.Side);
+            }
+
+            public static bool WasUsed { get; set; }
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void GraphOf_configuration_with_type_override_for_user_type_with(
+            Samples.PersonWithPet input)
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.PersonWithPet>()
+                .AddNativeFormatters()
+                .OverrideFormatter<Samples.IExtremity, OverridingExtremityFormatter>()
+                .Build();
+
+            OverridingExtremityFormatter.WasUsed = false;
+            var output = options.Roundtrip(input);
+
+            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
         }
 
         [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]

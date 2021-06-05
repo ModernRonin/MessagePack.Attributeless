@@ -79,6 +79,13 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
 
+        public MessagePackSerializerOptionsBuilder OverrideFormatter(Type targetType, Type formatterType) =>
+            this;
+
+        public MessagePackSerializerOptionsBuilder OverrideFormatter<TTarget, TFormatter>()
+            where TFormatter : IMessagePackFormatter<TTarget> =>
+            OverrideFormatter(typeof(TTarget), typeof(TFormatter));
+
         public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
             _configuration.AddSubType(baseType, subType);

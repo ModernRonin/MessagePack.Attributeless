@@ -14,6 +14,7 @@
   - GraphOf
 - Tests for equivalence of different config methods using keytable 
 - Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
+- test with type that has indexer properties
 
 ### Overrides
 - Allow to override formatter for type 
