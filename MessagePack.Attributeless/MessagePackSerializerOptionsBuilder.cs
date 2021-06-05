@@ -79,6 +79,9 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptionsBuilder Ignore(Type type) => this;
         public MessagePackSerializerOptionsBuilder Ignore(Type type, PropertyInfo property) => this;
 
+        public MessagePackSerializerOptionsBuilder Ignore(Type type, Func<PropertyInfo, bool> predicate) =>
+        public MessagePackSerializerOptionsBuilder Ignore<T>(Func<PropertyInfo, bool> predicate) =>
+            Ignore(typeof(T), predicate);
         public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
 
         public MessagePackSerializerOptionsBuilder
