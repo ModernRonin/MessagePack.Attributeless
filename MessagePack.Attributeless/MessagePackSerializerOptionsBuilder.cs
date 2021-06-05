@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
@@ -76,8 +77,13 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
 
         public MessagePackSerializerOptionsBuilder Ignore(Type type) => this;
+        public MessagePackSerializerOptionsBuilder Ignore(Type type, PropertyInfo property) => this;
 
         public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
+
+        public MessagePackSerializerOptionsBuilder
+            Ignore<T, TProperty>(Expression<Func<T, TProperty>> accessor) =>
+            Ignore(typeof(T), accessor.WriteablePropertyInfo());
 
         public MessagePackSerializerOptionsBuilder OverrideFormatter(Type targetType, Type formatterType) =>
             this;

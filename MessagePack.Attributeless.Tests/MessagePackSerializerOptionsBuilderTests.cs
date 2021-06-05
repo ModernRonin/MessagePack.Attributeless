@@ -169,8 +169,23 @@ namespace MessagePack.Attributeless.Tests
                 .Build();
 
             OverridingExtremityFormatter.WasUsed = false;
+
+            options.TestRoundtrip(input);
+            OverridingExtremityFormatter.WasUsed.Should().BeTrue();
+        }
+
+        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
+        public void Roundtrip_ignoring_a_single_property_of_a_concrete_type_with(Samples.PersonWithPet input)
+        {
+            var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.PersonWithPet>()
+                .AddNativeFormatters()
+                .Ignore<Samples.Address, string>(a => a.ZipCode)
+                .Build();
+
             var output = options.Roundtrip(input);
 
+            input.Human.Addresses.ForEach(a => a.ZipCode = default);
             output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
         }
 
