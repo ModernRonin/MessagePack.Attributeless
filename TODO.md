@@ -17,8 +17,8 @@
 - test with type that has indexer properties
 
 ### Overrides
-- Allow to override formatter for type 
-- Allow null-formatter, doesn't even write out property key, is not used as subtype 
+- [T] Allow to override formatter for type 
+- [T] Allow null-formatter, doesn't even write out property key, is not used as subtype 
 - Allow to ignore property, directly by expression, and via predicate 
 
 ### Keytable
