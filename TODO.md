@@ -7,8 +7,6 @@
 
 ## MUST - usable at work
 
-### documentation comments
-
 ### readme
 
 ### github setup
