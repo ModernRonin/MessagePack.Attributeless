@@ -76,8 +76,6 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
 
-        public MessagePackSerializerOptionsBuilder Ignore(Type type) => this;
-
         public MessagePackSerializerOptionsBuilder Ignore(Type type, PropertyInfo property) =>
             Ignore(type, pi => pi == property);
 
@@ -89,8 +87,6 @@ namespace MessagePack.Attributeless
 
         public MessagePackSerializerOptionsBuilder Ignore<T>(Func<PropertyInfo, bool> predicate) =>
             Ignore(typeof(T), predicate);
-
-        public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
 
         public MessagePackSerializerOptionsBuilder
             Ignore<T, TProperty>(Expression<Func<T, TProperty>> accessor) =>
