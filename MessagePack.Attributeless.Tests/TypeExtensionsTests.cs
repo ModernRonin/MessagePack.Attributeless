@@ -39,12 +39,33 @@ namespace MessagePack.Attributeless.Tests
             public Samples.Side? Side { get; set; }
         }
 
+        class HasIndexer
+        {
+            readonly Dictionary<string, Element> _map = new();
+
+            public Element this[string key]
+            {
+                get => _map[key];
+                set => _map[key] = value;
+            }
+
+            public ICollection<Node> Nodes { get; set; }
+        }
+
         [Test]
         public void GetReferencedUserTypes_deals_correctly_with_nullables()
         {
             typeof(ContainsNullable).GetReferencedUserTypes()
                 .Should()
                 .BeEquivalentTo(typeof(ContainsNullable), typeof(Samples.Side));
+        }
+
+        [Test]
+        public void GetReferencedUserTypes_does_not_include_indexed_properties()
+        {
+            typeof(HasIndexer).GetReferencedUserTypes()
+                .Should()
+                .BeEquivalentTo(typeof(HasIndexer), typeof(Node));
         }
 
         [Test]

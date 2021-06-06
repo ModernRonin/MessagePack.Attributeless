@@ -13,7 +13,6 @@
   - AllSubTypesOf
   - GraphOf
 - Tests for equivalence of different config methods using keytable 
-- test with type that has indexer properties
 
 ### revisit all exceptions being thrown
 - do they give good info
@@ -57,3 +56,5 @@ if prototype solution works out
 - abstract it behind interface
 
 
+# Doc
+- indexer properties are not used

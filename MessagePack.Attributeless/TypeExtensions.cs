@@ -20,8 +20,9 @@ namespace MessagePack.Attributeless
                 if (result.Contains(type)) return;
 
                 if (type.IsConstructedGenericType)
-                    foreach (var t in type.GenericTypeArguments)
-                        add(t);
+                {
+                    foreach (var t in type.GenericTypeArguments) add(t);
+                }
 
                 if (type.IsArray)
                 {
@@ -34,6 +35,7 @@ namespace MessagePack.Attributeless
                 result.Add(type);
                 var children =
                     type.GetProperties()
+                        .Where(p => !p.IsIndexed())
                         .Select(p => p.PropertyType)
                         .Distinct()
                         .Where(x => !x.IsEnum);
@@ -53,6 +55,8 @@ namespace MessagePack.Attributeless
 
         public static bool IsDerivedFrom(this Type self, Type baseType) =>
             self != baseType && baseType.IsAssignableFrom(self);
+
+        public static bool IsIndexed(this PropertyInfo self) => self.GetIndexParameters().Any();
 
         static Assembly[] GetAssemblies(Type type, Assembly[] assemblies) =>
             assemblies.Length == 0 ? new[] {type.Assembly} : assemblies;

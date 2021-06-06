@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FluentAssertions;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
@@ -8,7 +9,7 @@ namespace MessagePack.Attributeless.Tests
     [TestFixture]
     public class ConfigurableKeyFormatterTests
     {
-        class Something
+        public class Something
         {
             public int Count { get; set; }
             public string Text { get; set; }
@@ -46,15 +47,50 @@ namespace MessagePack.Attributeless.Tests
             public Samples.Side? Side { get; set; }
         }
 
-        class Inside
+        public class Inside
         {
             public int Number { get; set; }
         }
 
-        class Outside
+        public class Outside
         {
             public Inside Nested { get; set; }
             public string Text { get; set; }
+        }
+
+        public class TypeWithIndexerProperties
+        {
+            readonly Dictionary<int, Inside> _numbers = new();
+
+            public Inside this[int index]
+            {
+                get => _numbers[index];
+                set => _numbers[index] = value;
+            }
+
+            public int SomeNumber { get; set; }
+        }
+
+        [Test]
+        public void Indexer_properties_are_ignored()
+        {
+            var formatter = new ConfigurableKeyFormatter<TypeWithIndexerProperties>();
+            formatter.UseAutomaticKeys();
+
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new[] {formatter}, new[] {ContractlessStandardResolver.Instance}));
+
+            var input = new TypeWithIndexerProperties
+            {
+                [13] = new(),
+                [17] = new(),
+                SomeNumber = 19
+            };
+
+            var output = options.Roundtrip(input);
+
+            output.Should().BeEquivalentTo(new TypeWithIndexerProperties {SomeNumber = 19});
         }
 
         [Test]
