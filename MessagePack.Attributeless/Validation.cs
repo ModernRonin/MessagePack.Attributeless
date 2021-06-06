@@ -12,9 +12,10 @@ namespace MessagePack.Attributeless
         public Validation(Configuration configuration) => _configuration = configuration;
 
         public byte[] Checksum =>
-            new SHA512Managed().ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", KeyTable)));
+            new SHA512Managed().ComputeHash(
+                Encoding.UTF8.GetBytes(string.Join("\n", ConfigurationDescription)));
 
-        public IEnumerable<string> KeyTable
+        public IEnumerable<string> ConfigurationDescription
         {
             get
             {

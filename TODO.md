@@ -16,9 +16,6 @@
 - Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
 - test with type that has indexer properties
 
-### Keytable
-- Should have a different, better name 
-
 ### add easy way to validate configuration in a unit-test
 
 ### revisit all exceptions being thrown
