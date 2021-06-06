@@ -17,8 +17,6 @@
 
 ### readme
 
-### license
-
 ### github setup
 - build and publish actions
 - make repo public
