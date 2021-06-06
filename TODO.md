@@ -16,10 +16,6 @@
 - Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
 - test with type that has indexer properties
 
-### Overrides
-- [T] Allow to override formatter for type 
-- [T] Allow null-formatter, doesn't even write out property key, is not used as subtype 
-
 ### Keytable
 - Must contain which native formatters
 - Any override info 

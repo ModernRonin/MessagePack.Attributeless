@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using ApprovalTests;
 using FluentAssertions;
@@ -41,85 +40,6 @@ namespace MessagePack.Attributeless.Tests
             options.TestRoundtrip(input);
         }
 
-        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
-        public void GraphOf_configuration_ignoring_a_type_altogether_with(Samples.PersonWithPet input)
-        {
-            var options = MessagePackSerializer.DefaultOptions.Configure()
-                .GraphOf<Samples.PersonWithPet>()
-                .AddNativeFormatters()
-                .Ignore<Samples.Bird>()
-                .Build();
-
-            var output = options.Roundtrip(input);
-
-            if (input.Pet is Samples.Bird) input.Pet = default;
-            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
-        }
-
-        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
-        public void GraphOf_configuration_ignoring_a_type_altogether_even_if_nested_with(
-            Samples.PersonWithPet input)
-        {
-            var options = MessagePackSerializer.DefaultOptions.Configure()
-                .GraphOf<Samples.PersonWithPet>()
-                .AddNativeFormatters()
-                .Ignore<Samples.Leg>()
-                .Build();
-
-            var output = options.Roundtrip(input);
-
-            input.Pet.Extremities = input.Pet.Extremities.Where(e => e is not Samples.Leg).ToArray();
-            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
-        }
-
-        class UppercasingStringFormatter : IMessagePackFormatter<string>
-        {
-            public string Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) =>
-                MessagePackSerializer.Deserialize<string>(ref reader, options);
-
-            public void Serialize(ref MessagePackWriter writer,
-                string value,
-                MessagePackSerializerOptions options)
-            {
-                MessagePackSerializer.Serialize(typeof(string), ref writer, value.ToUpperInvariant(),
-                    options);
-            }
-        }
-
-        [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
-        public void GraphOf_configuration_with_type_override_for_non_user_type_with(
-            Samples.PersonWithPet input)
-        {
-            var options = MessagePackSerializer.DefaultOptions.Configure()
-                .GraphOf<Samples.PersonWithPet>()
-                .AddNativeFormatters()
-                .OverrideFormatter<string, UppercasingStringFormatter>()
-                .Build();
-
-            var output = options.Roundtrip(input);
-
-            setAllStringPropertiesToUppercase(input);
-            output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
-
-            void setAllStringPropertiesToUppercase(object obj)
-            {
-                if (obj is IEnumerable enumerable and not null)
-                {
-                    foreach (var element in enumerable) setAllStringPropertiesToUppercase(element);
-                    return;
-                }
-
-                var type = obj.GetType();
-                var (stringProperties, otherProperties) = type
-                    .GetProperties()
-                    .Where(p => p.CanWrite)
-                    .Partition(p => p.PropertyType == typeof(string));
-                stringProperties.ForEach(
-                    p => p.SetValue(obj, p.GetValue(obj)?.ToString()?.ToUpperInvariant()));
-                foreach (var p in otherProperties) setAllStringPropertiesToUppercase(p.GetValue(obj));
-            }
-        }
-
         class OverridingExtremityFormatter : IMessagePackFormatter<Samples.IExtremity>
         {
             public Samples.IExtremity Deserialize(ref MessagePackReader reader,
@@ -146,7 +66,7 @@ namespace MessagePack.Attributeless.Tests
                 var (code, val) = value switch
                 {
                     Samples.Arm arm => (0, arm.NumberOfFingers),
-                    Samples.Leg leg => (1, (int) leg.NumberOfToes),
+                    Samples.Leg leg => (1, leg.NumberOfToes),
                     Samples.Wing wing => (2, wing.Span),
                     _ => throw new InvalidOperationException("couldn't serialize")
                 };
