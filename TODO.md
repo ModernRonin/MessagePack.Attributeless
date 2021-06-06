@@ -19,7 +19,6 @@
 ### Overrides
 - [T] Allow to override formatter for type 
 - [T] Allow null-formatter, doesn't even write out property key, is not used as subtype 
-- Allow to ignore property, directly by expression, and via predicate 
 
 ### Keytable
 - Must contain which native formatters
