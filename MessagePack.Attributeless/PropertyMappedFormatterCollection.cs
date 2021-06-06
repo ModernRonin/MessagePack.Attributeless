@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless
@@ -30,6 +31,17 @@ namespace MessagePack.Attributeless
             _propertyMappedTypes.Add(type, (IPropertyToKeyMapping) result);
 
             return (IMessagePackFormatter) result;
+        }
+
+        public void Ignore(Type type, Func<PropertyInfo, bool> predicate)
+        {
+            if (!_propertyMappedTypes.ContainsKey(type))
+            {
+                throw new ArgumentException(
+                    $"Type {type.Name} is not registered. Add Ignore clauses after registering types.");
+            }
+
+            _propertyMappedTypes[type].Ignore(predicate);
         }
     }
 }

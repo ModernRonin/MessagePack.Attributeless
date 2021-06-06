@@ -175,17 +175,22 @@ namespace MessagePack.Attributeless.Tests
         }
 
         [TestCaseSource(typeof(Samples), nameof(Samples.PeopleWithTheirPets))]
-        public void Roundtrip_ignoring_a_single_property_with(Samples.PersonWithPet input)
+        public void Roundtrip_ignoring_individual_properties_with(Samples.PersonWithPet input)
         {
             var options = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
                 .AddNativeFormatters()
-                .Ignore<Samples.Address, string>(a => a.ZipCode)
+                .Ignore<Samples.Address, string>(a => a.City)
+                .Ignore<Samples.Address, string>(a => a.Country)
                 .Build();
 
             var output = options.Roundtrip(input);
 
-            input.Human.Addresses.ForEach(a => a.ZipCode = default);
+            input.Human.Addresses.ForEach(a =>
+            {
+                a.City = default;
+                a.Country = default;
+            });
             output.Should().BeEquivalentTo(input, cfg => cfg.RespectingRuntimeTypes());
         }
 
@@ -195,7 +200,7 @@ namespace MessagePack.Attributeless.Tests
             var options = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
                 .AddNativeFormatters()
-                .Ignore<Samples.Address>(pi => pi.Name.StartsWith("c"))
+                .Ignore<Samples.Address>(pi => pi.Name.StartsWith("C"))
                 .Build();
 
             var output = options.Roundtrip(input);

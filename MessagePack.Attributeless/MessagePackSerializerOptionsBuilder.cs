@@ -77,11 +77,19 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
 
         public MessagePackSerializerOptionsBuilder Ignore(Type type) => this;
-        public MessagePackSerializerOptionsBuilder Ignore(Type type, PropertyInfo property) => this;
 
-        public MessagePackSerializerOptionsBuilder Ignore(Type type, Func<PropertyInfo, bool> predicate) =>
+        public MessagePackSerializerOptionsBuilder Ignore(Type type, PropertyInfo property) =>
+            Ignore(type, pi => pi == property);
+
+        public MessagePackSerializerOptionsBuilder Ignore(Type type, Func<PropertyInfo, bool> predicate)
+        {
+            _configuration.PropertyMappedTypes.Ignore(type, predicate);
+            return this;
+        }
+
         public MessagePackSerializerOptionsBuilder Ignore<T>(Func<PropertyInfo, bool> predicate) =>
             Ignore(typeof(T), predicate);
+
         public MessagePackSerializerOptionsBuilder Ignore<T>() => Ignore(typeof(T));
 
         public MessagePackSerializerOptionsBuilder

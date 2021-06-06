@@ -38,6 +38,8 @@ namespace MessagePack.Attributeless
             return result;
         }
 
+        public void Ignore(Func<PropertyInfo, bool> predicate) => _map.RemoveWhereLeft(predicate);
+
         public void Serialize(ref MessagePackWriter writer, T value, MessagePackSerializerOptions options)
         {
             if (value == null)
