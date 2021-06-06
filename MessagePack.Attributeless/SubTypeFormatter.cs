@@ -4,7 +4,7 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless
 {
-    public class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeFormatter
+    public sealed class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeFormatter
     {
         readonly BidirectionalMap<Type, int> _map = new BidirectionalMap<Type, int>();
         int _nextKey;

@@ -7,8 +7,6 @@
 
 ## MUST - usable at work
 
-### make all types sealed
-
 ### tidy up namespace
 - move stuff that is not really relevant to users into sub-namespaces
 - hide user-relevant types behind interfaces

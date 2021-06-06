@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MessagePack.Attributeless
 {
-    public class BidirectionalMap<TLeft, TRight> : IEnumerable<KeyValuePair<TLeft, TRight>>
+    public sealed class BidirectionalMap<TLeft, TRight> : IEnumerable<KeyValuePair<TLeft, TRight>>
     {
         readonly Dictionary<TLeft, TRight> _leftToRight = new Dictionary<TLeft, TRight>();
         readonly Dictionary<TRight, TLeft> _rightToLeft = new Dictionary<TRight, TLeft>();

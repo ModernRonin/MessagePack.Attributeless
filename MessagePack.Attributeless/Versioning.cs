@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MessagePack.Attributeless
 {
-    public class Versioning
+    public sealed class Versioning
     {
         readonly Configuration _configuration;
 

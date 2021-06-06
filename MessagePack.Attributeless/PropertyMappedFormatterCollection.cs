@@ -6,7 +6,8 @@ using System.Reflection;
 
 namespace MessagePack.Attributeless
 {
-    public class PropertyMappedFormatterCollection : IEnumerable<KeyValuePair<Type, IPropertyFormatter>>
+    public sealed class PropertyMappedFormatterCollection
+        : IEnumerable<KeyValuePair<Type, IPropertyFormatter>>
     {
         readonly Dictionary<Type, IPropertyFormatter> _propertyMappedTypes =
             new Dictionary<Type, IPropertyFormatter>();

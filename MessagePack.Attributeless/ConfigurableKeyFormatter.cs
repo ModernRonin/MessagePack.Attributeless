@@ -7,7 +7,7 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless
 {
-    public class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyFormatter
+    public sealed class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyFormatter
         where T : new()
     {
         readonly BidirectionalMap<PropertyInfo, int> _map = new BidirectionalMap<PropertyInfo, int>();

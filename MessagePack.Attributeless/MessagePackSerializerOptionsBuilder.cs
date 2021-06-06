@@ -7,7 +7,7 @@ using MessagePack.Resolvers;
 
 namespace MessagePack.Attributeless
 {
-    public class MessagePackSerializerOptionsBuilder
+    public sealed class MessagePackSerializerOptionsBuilder
     {
         static readonly IMessagePackFormatter[] _nativeFormatters =
         {

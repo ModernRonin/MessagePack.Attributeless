@@ -6,7 +6,7 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless
 {
-    public class SubTypeMappedFormatterCollection : IEnumerable<KeyValuePair<Type, ISubTypeFormatter>>
+    public sealed class SubTypeMappedFormatterCollection : IEnumerable<KeyValuePair<Type, ISubTypeFormatter>>
     {
         readonly Dictionary<Type, ISubTypeFormatter> _subTypeMappedTypes =
             new Dictionary<Type, ISubTypeFormatter>();

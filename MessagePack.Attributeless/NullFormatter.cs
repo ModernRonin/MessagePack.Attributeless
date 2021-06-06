@@ -2,7 +2,7 @@
 
 namespace MessagePack.Attributeless
 {
-    public class NullFormatter<T> : IMessagePackFormatter<T>
+    public sealed class NullFormatter<T> : IMessagePackFormatter<T>
     {
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) => default;
 
