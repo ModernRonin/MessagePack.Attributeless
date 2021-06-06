@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MessagePack.Attributeless
 {
-    public class Validation
+    public class Versioning
     {
         readonly Configuration _configuration;
 
-        public Validation(Configuration configuration) => _configuration = configuration;
+        public Versioning(Configuration configuration) => _configuration = configuration;
 
         public byte[] Checksum =>
             new SHA512Managed().ComputeHash(

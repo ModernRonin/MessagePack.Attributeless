@@ -196,7 +196,7 @@ namespace MessagePack.Attributeless.Tests
         {
             var oldVersion = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
-                .Validation.Checksum;
+                .Versioning.Checksum;
             // the same, but leaving out Arm
             var newVersion = MessagePackSerializer.DefaultOptions.Configure()
                 .AutoKeyed<Samples.Address>()
@@ -207,7 +207,7 @@ namespace MessagePack.Attributeless.Tests
                 .SubType<Samples.IAnimal, Samples.Mammal>()
                 .SubType<Samples.IAnimal, Samples.Bird>()
                 .AutoKeyed<Samples.PersonWithPet>()
-                .Validation.Checksum;
+                .Versioning.Checksum;
 
             newVersion.Should().NotEqual(oldVersion);
         }
@@ -217,10 +217,10 @@ namespace MessagePack.Attributeless.Tests
         {
             var oldVersion = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
-                .Validation.Checksum;
+                .Versioning.Checksum;
             var newVersion = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
-                .Validation.Checksum;
+                .Versioning.Checksum;
 
             newVersion.Should().Equal(oldVersion);
         }
@@ -231,7 +231,7 @@ namespace MessagePack.Attributeless.Tests
             var builder = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
                 .OverrideFormatter<Samples.IExtremity, MySpecialExtremityFormatter>();
-            var keytable = builder.Validation.ConfigurationDescription;
+            var keytable = builder.Versioning.ConfigurationDescription;
             // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
             var asText = string.Join('\n', keytable);
             Approvals.Verify(asText);

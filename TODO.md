@@ -16,8 +16,6 @@
 - Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
 - test with type that has indexer properties
 
-### add easy way to validate configuration in a unit-test
-
 ### revisit all exceptions being thrown
 - do they give good info
 - test

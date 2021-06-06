@@ -26,7 +26,7 @@ namespace MessagePack.Attributeless
         {
             _options = options;
             _configuration = new Configuration(doImplicitlyAutokeySubtypes);
-            Validation = new Validation(_configuration);
+            Versioning = new Versioning(_configuration);
         }
 
         public MessagePackSerializerOptionsBuilder AddNativeFormatters()
@@ -116,6 +116,6 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new() =>
             SubType(typeof(TBase), typeof(TSub));
 
-        public Validation Validation { get; }
+        public Versioning Versioning { get; }
     }
 }
