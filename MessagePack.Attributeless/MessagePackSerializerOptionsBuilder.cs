@@ -96,8 +96,12 @@ namespace MessagePack.Attributeless
             Ignore<T, TProperty>(Expression<Func<T, TProperty>> accessor) =>
             Ignore(typeof(T), accessor.WriteablePropertyInfo());
 
-        public MessagePackSerializerOptionsBuilder OverrideFormatter(Type targetType, Type formatterType) =>
-            this;
+        public MessagePackSerializerOptionsBuilder OverrideFormatter(Type targetType, Type formatterType)
+        {
+            var formatter = Activator.CreateInstance(formatterType);
+            _configuration.Override(targetType, (IMessagePackFormatter) formatter);
+            return this;
+        }
 
         public MessagePackSerializerOptionsBuilder OverrideFormatter<TTarget, TFormatter>()
             where TFormatter : IMessagePackFormatter<TTarget> =>

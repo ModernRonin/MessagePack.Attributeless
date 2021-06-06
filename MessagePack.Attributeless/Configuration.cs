@@ -8,24 +8,39 @@ namespace MessagePack.Attributeless
     {
         readonly bool _doImplicitlyAutokeySubtypes;
 
+        readonly Dictionary<Type, IMessagePackFormatter> _overrides =
+            new Dictionary<Type, IMessagePackFormatter>();
+
         public Configuration(bool doImplicitlyAutokeySubtypes) =>
             _doImplicitlyAutokeySubtypes = doImplicitlyAutokeySubtypes;
 
-        public void AddAutoKeyed(Type type)
-        {
-            var formatter = PropertyMappedTypes.Add(type);
-            Formatters.Add(formatter);
-        }
+        public void AddAutoKeyed(Type type) => PropertyMappedTypes.Add(type);
 
         public void AddSubType(Type baseType, Type subType)
         {
-            var formatter = SubTypeMappedTypes.Add(baseType, subType);
-            Formatters.Add(formatter);
+            SubTypeMappedTypes.Add(baseType, subType);
             if (_doImplicitlyAutokeySubtypes) AddAutoKeyed(subType);
         }
 
+        public void Override(Type type, IMessagePackFormatter formatter) => _overrides[type] = formatter;
+
         public bool DoesUseNativeResolvers { get; set; }
-        public List<IMessagePackFormatter> Formatters { get; } = new List<IMessagePackFormatter>();
+
+        public IEnumerable<IMessagePackFormatter> Formatters
+        {
+            get
+            {
+                foreach (var (type, formatter) in SubTypeMappedTypes)
+                    if (!_overrides.ContainsKey(type))
+                        yield return formatter;
+
+                foreach (var (type, formatter) in PropertyMappedTypes)
+                    if (!_overrides.ContainsKey(type))
+                        yield return formatter;
+
+                foreach (var (_, formatter) in _overrides) yield return formatter;
+            }
+        }
 
         public PropertyMappedFormatterCollection PropertyMappedTypes { get; } =
             new PropertyMappedFormatterCollection();

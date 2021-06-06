@@ -6,19 +6,19 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless
 {
-    public class SubTypeMappedFormatterCollection : IEnumerable<KeyValuePair<Type, ISubTypeToKeyMapping>>
+    public class SubTypeMappedFormatterCollection : IEnumerable<KeyValuePair<Type, ISubTypeFormatter>>
     {
         readonly Dictionary<Type, ISubTypeFormatter> _subTypeMappedTypes =
             new Dictionary<Type, ISubTypeFormatter>();
 
-        public IEnumerator<KeyValuePair<Type, ISubTypeToKeyMapping>> GetEnumerator() =>
+        public IEnumerator<KeyValuePair<Type, ISubTypeFormatter>> GetEnumerator() =>
             _subTypeMappedTypes.OrderBy(kvp => kvp.Key.FullName)
-                .Select(kvp => new KeyValuePair<Type, ISubTypeToKeyMapping>(kvp.Key, kvp.Value))
+                .Select(kvp => new KeyValuePair<Type, ISubTypeFormatter>(kvp.Key, kvp.Value))
                 .GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IMessagePackFormatter Add(Type baseType, Type subType)
+        public void Add(Type baseType, Type subType)
         {
             subType.MustBeDefaultConstructable();
             subType.MustBeDerivedFrom(baseType);
@@ -32,7 +32,7 @@ namespace MessagePack.Attributeless
                     m.GetParameters().Length == 0)
                 .MakeGenericMethod(subType)
                 .Invoke(result, Array.Empty<object>());
-            return result;
+            return;
 
             IMessagePackFormatter getOrCreate()
             {
