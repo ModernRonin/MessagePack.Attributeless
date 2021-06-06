@@ -13,7 +13,6 @@
   - AllSubTypesOf
   - GraphOf
 - Tests for equivalence of different config methods using keytable 
-- Check whether referencedtypes gets all subtypes or GraphOf passes assemblies to AllSubTypes
 - test with type that has indexer properties
 
 ### revisit all exceptions being thrown

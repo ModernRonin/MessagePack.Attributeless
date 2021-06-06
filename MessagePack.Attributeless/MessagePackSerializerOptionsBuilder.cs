@@ -67,7 +67,7 @@ namespace MessagePack.Attributeless
             var allTypes = type.GetReferencedUserTypes(assemblies).OrderBy(t => t.Name);
             foreach (var t in allTypes)
             {
-                if (t.IsAbstract) AllSubTypesOf(t);
+                if (t.IsAbstract) AllSubTypesOf(t, assemblies);
                 else AutoKeyed(t);
             }
 
