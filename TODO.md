@@ -7,13 +7,6 @@
 
 ## MUST - usable at work
 
-### Tests
-- Write tests proving that all automatic config actions create sorted, ie guaranteed repeatable config
-  - Autokey
-  - AllSubTypesOf
-  - GraphOf
-- Tests for equivalence of different config methods using keytable 
-
 ### revisit all exceptions being thrown
 - do they give good info
 - test

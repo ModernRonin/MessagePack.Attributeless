@@ -228,6 +228,7 @@ namespace MessagePack.Attributeless.Tests
         [Test]
         public void ConfigurationDescription()
         {
+            // this test would also fail if AutoKey, AllSubTypesOf or GraphOf no longer sorted their elements deterministically 
             var builder = MessagePackSerializer.DefaultOptions.Configure()
                 .GraphOf<Samples.PersonWithPet>()
                 .OverrideFormatter<Samples.IExtremity, MySpecialExtremityFormatter>();
