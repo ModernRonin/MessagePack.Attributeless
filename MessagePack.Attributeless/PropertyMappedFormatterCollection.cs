@@ -21,7 +21,8 @@ namespace MessagePack.Attributeless
         {
             type.MustBeDefaultConstructable();
 
-            if (_propertyMappedTypes.ContainsKey(type)) return default;
+            if (_propertyMappedTypes.ContainsKey(type))
+                return (IMessagePackFormatter) _propertyMappedTypes[type];
 
             var formatterType = typeof(ConfigurableKeyFormatter<>).MakeGenericType(type);
             var result = Activator.CreateInstance(formatterType);
