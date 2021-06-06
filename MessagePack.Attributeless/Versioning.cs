@@ -12,10 +12,33 @@ namespace MessagePack.Attributeless
 
         public Versioning(Configuration configuration) => _configuration = configuration;
 
+        /// <summary>
+        ///     Use this in the handshake of your protocol, when using MessagePack for encoding network traffic, or in the first
+        ///     stage
+        ///     of your reading from persistence, when using MessagePack for this, to check whether the incoming format is the same
+        ///     as your current configuration.
+        ///     <para>
+        ///         This being a checksum, there is no guarantee that different configurations will yield different values, but
+        ///         it is extermely likely - likely enough for practical purposes.
+        ///     </para>
+        /// </summary>
         public byte[] Checksum =>
             new SHA512Managed().ComputeHash(
                 Encoding.UTF8.GetBytes(string.Join("\n", ConfigurationDescription)));
 
+        /// <summary>
+        ///     Once you are happy with your configuration, call this and save the output to a reference file you commit. Then
+        ///     create a unit-test
+        ///     that calls <see cref="ConfigurationDescription" /> and compares it against the contents of your reference file.
+        ///     <para>
+        ///         This will help making you aware of changes that might happen through things like, for example, renaming types
+        ///         or properties or adding new implementations of interfaces.
+        ///     </para>
+        ///     <para>
+        ///         Another use of this might be for debugging, for example when incoming traffic, also using MessagePack, but
+        ///         configured in another language, doesn't deserialize successfully or correctly.
+        ///     </para>
+        /// </summary>
         public IEnumerable<string> ConfigurationDescription
         {
             get

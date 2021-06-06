@@ -15,17 +15,15 @@
 - build and publish actions
 - make repo public
 
-### switch at work
-if prototype solution works out
-- adapt DeflateMessagePackSerializer
-- remove the attributes from model
-- remove the *direct* dependency on msgpack
-
 ### announce it
 - blog article
 - post in gitter channel
 
 
+# switch at work
+- adapt DeflateMessagePackSerializer
+- remove the attributes from model
+- remove the *direct* dependency on msgpack
 
 ## FUTURE
 
@@ -39,3 +37,8 @@ if prototype solution works out
 
 # Doc
 - indexer properties are not used
+differences to MessagePack
+- types must be default-constructable and public
+- properties must be public and writeable
+
+recommendation: configure non-attributeless stuff before .Configure() call

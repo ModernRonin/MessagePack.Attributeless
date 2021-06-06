@@ -5,6 +5,9 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless.Formatters
 {
+    /// <summary>
+    ///     You can use this type directly if the automatically generated subtype key mappings don't work for your use-case.
+    /// </summary>
     public sealed class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeFormatter
     {
         readonly BidirectionalMap<Type, int> _map = new BidirectionalMap<Type, int>();

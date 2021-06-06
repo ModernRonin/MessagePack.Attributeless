@@ -8,6 +8,9 @@ using MessagePack.Formatters;
 
 namespace MessagePack.Attributeless.Formatters
 {
+    /// <summary>
+    ///     You can use this type directly if the automatically generated property key mappings don't work for your use-case.
+    /// </summary>
     public sealed class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyFormatter
         where T : new()
     {
