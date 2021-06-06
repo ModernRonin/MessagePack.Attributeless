@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using FluentAssertions;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
@@ -79,6 +82,65 @@ namespace MessagePack.Attributeless.Tests
                 .Build();
 
             options.TestRoundtrip(input);
+        }
+
+        [Test]
+        public void Deserialize_throws_if_it_encounters_an_unknown_key()
+        {
+            var originalFormatter = new SubTypeFormatter<Samples.IExtremity>();
+            originalFormatter.RegisterSubType<Samples.Arm>(0);
+            originalFormatter.RegisterSubType<Samples.Leg>(1);
+            originalFormatter.RegisterSubType<Samples.Wing>(2);
+            var options = makeOptions(originalFormatter);
+
+            using var stream = new MemoryStream();
+            MessagePackSerializer.Serialize<Samples.IExtremity>(stream, new Samples.Leg(), options);
+            stream.Position = 0;
+
+            var changedFormatter = new SubTypeFormatter<Samples.IExtremity>();
+            changedFormatter.RegisterSubType<Samples.Arm>(0);
+            changedFormatter.RegisterSubType<Samples.Leg>(10);
+            changedFormatter.RegisterSubType<Samples.Wing>(20);
+            options = makeOptions(changedFormatter);
+
+            Action action = () => MessagePackSerializer.Deserialize<Samples.IExtremity>(stream, options);
+
+            action.Should()
+                .ThrowExactly<MessagePackSerializationException>()
+                .WithMessage(
+                    "Failed to deserialize MessagePack.Attributeless.Tests.Samples+IExtremity value.")
+                .WithInnerException<MessagePackSerializationException>()
+                .WithMessage(
+                    "Encountered unknown type key 1 for IExtremity - was this serialized with a differrent configuration?");
+
+            MessagePackSerializerOptions makeOptions(SubTypeFormatter<Samples.IExtremity> formatter)
+            {
+                return MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new IMessagePackFormatter[] {formatter},
+                        new[] {ContractlessStandardResolver.Instance}));
+            }
+        }
+
+        [Test]
+        public void Serialize_throws_if_it_encounters_an_unmapped_subtype()
+        {
+            var formatter = new SubTypeFormatter<Samples.IExtremity>();
+            formatter.RegisterSubType<Samples.Arm>(0);
+            formatter.RegisterSubType<Samples.Leg>(1);
+            var options =
+                MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new IMessagePackFormatter[] {formatter},
+                        new[] {ContractlessStandardResolver.Instance}));
+
+            using var stream = new MemoryStream();
+            Action action = () =>
+                MessagePackSerializer.Serialize<Samples.IExtremity>(new Samples.Wing(), options);
+
+            action.Should()
+                .ThrowExactly<MessagePackSerializationException>()
+                .WithMessage("Failed to serialize MessagePack.Attributeless.Tests.Samples+IExtremity value.")
+                .WithInnerException<MessagePackSerializationException>()
+                .WithMessage("Missing configuration for subtype Wing of IExtremity");
         }
     }
 }

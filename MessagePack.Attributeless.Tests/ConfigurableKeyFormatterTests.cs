@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using AutoBogus;
 using FluentAssertions;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
@@ -69,6 +72,39 @@ namespace MessagePack.Attributeless.Tests
             }
 
             public int SomeNumber { get; set; }
+        }
+
+        [Test]
+        public void Deserialize_throws_if_it_encounters_an_unknown_key()
+        {
+            var formatter = new ConfigurableKeyFormatter<Samples.Address>();
+            formatter.SetKeyFor(0, a => a.City);
+            formatter.SetKeyFor(1, a => a.Country);
+            formatter.SetKeyFor(2, a => a.ZipCode);
+            formatter.SetKeyFor(3, a => a.StreetAddress);
+            var options = makeOptions(formatter);
+
+            using var stream = new MemoryStream();
+            MessagePackSerializer.Serialize(stream, AutoFaker.Generate<Samples.Address>(), options);
+            stream.Position = 0;
+
+            formatter.SetKeyFor(7, a => a.Country);
+
+            Action action = () => MessagePackSerializer.Deserialize<Samples.Address>(stream, options);
+
+            action.Should()
+                .ThrowExactly<MessagePackSerializationException>()
+                .WithMessage("Failed to deserialize MessagePack.Attributeless.Tests.Samples+Address value.")
+                .WithInnerException<MessagePackSerializationException>()
+                .WithMessage(
+                    "Encountered unknown property key 1 for Address - was this serialized with a differrent configuration?");
+
+            MessagePackSerializerOptions makeOptions(
+                ConfigurableKeyFormatter<Samples.Address> configurableKeyFormatter)
+            {
+                return MessagePackSerializer.DefaultOptions.WithResolver(CompositeResolver
+                    .Create(new[] {configurableKeyFormatter}, new[] {ContractlessStandardResolver.Instance}));
+            }
         }
 
         [Test]

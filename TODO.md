@@ -7,10 +7,6 @@
 
 ## MUST - usable at work
 
-### revisit all exceptions being thrown
-- do they give good info
-- test
-
 ### make all types sealed
 
 ### tidy up namespace

@@ -17,8 +17,8 @@ namespace MessagePack.Attributeless
             var key = reader.ReadInt32();
             if (!_map.ContainsRight(key))
             {
-                throw new InvalidOperationException(
-                    $"Encountered unknown type key {key} for {typeof(TBase).Name} - looks like this was serialized with a version knowing more types than the current configuration.");
+                throw new MessagePackSerializationException(
+                    $"Encountered unknown type key {key} for {typeof(TBase).Name} - was this serialized with a differrent configuration?");
             }
 
             var type = _map.LeftFor(key);
@@ -36,7 +36,7 @@ namespace MessagePack.Attributeless
             var subType = value.GetType();
             if (!_map.ContainsLeft(subType))
             {
-                throw new InvalidOperationException(
+                throw new MessagePackSerializationException(
                     $"Missing configuration for subtype {subType.Name} of {typeof(TBase).Name}");
             }
 

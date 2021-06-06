@@ -34,8 +34,8 @@ namespace MessagePack.Attributeless
         {
             if (!_propertyMappedTypes.ContainsKey(type))
             {
-                throw new ArgumentException(
-                    $"Type {type.Name} is not registered. Add Ignore clauses after registering types.");
+                throw new InvalidOperationException(
+                    $"The type {type.Name} is not registered. Add Ignore clauses after registering types.");
             }
 
             _propertyMappedTypes[type].Ignore(predicate);

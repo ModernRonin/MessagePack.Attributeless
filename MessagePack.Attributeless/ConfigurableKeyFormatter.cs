@@ -25,8 +25,8 @@ namespace MessagePack.Attributeless
                 var key = reader.ReadInt32();
                 if (!_map.ContainsRight(key))
                 {
-                    throw new InvalidOperationException(
-                        $"Encountered unknown property key {key} for {typeof(T).Name} - looks like this was serialized with configuration different from the current one");
+                    throw new MessagePackSerializationException(
+                        $"Encountered unknown property key {key} for {typeof(T).Name} - was this serialized with a differrent configuration?");
                 }
 
                 var property = _map.LeftFor(key);
