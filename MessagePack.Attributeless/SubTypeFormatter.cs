@@ -21,7 +21,7 @@ namespace MessagePack.Attributeless
                     $"Encountered unknown type key {key} for {typeof(TBase).Name} - looks like this was serialized with a version knowing more types than the current configuration.");
             }
 
-            var type = _map[key];
+            var type = _map.LeftFor(key);
             return (TBase) MessagePackSerializer.Deserialize(type, ref reader, options);
         }
 
@@ -40,16 +40,14 @@ namespace MessagePack.Attributeless
                     $"Missing configuration for subtype {subType.Name} of {typeof(TBase).Name}");
             }
 
-            var key = _map[subType];
+            var key = _map.RightFor(subType);
             writer.Write(key);
             MessagePackSerializer.Serialize(subType, ref writer, value, options);
         }
 
         public void RegisterSubType<TSub>() where TSub : TBase => RegisterSubType<TSub>(_nextKey++);
 
-        public void RegisterSubType<TSub>(int key) where TSub : TBase
-        {
-            _map[key] = typeof(TSub);
-        }
+        public void RegisterSubType<TSub>(int key) where TSub : TBase =>
+            _map.SetLeftToRight(typeof(TSub), key);
     }
 }

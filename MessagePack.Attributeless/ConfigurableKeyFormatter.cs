@@ -29,7 +29,7 @@ namespace MessagePack.Attributeless
                         $"Encountered unknown property key {key} for {typeof(T).Name} - looks like this was serialized with configuration different from the current one");
                 }
 
-                var property = _map[key];
+                var property = _map.LeftFor(key);
                 var propertyValue =
                     MessagePackSerializer.Deserialize(property.PropertyType, ref reader, options);
                 property.SetValue(result, propertyValue);
@@ -60,14 +60,14 @@ namespace MessagePack.Attributeless
         public void SetKeyFor<TProperty>(int key, Expression<Func<T, TProperty>> accessor)
         {
             var property = accessor.WriteablePropertyInfo();
-            _map[key] = property;
+            _map.SetLeftToRight(property, key);
         }
 
         public void UseAutomaticKeys()
         {
             var key = 0;
             foreach (var property in typeof(T).GetProperties().Where(p => p.CanWrite).OrderBy(p => p.Name))
-                _map[key++] = property;
+                _map.SetRightToLeft(key++, property);
         }
     }
 }

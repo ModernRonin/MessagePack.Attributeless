@@ -13,28 +13,10 @@ namespace MessagePack.Attributeless
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public TLeft this[TRight key]
-        {
-            get => _rightToLeft[key];
-            set
-            {
-                _rightToLeft[key] = value;
-                _leftToRight[value] = key;
-            }
-        }
-
-        public TRight this[TLeft key]
-        {
-            get => _leftToRight[key];
-            set
-            {
-                _rightToLeft[value] = key;
-                _leftToRight[key] = value;
-            }
-        }
-
         public bool ContainsLeft(TLeft left) => _leftToRight.ContainsKey(left);
         public bool ContainsRight(TRight right) => _rightToLeft.ContainsKey(right);
+
+        public TLeft LeftFor(TRight right) => _rightToLeft[right];
 
         public IReadOnlyDictionary<TLeft, TRight> LeftToRightView() => _leftToRight;
 
@@ -45,13 +27,36 @@ namespace MessagePack.Attributeless
             _rightToLeft.Remove(right);
         }
 
+        public void RemoveRight(TRight right)
+        {
+            var left = _rightToLeft[right];
+            _leftToRight.Remove(left);
+            _rightToLeft.Remove(right);
+        }
+
         public void RemoveWhereLeft(Func<TLeft, bool> predicate)
         {
             var leftKeysToRemove = _leftToRight.Keys.Where(predicate).ToArray();
             foreach (var left in leftKeysToRemove) RemoveLeft(left);
         }
 
+        public TRight RightFor(TLeft left) => _leftToRight[left];
+
         public IReadOnlyDictionary<TRight, TLeft> RightToLeftView() => _rightToLeft;
+
+        public void SetLeftToRight(TLeft left, TRight right)
+        {
+            if (_leftToRight.ContainsKey(left)) RemoveLeft(left);
+            _rightToLeft[right] = left;
+            _leftToRight[left] = right;
+        }
+
+        public void SetRightToLeft(TRight right, TLeft left)
+        {
+            if (_leftToRight.ContainsKey(left)) RemoveLeft(left);
+            _rightToLeft[right] = left;
+            _leftToRight[left] = right;
+        }
 
         public int Count => _leftToRight.Count;
     }
