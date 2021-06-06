@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public sealed class BidirectionalMap<TLeft, TRight> : IEnumerable<KeyValuePair<TLeft, TRight>>
     {

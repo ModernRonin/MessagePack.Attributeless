@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using MessagePack.Attributeless.Implementation;
 using NUnit.Framework;
 
-namespace MessagePack.Attributeless.Tests
+namespace MessagePack.Attributeless.Tests.Implementation
 {
     [TestFixture]
     public class BidirectionalMapTests

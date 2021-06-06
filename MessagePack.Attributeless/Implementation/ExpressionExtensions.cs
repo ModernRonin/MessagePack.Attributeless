@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public static class ExpressionExtensions
     {

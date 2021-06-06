@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public interface IPropertyToKeyMapping : IToKeyMapping<PropertyInfo>
     {

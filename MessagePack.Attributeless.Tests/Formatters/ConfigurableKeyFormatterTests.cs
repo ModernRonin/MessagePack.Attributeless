@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using AutoBogus;
 using FluentAssertions;
+using MessagePack.Attributeless.Formatters;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
-namespace MessagePack.Attributeless.Tests
+namespace MessagePack.Attributeless.Tests.Formatters
 {
     [TestFixture]
     public class ConfigurableKeyFormatterTests

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public sealed class Configuration
     {
@@ -32,12 +32,14 @@ namespace MessagePack.Attributeless
             get
             {
                 foreach (var (type, formatter) in SubTypeMappedTypes)
-                    if (!_overrides.ContainsKey(type))
-                        yield return formatter;
+                {
+                    if (!_overrides.ContainsKey(type)) yield return formatter;
+                }
 
                 foreach (var (type, formatter) in PropertyMappedTypes)
-                    if (!_overrides.ContainsKey(type))
-                        yield return formatter;
+                {
+                    if (!_overrides.ContainsKey(type)) yield return formatter;
+                }
 
                 foreach (var (_, formatter) in _overrides) yield return formatter;
             }

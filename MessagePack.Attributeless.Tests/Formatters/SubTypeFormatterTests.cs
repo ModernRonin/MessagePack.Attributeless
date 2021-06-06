@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using FluentAssertions;
+using MessagePack.Attributeless.Formatters;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using NUnit.Framework;
 
-namespace MessagePack.Attributeless.Tests
+namespace MessagePack.Attributeless.Tests.Formatters
 {
     [TestFixture]
     public class SubTypeFormatterTests

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack.Attributeless.Implementation;
 using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Formatters
 {
     public sealed class SubTypeFormatter<TBase> : IMessagePackFormatter<TBase>, ISubTypeFormatter
     {

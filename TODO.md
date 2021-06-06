@@ -7,10 +7,6 @@
 
 ## MUST - usable at work
 
-### tidy up namespace
-- move stuff that is not really relevant to users into sub-namespaces
-- hide user-relevant types behind interfaces
-
 ### documentation comments
 
 ### readme

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using MessagePack.Attributeless.Implementation;
 using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Formatters
 {
     public sealed class ConfigurableKeyFormatter<T> : IMessagePackFormatter<T>, IPropertyFormatter
         where T : new()

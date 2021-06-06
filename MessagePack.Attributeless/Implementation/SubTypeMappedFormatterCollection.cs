@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack.Attributeless.Formatters;
 using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public sealed class SubTypeMappedFormatterCollection : IEnumerable<KeyValuePair<Type, ISubTypeFormatter>>
     {

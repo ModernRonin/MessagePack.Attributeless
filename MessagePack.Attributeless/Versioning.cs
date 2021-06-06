@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using MessagePack.Attributeless.Implementation;
 
 namespace MessagePack.Attributeless
 {

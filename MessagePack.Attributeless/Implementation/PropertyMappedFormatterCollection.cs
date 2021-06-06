@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using MessagePack.Attributeless.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public sealed class PropertyMappedFormatterCollection
         : IEnumerable<KeyValuePair<Type, IPropertyFormatter>>

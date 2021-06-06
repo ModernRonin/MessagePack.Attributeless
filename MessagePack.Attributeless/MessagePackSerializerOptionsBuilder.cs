@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using MessagePack.Attributeless.Implementation;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 

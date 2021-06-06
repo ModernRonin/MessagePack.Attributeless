@@ -1,6 +1,6 @@
 ﻿using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Formatters
 {
     public sealed class NullFormatter<T> : IMessagePackFormatter<T>
     {

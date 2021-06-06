@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public static class ConstraintExtensions
     {

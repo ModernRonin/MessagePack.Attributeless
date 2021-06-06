@@ -1,6 +1,6 @@
 ﻿using MessagePack.Formatters;
 
-namespace MessagePack.Attributeless
+namespace MessagePack.Attributeless.Implementation
 {
     public interface IPropertyFormatter : IPropertyToKeyMapping, IMessagePackFormatter { }
 }
