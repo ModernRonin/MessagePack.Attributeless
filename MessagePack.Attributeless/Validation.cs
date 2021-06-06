@@ -33,6 +33,13 @@ namespace MessagePack.Attributeless
                     foreach (var (property, key) in mapping.Mappings.OrderBy(kvp => kvp.Key.Name))
                         yield return $"  - {property.Name} : {key}";
                 }
+
+                yield return "---Overrides---";
+                foreach (var (targetType, formatterType) in _configuration.Overrides)
+                    yield return $"{targetType.FullName} : {formatterType.FullName}";
+
+                yield return "---Use Native Formatters---";
+                yield return _configuration.DoesUseNativeResolvers.ToString();
             }
         }
     }

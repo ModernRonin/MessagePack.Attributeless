@@ -17,8 +17,6 @@
 - test with type that has indexer properties
 
 ### Keytable
-- Must contain which native formatters
-- Any override info 
 - Should have a different, better name 
 
 ### add easy way to validate configuration in a unit-test

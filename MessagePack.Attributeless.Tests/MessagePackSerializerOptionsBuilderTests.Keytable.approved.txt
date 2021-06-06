@@ -1,7 +1,7 @@
 ﻿---Subtypes---
 MessagePack.Attributeless.Tests.Samples+IAnimal
-  - MessagePack.Attributeless.Tests.Samples+Bird : 1
-  - MessagePack.Attributeless.Tests.Samples+Mammal : 0
+  - MessagePack.Attributeless.Tests.Samples+Bird : 0
+  - MessagePack.Attributeless.Tests.Samples+Mammal : 1
 MessagePack.Attributeless.Tests.Samples+IExtremity
   - MessagePack.Attributeless.Tests.Samples+Arm : 0
   - MessagePack.Attributeless.Tests.Samples+Leg : 1
@@ -38,3 +38,7 @@ MessagePack.Attributeless.Tests.Samples+PersonWithPet
 MessagePack.Attributeless.Tests.Samples+Wing
   - Side : 0
   - Span : 1
+---Overrides---
+MessagePack.Attributeless.Tests.Samples+IExtremity : MessagePack.Attributeless.Tests.MessagePackSerializerOptionsBuilderTests+MySpecialExtremityFormatter
+---Use Native Formatters---
+False

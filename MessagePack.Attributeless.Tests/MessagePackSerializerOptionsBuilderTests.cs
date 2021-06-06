@@ -177,6 +177,20 @@ namespace MessagePack.Attributeless.Tests
             public IInterface Prop { get; set; }
         }
 
+        class MySpecialExtremityFormatter : IMessagePackFormatter<Samples.IExtremity>
+        {
+            public Samples.IExtremity Deserialize(ref MessagePackReader reader,
+                MessagePackSerializerOptions options) =>
+                throw new NotImplementedException();
+
+            public void Serialize(ref MessagePackWriter writer,
+                Samples.IExtremity value,
+                MessagePackSerializerOptions options)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         [Test]
         public void Checksum_is_LIKELY_to_be_different_for_a_modified_configuration()
         {
@@ -215,15 +229,8 @@ namespace MessagePack.Attributeless.Tests
         public void KeyTable()
         {
             var builder = MessagePackSerializer.DefaultOptions.Configure()
-                .AutoKeyed<Samples.Address>()
-                .AutoKeyed<Samples.Person>()
-                .AddNativeFormatters()
-                .SubType<Samples.IExtremity, Samples.Arm>()
-                .SubType<Samples.IExtremity, Samples.Leg>()
-                .SubType<Samples.IExtremity, Samples.Wing>()
-                .SubType<Samples.IAnimal, Samples.Mammal>()
-                .SubType<Samples.IAnimal, Samples.Bird>()
-                .AutoKeyed<Samples.PersonWithPet>();
+                .GraphOf<Samples.PersonWithPet>()
+                .OverrideFormatter<Samples.IExtremity, MySpecialExtremityFormatter>();
             var keytable = builder.Validation.KeyTable;
             // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
             var asText = string.Join('\n', keytable);
