@@ -22,22 +22,32 @@ namespace MessagePack.Attributeless
 
         public void RemoveLeft(TLeft left)
         {
+            if (!ContainsLeft(left)) return;
+
             var right = _leftToRight[left];
             _leftToRight.Remove(left);
             _rightToLeft.Remove(right);
         }
 
+        public void RemoveLeft(Func<TLeft, bool> predicate)
+        {
+            var leftKeysToRemove = _leftToRight.Keys.Where(predicate).ToArray();
+            foreach (var left in leftKeysToRemove) RemoveLeft(left);
+        }
+
         public void RemoveRight(TRight right)
         {
+            if (!ContainsRight(right)) return;
+
             var left = _rightToLeft[right];
             _leftToRight.Remove(left);
             _rightToLeft.Remove(right);
         }
 
-        public void RemoveWhereLeft(Func<TLeft, bool> predicate)
+        public void RemoveRight(Func<TRight, bool> predicate)
         {
-            var leftKeysToRemove = _leftToRight.Keys.Where(predicate).ToArray();
-            foreach (var left in leftKeysToRemove) RemoveLeft(left);
+            var rightKeysToRemove = _rightToLeft.Keys.Where(predicate).ToArray();
+            foreach (var right in rightKeysToRemove) RemoveRight(right);
         }
 
         public TRight RightFor(TLeft left) => _leftToRight[left];
