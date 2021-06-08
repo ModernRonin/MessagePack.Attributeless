@@ -4,6 +4,8 @@
 
 ## MUST
 
+## add release.history csproj include
+
 ### readme
 
 recommendation: configure non-attributeless stuff before .Configure() call
