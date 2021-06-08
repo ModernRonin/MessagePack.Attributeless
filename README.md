@@ -4,13 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/dt/MessagePack.Attributeless.svg)](https://www.nuget.org/packages/MessagePack.Attributeless)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) 
 
-## Table of Contents
-[Motivation](#motivation)
-[Release History](#release-history)
-[Usage](#usage)
-[Performance](#performance)
-[Limitations](#limitations)
-[License](#license)
+[Motivation](#motivation) - [Release History](#release-history) - [Usage](#usage) - [Performance](#performance) - [Limitations](#limitations) - [License](#license)
 
 ## Motivation
 MessagePack is fast and generates small destillates. However, it requires you to either attribute all or many of your types or to give up some of its size gain **and** add a potential security risk.
@@ -36,8 +30,73 @@ You may wonder what's the problem with attributes. There are quite a few:
 ## Usage
 
 ## Performance
+Performance data was generated running the `MessagePack.Attributeless.Microbenchmark` project in release mode outside the debugger with `-n 1000 -r 100 -j`. Feel free to check the source - if you find something you think is not right, feel free to open a discussion.
 
-## Limitations
+In all diagrams, JSON is added as a reference.
+
+The following diagram puts the four methods on a coordinate-system between size and speed.
+
+The speed metric is derived from multiplying the average time to serialize one array of 1000 complex elements with the average time to deserialize it, in other words it's directly proportional to serialization and deserialization speed. The axis is logarithmic.
+
+The size metric is simply the size of the destillate, the serialized form of said array of 1000 complex elements, in bytes.
+
+<img src="readmeresources/SpeedAndSize.png" width=600>
+
+As you can see, JSON is by far the slowest while Fully Attributed - the standard resolver of MessagePack - is the fastest.
+
+In absolute terms, the comparison looks like this:
+
+| Method | Serialize (ms) | Deserialize (ms) |
+| ------ | -------------- |----------------- |
+| Attributeless | 9.2 | 12.0 |
+| Fully attributed | 2.2 | 2.0 |
+| Contractless | 3.0 | 2.7 |
+| Typeless | 5.4 | 5.1 |
+| JSON | 34.9 | 62.6 |
+
+If speed is your primary metric, you should use Fully Attributed - it's about 16(!) times faster than JSON for serialization and almost 31 times faster for deserialization. 
+
+Attributeless is clearly the slowest of the four MessagePack methods, but it's still almost 4 times as fast as JSON for serialization and 5 times as fast for deserialization.
+
+Looking at size, on the other hand, surprisingly Typeless is even worse than JSON, and Attributeless is almost as small as the standard resolver.
+
+This is runtime performance - but how about development productivity? How many attributes do we have to add with each method and how many domain types do we need to touch to enable serialization?
+
+| Method | Types touched | Number of Attributes added |
+| ------ | ------------- | -------------------------- |
+| Fully attributed | 10 | 25 |
+| Contractless | 2 | 5 |
+| JSON | 0 | 0 |
+| Typeless | 0 | 0 |
+| Attributeless | 0 | 0 |
+
+As you can see, Attributeless requires no touching of your types at all, same as JSON and Typeless, while Fully Attributed is the most intrusive option.
+
+(In case you wonder how the benchmark dealt with polymorphic types in JSON, take a look at the excellent [JsonSubtypes](https://github.com/manuc66/JsonSubTypes) library.)
+
+Obviously, these numbers very much depend on your domain types. The benchmark, for example, has 2 polymorphic hierarchies. If your domain model has none, then Contractless will require zero types being touched and zero attributes, just like JSON or Typeless or Attributeless. Vice versa, if you got a lot more, the numbers will rise.
+
+
+
+### Conclusion - which serializer and settings to pick?
+It all depends on your use-case. Here are a few ideas:
+
+Do you have a large domain model or just a few types? If the former, you should seriously consider Attributeless, if the later, Fully Attributed or Contractless might be right for you.
+
+What is more important for you, size or speed? If the former, you should consider Fully Attributed or Attributeless, if the later, Fully Attributed or Contractless.
+
+How dramatic are your speed requirements? If every millisecond counts, you definitely need Fully Attributed. On the other hand, if you need fast, but you don't need to shave of every millisecond possible, Attributeless with its significantly greater development comfort and OOD comformance is likely the right choice.
+
+How likely are you to change your serializing protocol in the future or having to support multiple protocols? If you can commit to MessagePack and MessagePack only for the indefinite future, then Fully Attributed will work for you. If you need to support multiple formats or consider a change of format not unlikely over the lifetime of your product, then you will prefer Attributeless.
+
+
+
+
+
+
+
+
+## Limitations 
 
 
 ## License
