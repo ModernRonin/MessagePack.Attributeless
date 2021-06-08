@@ -97,7 +97,11 @@ How likely are you to change your serializing protocol in the future or having t
 
 
 ## Limitations 
+Compared to MessagePack out-of-the-box, Attributeless introduces a few limitations. These limitations are by design and reflect a tradeoff of both lower development and runtime complexity for not supporting certain edge cases:
 
+* Serializable types all must be default-constructable and public 
+* Serializable properties must be public and writeable
+* indexer properties are not serialized or deserialized
 
 ## License
 The [license](./LICENSE) is [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). In essence this means you are free to use and distribute and change this tool however you see fit, as long as you provide a link to the license

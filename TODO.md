@@ -5,10 +5,6 @@
 ## MUST
 
 ### readme
-- indexer properties are not used
-differences to MessagePack
-- types must be default-constructable and public
-- properties must be public and writeable
 
 recommendation: configure non-attributeless stuff before .Configure() call
 ### github setup
