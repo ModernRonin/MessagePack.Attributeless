@@ -25,7 +25,8 @@ You may wonder what's the problem with attributes. There are quite a few:
 
 
 ## Release History
-1.0.0: initial release
+<!-- 1.0.0: initial release -->
+not yet released
 
 ## Usage
 
