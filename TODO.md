@@ -2,9 +2,6 @@
 
 ## INCOMING
 
-
-change repo name
-
 ## MUST
 
 ### readme
