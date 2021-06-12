@@ -144,7 +144,8 @@ namespace MessagePack.Attributeless
         ///         <see cref="AutoKeyed{T}" /> and <see cref="AllSubTypesOf{TBase}" /> or <see cref="SubType{TBase,TSub}" />.
         ///     </para>
         /// </summary>
-        public MessagePackSerializerOptionsBuilder GraphOf<T>() => GraphOf(typeof(T));
+        public MessagePackSerializerOptionsBuilder GraphOf<T>(params Assembly[] assemblies) =>
+            GraphOf(typeof(T), assemblies);
 
         /// <summary>
         ///     Non-generic version of
