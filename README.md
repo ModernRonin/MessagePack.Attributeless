@@ -34,9 +34,9 @@ You can pick different levels of using Attributeless, from minimal configuration
 ### GraphOf
 The simplest way to use Attributeless looks like this:
 ```csharp
- var options = MessagePackSerializer.DefaultOptions.Configure()
-                .GraphOf<Samples.PersonWithPet>()
-                .Build();
+var options = MessagePackSerializer.DefaultOptions.Configure()
+    .GraphOf<Samples.PersonWithPet>()
+    .Build();
 ```
 This will walk through the object graph of `PersonWithPet` by looking at any public writeable properties, then at their types and so on, 
 while considering polymorphy. For example, `PersonWithPet` is defined as:
@@ -50,6 +50,49 @@ public class PersonWithPet
 Upon encountering the property `Pet`, Attributless will check for all concrete implementations of `IAnimal` and configure itself accordingly. 
 If some of your types don't live in the same assembly as your root type, you can pass an array of assemblies to `GraphOf`. If you do this, you need to include
 the assembly of the root-type, too. 
+
+What if you want to ignore certain properties? You can ignore them individually like:
+```csharp
+var options = MessagePackSerializer.DefaultOptions.Configure()
+    .GraphOf<Samples.PersonWithPet>()
+    .AddNativeFormatters()
+    .Ignore<Samples.Address, string>(a => a.City)
+    .Ignore<Samples.Address, string>(a => a.Country)
+    .Build();
+```
+or via a predicate like:
+```csharp
+var options = MessagePackSerializer.DefaultOptions.Configure()
+    .GraphOf<Samples.PersonWithPet>()
+    .AddNativeFormatters()
+    .Ignore<Samples.Address>(pi => pi.Name.StartsWith("C"))
+    .Build();
+```
+What if you need special treatment of one of the types in your type graph?
+```csharp
+var options = MessagePackSerializer.DefaultOptions.Configure()
+    .GraphOf<Samples.PersonWithPet>()
+    .AddNativeFormatters()
+    .OverrideFormatter<Samples.IExtremity, OverridingExtremityFormatter>()
+    .Build();
+```
+This will override the serialization of `IExtremity` values using your very own formatter which must implement `IMessagePackFormatter<IExtremity>`.
+
+### AutoKeyed, AllSubTypesOf, SubType
+What if you don't like the behavior of `.GraphOf`? You can go one step more low-level and use the building blocks upon which `.GraphOf` is based:
+* `AutoKeyed` will create configuration for just the type you specify, ignoring any polymorphy; basically, it will create a table of keys for all public writeable properties and use that table for de/serialization - quite the same really as if you manually attributed all properties, sorted by name, with `Key` attributes with incrementing keys. 
+* `SubType<TBase, TSub>` will configure `TSub` to be known as a possible sub-type of `TBase`; Attributeless handles polymorphy by serializing an extra integer or byte that specifies the sub-type.
+* `AllSubTypesOf<TBase>` does the same, but for all concrete sub-types it can find. If you pass no assemblies, it will look only in the assembly defining `TBase`, otherwise it will look in exactly those assemblies you specify. Why is the assembly defining `TBase` not added implicitly in the later case? Because you might want to exclude implementations of `TBase` in that same assembly.
+
+### Using the formatters themselves
+The most low-level usage pattern is to use the two formatters `ConfigurableKeyFormatter<T>` and `SubTypeFormatter<TBase>`. There is also a `NullFormatter<T>` which basically configures MessagePack to completely ignore a certain type. 
+
+The later is not exposed in the fluent builder because there are questions like how to deal with elements in a collection being ignored (do you want them to be `null` values or to be removed or something different altogether) which cannot easily be baked into a generalized API. 
+
+### Protocol versioning
+### Native resolvers
+
+### Non-Generic overloads
 
 
 ## Performance
