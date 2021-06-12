@@ -29,6 +29,28 @@ You may wonder what's the problem with attributes. There are quite a few:
 not yet released
 
 ## Usage
+You can pick different levels of using Attributeless, from minimal configuration to relatively low-level.
+
+### GraphOf
+The simplest way to use Attributeless looks like this:
+```csharp
+ var options = MessagePackSerializer.DefaultOptions.Configure()
+                .GraphOf<Samples.PersonWithPet>()
+                .Build();
+```
+This will walk through the object graph of `PersonWithPet` by looking at any public writeable properties, then at their types and so on, 
+while considering polymorphy. For example, `PersonWithPet` is defined as:
+```csharp
+public class PersonWithPet
+{
+    public Person Human { get; set; }
+    public IAnimal Pet { get; set; }
+}
+```
+Upon encountering the property `Pet`, Attributless will check for all concrete implementations of `IAnimal` and configure itself accordingly. 
+If some of your types don't live in the same assembly as your root type, you can pass an array of assemblies to `GraphOf`. If you do this, you need to include
+the assembly of the root-type, too. 
+
 
 ## Performance
 Performance data was generated running the `MessagePack.Attributeless.Microbenchmark` project in release mode outside the debugger with `-n 1000 -r 100 -j`. Feel free to check the source - if you find something you think is not right, feel free to open a discussion.
@@ -89,13 +111,6 @@ What is more important for you, size or speed? If the former, you should conside
 How dramatic are your speed requirements? If every millisecond counts, you definitely need Fully Attributed. On the other hand, if you need fast, but you don't need to shave of every millisecond possible, Attributeless with its significantly greater development comfort and OOD comformance is likely the right choice.
 
 How likely are you to change your serializing protocol in the future or having to support multiple protocols? If you can commit to MessagePack and MessagePack only for the indefinite future, then Fully Attributed will work for you. If you need to support multiple formats or consider a change of format not unlikely over the lifetime of your product, then you will prefer Attributeless.
-
-
-
-
-
-
-
 
 ## Limitations 
 Compared to MessagePack out-of-the-box, Attributeless introduces a few limitations. These limitations are by design and reflect a tradeoff of both lower development and runtime complexity for not supporting certain edge cases:
