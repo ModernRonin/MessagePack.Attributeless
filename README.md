@@ -90,10 +90,12 @@ The most low-level usage pattern is to use the two formatters `ConfigurableKeyFo
 The later is not exposed in the fluent builder because there are questions like how to deal with elements in a collection being ignored (do you want them to be `null` values or to be removed or something different altogether) which cannot easily be baked into a generalized API. 
 
 ### Protocol versioning
+
 ### Native resolvers
+For convenice reasons, there is also a method `.AddNativeFormatters()` which adds all native C# formatters. Of course you should not use this unless all your clients use a CLR language, like C# or F#. But if you're using Attributeless, chances are you don't care about languages outside the .NET eco-system because there is no port of it to other languages (at least so far).
 
 ### Non-Generic overloads
-
+All the fluent builder methods also have non-generic overloads (like for example `GraphOf(Type type, params Assembly[] assemblies)` as an alternative to `GraphOf<T>(params Assembly[] assemblies)`) to support scenarios where you want to supply the types dynamically, for example test-cases. 
 
 ## Performance
 Performance data was generated running the `MessagePack.Attributeless.Microbenchmark` project in release mode outside the debugger with `-n 1000 -r 100 -j`. Feel free to check the source - if you find something you think is not right, feel free to open a discussion.
