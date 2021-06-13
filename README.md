@@ -34,8 +34,7 @@ The results of my experiments became eventually Attributeless, until eventually 
 
 
 ## Release History
-<!-- 1.0.0: initial release -->
-not yet released
+1.0.0: initial release
 
 ## Usage
 You can pick different levels of using Attributeless, from minimal configuration to relatively low-level.
