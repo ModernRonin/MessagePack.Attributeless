@@ -39,6 +39,9 @@ Attributeless is the result of my experiment, and by now it has reached the poin
 ## Release History
 1.0.0: initial release
 
+1.0.1:
+* fix: documentation comments are included in nuget package
+
 ## Usage
 You can pick different levels of using Attributeless, from minimal configuration to relatively low-level.
 
