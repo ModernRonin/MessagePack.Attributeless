@@ -8,4 +8,5 @@
     <PackageReference Include="MessagePack" Version="2.2.85" />
   </ItemGroup>
 
+    <Import Project="release.history"/>
 </Project>
