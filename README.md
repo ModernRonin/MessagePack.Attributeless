@@ -23,7 +23,13 @@ You may wonder what's the problem with attributes. There are quite a few:
 1. you bind something that is likely a domain concept to something that is infrastructure
 1. if you ever decide to change your serialization format, you'll have to touch all your domain types again
 
+My personal motivation for this project came from a condundrum I encountered at work: I was introducing MessagePack for a huge number of pre-existing domain types at the core of a business-critical application. Those types had been created a long time ago and were already littered with attributes for JSON serialization. JSON serialization was to stay, binary serialization would be used only in certain scenarios to save traffic and lower costs. I really did not want to litter them all with another set of attributes. (Actually, if circumstances allowed, I'd have refactored them to have no JSON attributes either and configured JSON.net another way.) For one, it would mean touching way too many types, and secondly, the code would have become even more noisy. 
 
+So I looked at Contractless, but that still wouldn't work because of the requirement to attribute polymorphy. Not only would I have to touch a lot types again, even worse, I'd have to let my base-types know about my sub-types. 
+
+Next I looked at Typeless. But Typeless comes with a lot of cost: you got the security issue - which in my use-case didn't matter because all binary serialization would happen only on the server, clients only deserialize, but what if that would have to change in the future? -, the destillates, while still a lot smaller than JSON for our specific type of data, would be still bigger than they could be with Fully Attributed, and then I had to attribute a few private fields as ignored because Typeless serializes everything.
+
+Being under pressure, I left it at Typeless for the time being, but in my free time set about to experiment with what eventually became Attributeless, until eventually it reached the point where it could replace Typeless.
 ## Release History
 <!-- 1.0.0: initial release -->
 not yet released
