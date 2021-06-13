@@ -3,12 +3,6 @@
 ## INCOMING
 
 ## MUST
-
-## add release.history csproj include
-
-### readme
-
-recommendation: configure non-attributeless stuff before .Configure() call
 ### github setup
 - build and publish actions
 - make repo public
@@ -18,9 +12,4 @@ recommendation: configure non-attributeless stuff before .Configure() call
 - post in gitter channel
 - add tags to github repo About
 
-
-# switch at work
-- adapt DeflateMessagePackSerializer
-- remove the attributes from model
-- remove the *direct* dependency on msgpack
 

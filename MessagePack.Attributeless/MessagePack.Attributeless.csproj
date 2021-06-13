@@ -1,12 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageProjectUrl>https://github.com/ModernRonin/MessagePack.Attributeless</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ModernRonin/MessagePack.Attributeless</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>messagepack, no attributes, attributeless, fluent, polymorphy</PackageTags>
+		<PackageLicenseExpression>CC-BY-SA-4.0</PackageLicenseExpression>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<Description>Configure your types for serialization with MessagePack via fluent builder, without any attributes</Description>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.2.85" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MessagePack" Version="2.2.85" />
+	</ItemGroup>
 
-    <Import Project="release.history"/>
+	<Import Project="release.history" />
 </Project>
