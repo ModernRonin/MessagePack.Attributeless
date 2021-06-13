@@ -18,5 +18,5 @@ if (-not $version)
 	exit 
 }
 
-dotnet pack --configuration Release
+dotnet pack --configuration Release --include-symbols -p:ContinuousIntegrationBuild=true
 dotnet nuget push .\MessagePack.Attributeless\nupkg\MessagePack.Attributeless.$version.nupkg -s https://api.nuget.org/v3/index.json --api-key $nugetApiKey
