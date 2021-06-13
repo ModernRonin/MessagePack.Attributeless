@@ -23,14 +23,17 @@ You may wonder what's the problem with attributes. There are quite a few:
 1. you bind something that is likely a domain concept to something that is infrastructure
 1. if you ever decide to change your serialization format, you'll have to touch all your domain types again
 
-My personal motivation for this project came from a condundrum I encountered at work: I was introducing MessagePack for a huge number of pre-existing domain types at the core of a business-critical application. Those types had been created a long time ago and were already littered with attributes for JSON serialization. JSON serialization was to stay, binary serialization would be used only in certain scenarios to save traffic and lower costs. I really did not want to litter them all with another set of attributes. (Actually, if circumstances allowed, I'd have refactored them to have no JSON attributes either and configured JSON.net another way.) For one, it would mean touching way too many types, and secondly, the code would have become even more noisy. 
+My personal motivation for this project came when I was introducing MessagePack for binary serialization of a huge number of pre-existing domain types at the core of a business-critical application. Those types had been created a long time ago and were already littered with attributes for JSON serialization. JSON serialization was to stay, binary serialization would be used only in certain scenarios to save traffic and lower costs. I really did not want to litter them all with another set of attributes. (Actually, if circumstances allowed, I'd have refactored them to have no JSON attributes either and configured json.net another way.) For one, it would mean touching way too many types, and secondly, the code would have become even more noisy. 
 
 So I looked at Contractless, but that still wouldn't work because of the requirement to attribute polymorphy. Not only would I have to touch a lot types again, even worse, I'd have to let my base-types know about my sub-types. 
 
-Next I looked at Typeless. But Typeless comes with a lot of cost: you got the security issue - which in my use-case didn't matter because all binary serialization would happen only on the server, clients only deserialize, but what if that would have to change in the future? -, the destillates, while still a lot smaller than JSON for our specific type of data, would be still bigger than they could be with Fully Attributed, and then I had to attribute a few private fields as ignored because Typeless serializes everything.
+Next I looked at Typeless. That was the best option for that project at the time within reasonable time-constraints for our use-case.
 
-Being under pressure, I left it at Typeless for the time being, but in my free time set about to try and find a better way of doing this. If I'd succeed, I could eventually replace usage at work, if I didn't, I would have wasted my own time and not my client's.
-The results of my experiments became eventually Attributeless, until eventually it reached the point where it could replace Typeless.
+But Typeless comes with some disadvantages, as described above. Luckily, the security issue did not affect the described project because clients only ever deserialized binary, only servers serialized it. For our use-case, MessagePack even with Typeless was still vastly superior over JSON, but still it felt like a bit of a shame not to be able to get the full size benefit of MessagePack. 
+
+So I set about trying and finding a better way for these scenarios in my free time. If I'd succeed, I could eventually replace usage at work, if I didn't, I would have wasted my own time and not my client's.
+
+Attributeless is the result of my experiment, and by now it has reached the point where I can use it to replace Typeless even in my client's project.
 
 
 ## Release History
