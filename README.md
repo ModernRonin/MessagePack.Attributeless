@@ -29,7 +29,10 @@ So I looked at Contractless, but that still wouldn't work because of the require
 
 Next I looked at Typeless. But Typeless comes with a lot of cost: you got the security issue - which in my use-case didn't matter because all binary serialization would happen only on the server, clients only deserialize, but what if that would have to change in the future? -, the destillates, while still a lot smaller than JSON for our specific type of data, would be still bigger than they could be with Fully Attributed, and then I had to attribute a few private fields as ignored because Typeless serializes everything.
 
-Being under pressure, I left it at Typeless for the time being, but in my free time set about to experiment with what eventually became Attributeless, until eventually it reached the point where it could replace Typeless.
+Being under pressure, I left it at Typeless for the time being, but in my free time set about to try and find a better way of doing this. If I'd succeed, I could eventually replace usage at work, if I didn't, I would have wasted my own time and not my client's.
+The results of my experiments became eventually Attributeless, until eventually it reached the point where it could replace Typeless.
+
+
 ## Release History
 <!-- 1.0.0: initial release -->
 not yet released
