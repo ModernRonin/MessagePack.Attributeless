@@ -55,9 +55,9 @@ namespace MessagePack.Attributeless.Formatters
             writer.Write(_map.Count);
             foreach (var (property, key) in _map)
             {
-                var propertValue = property.GetValue(value);
+                var propertyValue = property.GetValue(value);
                 writer.Write(key);
-                MessagePackSerializer.Serialize(property.PropertyType, ref writer, propertValue, options);
+                MessagePackSerializer.Serialize(property.PropertyType, ref writer, propertyValue, options);
             }
         }
 
@@ -71,8 +71,8 @@ namespace MessagePack.Attributeless.Formatters
         {
             var key = 0;
             foreach (var property in typeof(T).GetProperties()
-                .Where(p => p.CanWrite && !p.IsIndexed())
-                .OrderBy(p => p.Name)) _map.SetRightToLeft(key++, property);
+                         .Where(p => p.CanWrite && !p.IsIndexed())
+                         .OrderBy(p => p.Name)) _map.SetRightToLeft(key++, property);
         }
     }
 }
