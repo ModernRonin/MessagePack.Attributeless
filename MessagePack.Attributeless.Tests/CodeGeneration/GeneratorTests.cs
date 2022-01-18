@@ -28,10 +28,22 @@ public class GeneratorTests
     }
 
     [Test]
-    public void Generate_enum()
+    public void Generate_concrete_type_with_enum()
     {
         var config = MessagePackSerializer.DefaultOptions.Configure()
             .GraphOf<Samples.Leg>()
+            .Configuration;
+
+        var result = new Generator().Generate(config);
+
+        Approvals.Verify(result);
+    }
+
+    [Test]
+    public void Generate_type_hierarchy()
+    {
+        var config = MessagePackSerializer.DefaultOptions.Configure()
+            .GraphOf<Samples.IExtremity>()
             .Configuration;
 
         var result = new Generator().Generate(config);

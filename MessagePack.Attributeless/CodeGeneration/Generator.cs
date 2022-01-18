@@ -7,6 +7,8 @@ namespace MessagePack.Attributeless.CodeGeneration
 {
     public class Generator
     {
+        readonly string _namespace = "Generated";
+
         public string Generate(Configuration configuration)
         {
             var result = new StringBuilder();
@@ -29,12 +31,23 @@ namespace MessagePack.Attributeless.CodeGeneration
             {
                 var template = new EnumFormatterTemplate
                 {
-                    Type = type,
-                    Namespace = "Generated"
+                    Namespace = _namespace,
+                    Type = type
                 };
                 result.Append(template.TransformText());
             }
-            // generate for subtyped
+
+            foreach (var (baseType, formatter) in configuration.SubTypeMappedTypes)
+            {
+                var template = new BaseTypeTemplate
+                {
+                    Namespace = _namespace,
+                    Type = baseType,
+                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.FullName.Replace('+', '.'),
+                        t => t.Value)
+                };
+                result.Append(template.TransformText());
+            }
             // generate for propertymapped
 
             return result.ToString();

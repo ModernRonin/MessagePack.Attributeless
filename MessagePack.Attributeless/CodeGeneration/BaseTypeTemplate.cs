@@ -58,21 +58,116 @@ namespace MessagePack.Attributeless.CodeGeneration
             #line hidden
             this.Write(" Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)\r" +
                     "\n\t\t{\r\n\t\t\tif (reader.TryReadNil()) return default;\r\n\r\n\t\t\tvar key = reader.ReadInt" +
-                    "32();\r\n\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
+                    "32();\r\n\t\t\tswitch (key)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
             
             #line 21 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+
+					foreach (var kvp in Mappings)
+					{
+				
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t\tcase ");
+            
+            #line 26 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Value));
+            
+            #line default
+            #line hidden
+            this.Write(": return deserialize<");
+            
+            #line 26 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Key));
+            
+            #line default
+            #line hidden
+            this.Write(">();\r\n\t\t\t\t\r\n\t\t\t\t");
+            
+            #line 28 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+
+					}
+				
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException(\r\n                    $\"En" +
+                    "countered unknown type key {key} for ");
+            
+            #line 34 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\twriter.");
+            this.Write(" - was this serialized with a different configuration?\");\r\n\t\t\t\r\n\t\t\tT deserialize<" +
+                    "T>() where T: ");
             
-            #line 23 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(WriterMethod));
+            #line 36 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(";\r\n\t\t}\r\n\t}\r\n}\r\n");
+            this.Write(" \r\n            \t=> return options.Resolver.GetFormatterWithVerify<T>().Deserializ" +
+                    "e(ref reader, options);\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writ" +
+                    "er, ");
+            
+            #line 39 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\tif (value == null)\r\n    " +
+                    "        {\r\n                writer.WriteNil();\r\n                return;\r\n        " +
+                    "    }\r\n\r\n\t\t\tswitch (value)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
+            
+            #line 49 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+
+					foreach (var kvp in Mappings)
+					{
+				
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t\tcase ");
+            
+            #line 54 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Key));
+            
+            #line default
+            #line hidden
+            this.Write(" t: serialize(t, ");
+            
+            #line 54 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Value));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n\t\t\t\t\r\n\t\t\t\t");
+            
+            #line 56 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+
+					}
+				
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException($\"Missing configuration fo" +
+                    "r subtype {value.GetType().Name} of ");
+            
+            #line 61 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write("\");\r\n\t\t\t\r\n\t\t\tvoid serialize<T>(T what, int key) where T: ");
+            
+            #line 63 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t{\r\n\t\t\t\twriter.Write(key);\r\n\t\t\t\toptions.Resolver.GetFormatterWithVerify<T>()." +
+                    "Serialize(ref writer, what, options);\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

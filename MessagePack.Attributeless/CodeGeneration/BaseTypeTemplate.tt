@@ -16,11 +16,55 @@ namespace <#= Namespace #>
 			if (reader.TryReadNil()) return default;
 
 			var key = reader.ReadInt32();
+			switch (key)
+			{			
+				<#
+					foreach (var kvp in Mappings)
+					{
+				#>
 
+				case <#= kvp.Value #>: return deserialize<<#= kvp.Key #>>();
+				
+				<#
+					}
+				#>
+
+			}
+			throw new MessagePackSerializationException(
+                    $"Encountered unknown type key {key} for <#= FullTypeName #> - was this serialized with a different configuration?");
+			
+			T deserialize<T>() where T: <#= FullTypeName #> 
+            	=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 
-			writer.<#= WriterMethod #>;
+			if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+			switch (value)
+			{			
+				<#
+					foreach (var kvp in Mappings)
+					{
+				#>
+
+				case <#= kvp.Key #> t: serialize(t, <#= kvp.Value #>);
+				
+				<#
+					}
+				#>
+
+			}
+			throw new MessagePackSerializationException($"Missing configuration for subtype {value.GetType().Name} of <#= FullTypeName #>");
+			
+			void serialize<T>(T what, int key) where T: <#= FullTypeName #>
+			{
+				writer.Write(key);
+				options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
+			}
 		}
 	}
 }

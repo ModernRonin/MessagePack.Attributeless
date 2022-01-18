@@ -22,11 +22,11 @@ namespace MessagePack.Attributeless.Formatters
             if (!_map.ContainsRight(key))
             {
                 throw new MessagePackSerializationException(
-                    $"Encountered unknown type key {key} for {typeof(TBase).Name} - was this serialized with a differrent configuration?");
+                    $"Encountered unknown type key {key} for {typeof(TBase).Name} - was this serialized with a different configuration?");
             }
 
             var type = _map.LeftFor(key);
-            return (TBase) MessagePackSerializer.Deserialize(type, ref reader, options);
+            return (TBase)MessagePackSerializer.Deserialize(type, ref reader, options);
         }
 
         public void Serialize(ref MessagePackWriter writer, TBase value, MessagePackSerializerOptions options)
