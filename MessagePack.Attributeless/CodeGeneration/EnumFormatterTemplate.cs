@@ -57,21 +57,35 @@ namespace MessagePack.Attributeless.CodeGeneration
             #line default
             #line hidden
             this.Write(" Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)\r" +
-                    "\n\t\t{\r\n\t\t\twriter.");
+                    "\n\t\t{\r\n\t\t\treturn (");
             
             #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(WriterMethod));
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(";\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
+            this.Write(") reader.");
+            
+            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(ReaderMethod));
+            
+            #line default
+            #line hidden
+            this.Write("()\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
             
             #line 15 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t}\r\n\t}\r\n}");
+            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\twriter.");
+            
+            #line 17 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(WriterMethod));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n\t\t}\r\n\t}\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }
