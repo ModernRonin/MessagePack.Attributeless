@@ -35,23 +35,23 @@ namespace MessagePack.Attributeless.CodeGeneration
             
             #line default
             #line hidden
-            this.Write(" \r\n{\r\n\r\n\tpublic class ");
+            this.Write(" \r\n{\r\n\tusing MessagePack.Formatters;\r\n\r\n\tpublic class ");
             
-            #line 9 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 10 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(IdentifierTypeName));
             
             #line default
             #line hidden
             this.Write("Formatter: IMessagePackFormatter<");
             
-            #line 9 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 10 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
             this.Write(">\r\n\t{\r\n\t\tpublic ");
             
-            #line 11 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 12 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
@@ -59,28 +59,28 @@ namespace MessagePack.Attributeless.CodeGeneration
             this.Write(" Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)\r" +
                     "\n\t\t{\r\n\t\t\treturn (");
             
-            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 14 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
             this.Write(") reader.");
             
-            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 14 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ReaderMethod));
             
             #line default
             #line hidden
             this.Write("()\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
             
-            #line 15 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 16 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
             this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\twriter.");
             
-            #line 17 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
+            #line 18 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\EnumFormatterTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(WriterMethod));
             
             #line default

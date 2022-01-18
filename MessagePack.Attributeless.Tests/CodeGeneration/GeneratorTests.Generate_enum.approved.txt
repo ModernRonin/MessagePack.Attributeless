@@ -1,5 +1,6 @@
 ﻿namespace Generated 
 {
+	using MessagePack.Formatters;
 
 	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
 	{

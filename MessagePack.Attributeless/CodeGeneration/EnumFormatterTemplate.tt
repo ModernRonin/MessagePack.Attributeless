@@ -5,6 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 namespace <#= Namespace #> 
 {
+	using MessagePack.Formatters;
 
 	public class <#= IdentifierTypeName #>Formatter: IMessagePackFormatter<<#= FullTypeName #>>
 	{

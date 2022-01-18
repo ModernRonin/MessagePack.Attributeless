@@ -34,7 +34,6 @@ namespace MessagePack.Attributeless.CodeGeneration
                 };
                 result.Append(template.TransformText());
             }
-            // generate for enums
             // generate for subtyped
             // generate for propertymapped
 
