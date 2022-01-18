@@ -35,23 +35,24 @@ namespace MessagePack.Attributeless.CodeGeneration
             
             #line default
             #line hidden
-            this.Write(" \r\n{\r\n\tusing MessagePack.Formatters;\r\n\r\n\tpublic class ");
+            this.Write(" \r\n{\r\n\tusing MessagePack;\r\n\tusing MessagePack.Formatters;\r\n\tusing MessagePack.Res" +
+                    "olvers;\r\n\r\n\tpublic class ");
             
-            #line 11 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(IdentifierTypeName));
             
             #line default
             #line hidden
             this.Write("Formatter: IMessagePackFormatter<");
             
-            #line 11 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
             this.Write(">\r\n\t{\r\n\t\t\r\n\t\tpublic ");
             
-            #line 14 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 16 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
@@ -60,7 +61,7 @@ namespace MessagePack.Attributeless.CodeGeneration
                     "\n\t\t{\r\n\t\t\tif (reader.TryReadNil()) return default;\r\n\r\n\t\t\tvar key = reader.ReadInt" +
                     "32();\r\n\t\t\tswitch (key)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
             
-            #line 21 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 23 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
 
 					foreach (var kvp in Mappings)
 					{
@@ -70,21 +71,21 @@ namespace MessagePack.Attributeless.CodeGeneration
             #line hidden
             this.Write("\r\n\t\t\t\tcase ");
             
-            #line 26 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 28 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Value));
             
             #line default
             #line hidden
-            this.Write(": return deserialize<");
+            this.Write(": return options.Resolver.GetFormatterWithVerify<");
             
-            #line 26 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 28 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Key));
             
             #line default
             #line hidden
-            this.Write(">();\r\n\t\t\t\t\r\n\t\t\t\t");
+            this.Write(">().Deserialize(ref reader, options);\r\n\t\t\t\t\r\n\t\t\t\t");
             
-            #line 28 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 30 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
 
 					}
 				
@@ -94,23 +95,15 @@ namespace MessagePack.Attributeless.CodeGeneration
             this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException(\r\n\t\t\t\t\t$\"Encountered unkno" +
                     "wn type key {key} for ");
             
-            #line 34 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
-            
-            #line default
-            #line hidden
-            this.Write(" - was this serialized with a different configuration?\");\r\n\t\t\t\r\n\t\t\tT deserialize<" +
-                    "T>() where T: ");
-            
             #line 36 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(" \r\n\t\t\t\t=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref rea" +
-                    "der, options);\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
+            this.Write(" - was this serialized with a different configuration?\");\r\n\t\t}\r\n\t\tpublic void Ser" +
+                    "ialize(ref MessagePackWriter writer, ");
             
-            #line 39 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 38 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
@@ -118,7 +111,7 @@ namespace MessagePack.Attributeless.CodeGeneration
             this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\tif (value == null)\r\n\t\t\t{" +
                     "\r\n\t\t\t\twriter.WriteNil();\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tswitch (value)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
             
-            #line 49 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 48 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
 
 					foreach (var kvp in Mappings)
 					{
@@ -128,21 +121,28 @@ namespace MessagePack.Attributeless.CodeGeneration
             #line hidden
             this.Write("\r\n\t\t\t\tcase ");
             
-            #line 54 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 53 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Key));
             
             #line default
             #line hidden
-            this.Write(" t: serialize(t, ");
+            this.Write(" t: \r\n\t\t\t\twriter.Write(");
             
             #line 54 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Value));
             
             #line default
             #line hidden
-            this.Write(");\r\n\t\t\t\t\r\n\t\t\t\t");
+            this.Write(");\r\n\t\t\t\toptions.Resolver.GetFormatterWithVerify<");
             
-            #line 56 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            #line 55 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(kvp.Key));
+            
+            #line default
+            #line hidden
+            this.Write(">().Serialize(ref writer, t, options);\r\n\t\t\t\t\treturn;\r\n\t\t\t\t\r\n\t\t\t\t");
+            
+            #line 58 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
 
 					}
 				
@@ -152,20 +152,12 @@ namespace MessagePack.Attributeless.CodeGeneration
             this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException($\"Missing configuration fo" +
                     "r subtype {value.GetType().Name} of ");
             
-            #line 61 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
-            
-            #line default
-            #line hidden
-            this.Write("\");\r\n\t\t\t\r\n\t\t\tvoid serialize<T>(T what, int key) where T: ");
-            
             #line 63 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write("\r\n\t\t\t{\r\n\t\t\t\twriter.Write(key);\r\n\t\t\t\toptions.Resolver.GetFormatterWithVerify<T>()." +
-                    "Serialize(ref writer, what, options);\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n");
+            this.Write("\");\r\n\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

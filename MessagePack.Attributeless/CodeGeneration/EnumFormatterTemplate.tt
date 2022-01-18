@@ -5,13 +5,15 @@
 <#@ import namespace="System.Collections.Generic" #>
 namespace <#= Namespace #> 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class <#= IdentifierTypeName #>Formatter: IMessagePackFormatter<<#= FullTypeName #>>
 	{
 		public <#= FullTypeName #> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 		{
-			return (<#= FullTypeName #>) reader.<#= ReaderMethod #>()
+			return (<#= FullTypeName #>) reader.<#= ReaderMethod #>;
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 

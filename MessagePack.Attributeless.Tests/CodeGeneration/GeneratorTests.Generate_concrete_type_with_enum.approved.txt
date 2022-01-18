@@ -1,32 +1,41 @@
-﻿namespace Generated 
+﻿
+namespace Generated 
 {
+	using MessagePack;
+	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
+
 	public static class MessagePackSerializerOptionsExtensions
 	{
-		public MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+		public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
 			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
 			{
 								new LegFormatter(),
 								new SideFormatter(),
-							}, { self.Resolver });
+							}, new[] { self.Resolver }));
 	}
 }namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
 	{
 		public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 		{
-			return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32((int) value)()
+			return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32();
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
 		{ 
-			writer.WriteInt32(value);
+			writer.WriteInt32((int) value);
 		}
 	}
 }namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class LegFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Leg>
 	{
@@ -36,13 +45,9 @@
 
 			return new MessagePack.Attributeless.Tests.Samples.Leg
 			{
-								NumberOfToes = deserialize<System.Byte>();
-								Side = deserialize<MessagePack.Attributeless.Tests.Samples.Side>();
-							}
-
-			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.Leg 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
-
+								NumberOfToes = options.Resolver.GetFormatterWithVerify<System.Byte>().Deserialize(ref reader, options),
+								Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
+							};
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Leg value, MessagePackSerializerOptions options) 
 		{ 
@@ -52,11 +57,8 @@
 				return;
 			}
 
-						serialize(result.NumberOfToes);
-						serialize(result.Side);
-			
-			void serialize<T>(T what) where T: MessagePack.Attributeless.Tests.Samples.Leg
-				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-		}
+						options.Resolver.GetFormatterWithVerify<System.Byte>().Serialize(ref writer, value.NumberOfToes, options);
+						options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
+					}
 	}
 }

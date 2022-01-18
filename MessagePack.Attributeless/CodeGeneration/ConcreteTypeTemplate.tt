@@ -5,7 +5,9 @@
 <#@ import namespace="System.Collections.Generic" #>
 namespace <#= Namespace #> 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class <#= IdentifierTypeName #>Formatter: IMessagePackFormatter<<#= FullTypeName #>>
 	{
@@ -16,13 +18,9 @@ namespace <#= Namespace #>
 			return new <#= FullTypeName #>
 			{
 				<# foreach (var (name, type) in Mappings) { #>
-				<#= name #> = deserialize<<#= type #>>();
+				<#= name #> = options.Resolver.GetFormatterWithVerify<<#= type #>>().Deserialize(ref reader, options),
 				<# } #>
-			}
-
-			T deserialize<T>() where T: <#= FullTypeName #> 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
-
+			};
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 
@@ -32,12 +30,9 @@ namespace <#= Namespace #>
 				return;
 			}
 
-			<# foreach (var (name, _) in Mappings) { #>
-			serialize(result.<#= name #>);
+			<# foreach (var (name, type) in Mappings) { #>
+			options.Resolver.GetFormatterWithVerify<<#= type #>>().Serialize(ref writer, value.<#= name #>, options);
 			<# } #>
-
-			void serialize<T>(T what) where T: <#= FullTypeName #>
-				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
 		}
 	}
 }

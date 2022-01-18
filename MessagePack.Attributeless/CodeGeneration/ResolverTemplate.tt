@@ -3,16 +3,21 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+
 namespace <#= Namespace #> 
 {
+	using MessagePack;
+	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
+
 	public static class MessagePackSerializerOptionsExtensions
 	{
-		public MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+		public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
 			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
 			{
 				<# foreach (var formatter in Formatters) { #>
 				new <#= formatter #>(),
 				<# } #>
-			}, { self.Resolver });
+			}, new[] { self.Resolver }));
 	}
 }

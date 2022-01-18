@@ -28,38 +28,46 @@ namespace MessagePack.Attributeless.CodeGeneration
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("namespace ");
+            this.Write("\r\nnamespace ");
             
-            #line 6 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
+            #line 7 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
             
             #line default
             #line hidden
-            this.Write(" \r\n{\r\n\tpublic static class MessagePackSerializerOptionsExtensions\r\n\t{\r\n\t\tpublic M" +
-                    "essagePackSerializerOptions Add(this MessagePackSerializerOptions self)\r\n\t\t\t=> s" +
-                    "elf.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]\r\n\t\t\t{\r\n\t\t\t" +
-                    "\t");
+            this.Write(@" 
+{
+	using MessagePack;
+	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
+
+	public static class MessagePackSerializerOptionsExtensions
+	{
+		public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
+			{
+				");
             
-            #line 13 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
+            #line 18 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
  foreach (var formatter in Formatters) { 
             
             #line default
             #line hidden
             this.Write("\t\t\t\tnew ");
             
-            #line 14 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
+            #line 19 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(formatter));
             
             #line default
             #line hidden
             this.Write("(),\r\n\t\t\t\t");
             
-            #line 15 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
+            #line 20 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ResolverTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("\t\t\t}, { self.Resolver });\r\n\t}\r\n}");
+            this.Write("\t\t\t}, new[] { self.Resolver }));\r\n\t}\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }

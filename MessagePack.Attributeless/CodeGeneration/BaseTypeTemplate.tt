@@ -6,7 +6,9 @@
 
 namespace <#= Namespace #> 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class <#= IdentifierTypeName #>Formatter: IMessagePackFormatter<<#= FullTypeName #>>
 	{
@@ -23,7 +25,7 @@ namespace <#= Namespace #>
 					{
 				#>
 
-				case <#= kvp.Value #>: return deserialize<<#= kvp.Key #>>();
+				case <#= kvp.Value #>: return options.Resolver.GetFormatterWithVerify<<#= kvp.Key #>>().Deserialize(ref reader, options);
 				
 				<#
 					}
@@ -32,9 +34,6 @@ namespace <#= Namespace #>
 			}
 			throw new MessagePackSerializationException(
 					$"Encountered unknown type key {key} for <#= FullTypeName #> - was this serialized with a different configuration?");
-			
-			T deserialize<T>() where T: <#= FullTypeName #> 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 
@@ -51,7 +50,10 @@ namespace <#= Namespace #>
 					{
 				#>
 
-				case <#= kvp.Key #> t: serialize(t, <#= kvp.Value #>);
+				case <#= kvp.Key #> t: 
+				writer.Write(<#= kvp.Value #>);
+				options.Resolver.GetFormatterWithVerify<<#= kvp.Key #>>().Serialize(ref writer, t, options);
+					return;
 				
 				<#
 					}
@@ -59,12 +61,6 @@ namespace <#= Namespace #>
 
 			}
 			throw new MessagePackSerializationException($"Missing configuration for subtype {value.GetType().Name} of <#= FullTypeName #>");
-			
-			void serialize<T>(T what, int key) where T: <#= FullTypeName #>
-			{
-				writer.Write(key);
-				options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-			}
 		}
 	}
 }

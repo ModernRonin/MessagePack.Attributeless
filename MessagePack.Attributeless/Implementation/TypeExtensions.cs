@@ -85,7 +85,15 @@ namespace MessagePack.Attributeless.Implementation
 
         public static bool IsIndexed(this PropertyInfo self) => self.GetIndexParameters().Any();
 
-        public static string SafeFullName(this Type self) => self.FullName.Replace('+', '.');
+        public static string SafeFullName(this Type self)
+        {
+            var name = self.FullName.Replace('+', '.');
+            if (!self.IsConstructedGenericType) return name;
+            var index = name.IndexOf('`');
+            name = name.Substring(0, index);
+            var typeArguments = string.Join(", ", self.GetGenericArguments().Select(SafeFullName));
+            return $"{name}<{typeArguments}>";
+        }
 
         public static IEnumerable<PropertyInfo> SerializeableProperties(this Type self) =>
             self.GetProperties().Where(p => p.CanWrite && !p.IsIndexed());

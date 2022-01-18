@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text;
 using ApprovalTests;
 using FluentAssertions;
 using MessagePack.Attributeless.Implementation;
@@ -248,6 +249,30 @@ public class TypeExtensionsTests
         typeof(int).HasCompiledMessagePackFormatter().Should().BeTrue();
         typeof(ImmutableArray<>).HasCompiledMessagePackFormatter().Should().BeTrue();
     }
+
+    [Test]
+    public void SafeFullName_of_a_generic_type_with_more_than_one_argument() =>
+        typeof(Dictionary<int, Element>).SafeFullName()
+            .Should()
+            .Be(
+                "System.Collections.Generic.Dictionary<System.Int32, MessagePack.Attributeless.Tests.Implementation.TypeExtensionsTests.Element>");
+
+    [Test]
+    public void SafeFullName_of_a_nested_generic_type() =>
+        typeof(Generic<Element>).SafeFullName()
+            .Should()
+            .Be(
+                "MessagePack.Attributeless.Tests.Implementation.TypeExtensionsTests.Generic<MessagePack.Attributeless.Tests.Implementation.TypeExtensionsTests.Element>");
+
+    [Test]
+    public void SafeFullName_of_a_nested_type() =>
+        typeof(Element).SafeFullName()
+            .Should()
+            .Be("MessagePack.Attributeless.Tests.Implementation.TypeExtensionsTests.Element");
+
+    [Test]
+    public void SafeFullName_of_a_non_nested_type() =>
+        typeof(StringBuilder).SafeFullName().Should().Be("System.Text.StringBuilder");
 
     [Test]
     public void WithTypeArguments_for_array_types_returns_element_type() =>

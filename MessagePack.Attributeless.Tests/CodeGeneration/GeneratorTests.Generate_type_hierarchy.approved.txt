@@ -1,8 +1,13 @@
-﻿namespace Generated 
+﻿
+namespace Generated 
 {
+	using MessagePack;
+	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
+
 	public static class MessagePackSerializerOptionsExtensions
 	{
-		public MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+		public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
 			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
 			{
 								new ArmFormatter(),
@@ -10,27 +15,31 @@
 								new LegFormatter(),
 								new WingFormatter(),
 								new IExtremityFormatter(),
-							}, { self.Resolver });
+							}, new[] { self.Resolver }));
 	}
 }namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
 	{
 		public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 		{
-			return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32((int) value)()
+			return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32();
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
 		{ 
-			writer.WriteInt32(value);
+			writer.WriteInt32((int) value);
 		}
 	}
 }
 namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class IExtremityFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.IExtremity>
 	{
@@ -43,21 +52,18 @@ namespace Generated
 			switch (key)
 			{			
 				
-				case 0: return deserialize<MessagePack.Attributeless.Tests.Samples.Arm>();
+				case 0: return options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Arm>().Deserialize(ref reader, options);
 				
 				
-				case 1: return deserialize<MessagePack.Attributeless.Tests.Samples.Leg>();
+				case 1: return options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Leg>().Deserialize(ref reader, options);
 				
 				
-				case 2: return deserialize<MessagePack.Attributeless.Tests.Samples.Wing>();
+				case 2: return options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Wing>().Deserialize(ref reader, options);
 				
 				
 			}
 			throw new MessagePackSerializationException(
 					$"Encountered unknown type key {key} for MessagePack.Attributeless.Tests.Samples.IExtremity - was this serialized with a different configuration?");
-			
-			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.IExtremity 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.IExtremity value, MessagePackSerializerOptions options) 
 		{ 
@@ -70,29 +76,34 @@ namespace Generated
 			switch (value)
 			{			
 				
-				case MessagePack.Attributeless.Tests.Samples.Arm t: serialize(t, 0);
+				case MessagePack.Attributeless.Tests.Samples.Arm t: 
+				writer.Write(0);
+				options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Arm>().Serialize(ref writer, t, options);
+					return;
 				
 				
-				case MessagePack.Attributeless.Tests.Samples.Leg t: serialize(t, 1);
+				case MessagePack.Attributeless.Tests.Samples.Leg t: 
+				writer.Write(1);
+				options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Leg>().Serialize(ref writer, t, options);
+					return;
 				
 				
-				case MessagePack.Attributeless.Tests.Samples.Wing t: serialize(t, 2);
+				case MessagePack.Attributeless.Tests.Samples.Wing t: 
+				writer.Write(2);
+				options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Wing>().Serialize(ref writer, t, options);
+					return;
 				
 				
 			}
 			throw new MessagePackSerializationException($"Missing configuration for subtype {value.GetType().Name} of MessagePack.Attributeless.Tests.Samples.IExtremity");
-			
-			void serialize<T>(T what, int key) where T: MessagePack.Attributeless.Tests.Samples.IExtremity
-			{
-				writer.Write(key);
-				options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-			}
 		}
 	}
 }
 namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class ArmFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Arm>
 	{
@@ -102,13 +113,9 @@ namespace Generated
 
 			return new MessagePack.Attributeless.Tests.Samples.Arm
 			{
-								NumberOfFingers = deserialize<System.Byte>();
-								Side = deserialize<MessagePack.Attributeless.Tests.Samples.Side>();
-							}
-
-			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.Arm 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
-
+								NumberOfFingers = options.Resolver.GetFormatterWithVerify<System.Byte>().Deserialize(ref reader, options),
+								Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
+							};
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Arm value, MessagePackSerializerOptions options) 
 		{ 
@@ -118,16 +125,15 @@ namespace Generated
 				return;
 			}
 
-						serialize(result.NumberOfFingers);
-						serialize(result.Side);
-			
-			void serialize<T>(T what) where T: MessagePack.Attributeless.Tests.Samples.Arm
-				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-		}
+						options.Resolver.GetFormatterWithVerify<System.Byte>().Serialize(ref writer, value.NumberOfFingers, options);
+						options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
+					}
 	}
 }namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class LegFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Leg>
 	{
@@ -137,13 +143,9 @@ namespace Generated
 
 			return new MessagePack.Attributeless.Tests.Samples.Leg
 			{
-								NumberOfToes = deserialize<System.Byte>();
-								Side = deserialize<MessagePack.Attributeless.Tests.Samples.Side>();
-							}
-
-			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.Leg 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
-
+								NumberOfToes = options.Resolver.GetFormatterWithVerify<System.Byte>().Deserialize(ref reader, options),
+								Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
+							};
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Leg value, MessagePackSerializerOptions options) 
 		{ 
@@ -153,16 +155,15 @@ namespace Generated
 				return;
 			}
 
-						serialize(result.NumberOfToes);
-						serialize(result.Side);
-			
-			void serialize<T>(T what) where T: MessagePack.Attributeless.Tests.Samples.Leg
-				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-		}
+						options.Resolver.GetFormatterWithVerify<System.Byte>().Serialize(ref writer, value.NumberOfToes, options);
+						options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
+					}
 	}
 }namespace Generated 
 {
+	using MessagePack;
 	using MessagePack.Formatters;
+	using MessagePack.Resolvers;
 
 	public class WingFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Wing>
 	{
@@ -172,13 +173,9 @@ namespace Generated
 
 			return new MessagePack.Attributeless.Tests.Samples.Wing
 			{
-								Side = deserialize<MessagePack.Attributeless.Tests.Samples.Side>();
-								Span = deserialize<System.Int32>();
-							}
-
-			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.Wing 
-				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
-
+								Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
+								Span = options.Resolver.GetFormatterWithVerify<System.Int32>().Deserialize(ref reader, options),
+							};
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Wing value, MessagePackSerializerOptions options) 
 		{ 
@@ -188,11 +185,8 @@ namespace Generated
 				return;
 			}
 
-						serialize(result.Side);
-						serialize(result.Span);
-			
-			void serialize<T>(T what) where T: MessagePack.Attributeless.Tests.Samples.Wing
-				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
-		}
+						options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
+						options.Resolver.GetFormatterWithVerify<System.Int32>().Serialize(ref writer, value.Span, options);
+					}
 	}
 }
