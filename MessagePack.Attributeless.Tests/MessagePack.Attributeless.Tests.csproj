@@ -4,10 +4,10 @@
 		<TargetFramework>net6.0</TargetFramework>
 
 		<IsPackable>false</IsPackable>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ApprovalTests" Version="5.7.1" />
 		<PackageReference Include="AutoBogus" Version="2.13.1" />
 		<PackageReference Include="AutoBogus.Conventions" Version="2.13.1" />
 		<PackageReference Include="FluentAssertions" Version="6.3.0" />
@@ -16,6 +16,7 @@
 		<PackageReference Include="NUnit" Version="3.13.2" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="Verify.NUnit" Version="14.14.1" />
 	</ItemGroup>
 
 	<ItemGroup>

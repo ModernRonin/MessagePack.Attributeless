@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ApprovalTests;
+using System.Threading.Tasks;
 using FluentAssertions;
 using MessagePack.Attributeless.Implementation;
 using NUnit.Framework;
@@ -99,14 +99,14 @@ public class TypeExtensionsTests
     }
 
     [Test]
-    public void GetReferencedUserTypes_with_complex_graph()
+    public Task GetReferencedUserTypes_with_complex_graph()
     {
         var type = typeof(Samples.PersonWithPet);
 
         var actual = type.GetReferencedUserTypes();
 
         var asText = string.Join('\n', actual.OrderBy(t => t.Name).Select(t => t.Name));
-        Approvals.Verify(asText);
+        return Verify(asText);
     }
 
     [Test]
