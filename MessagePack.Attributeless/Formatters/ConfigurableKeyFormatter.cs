@@ -70,9 +70,8 @@ namespace MessagePack.Attributeless.Formatters
         public void UseAutomaticKeys()
         {
             var key = 0;
-            foreach (var property in typeof(T).GetProperties()
-                         .Where(p => p.CanWrite && !p.IsIndexed())
-                         .OrderBy(p => p.Name)) _map.SetRightToLeft(key++, property);
+            foreach (var property in typeof(T).SerializeableProperties().OrderBy(p => p.Name))
+                _map.SetRightToLeft(key++, property);
         }
     }
 }
