@@ -5,6 +5,7 @@
 	{
 		public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 		{
+			writer.WriteInt32((int) value);
 		}
 		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
 		{ 

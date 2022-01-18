@@ -1,6 +1,8 @@
-﻿using FluentAssertions;
+﻿using ApprovalTests;
+using FluentAssertions;
 using MessagePack.Formatters;
 using MoreLinq;
+using NUnit.Framework;
 
 namespace MessagePack.Attributeless.Tests;
 
@@ -222,7 +224,7 @@ public class MessagePackSerializerOptionsBuilderTests
     }
 
     [Test]
-    public Task ConfigurationDescription()
+    public void ConfigurationDescription()
     {
         // this test would also fail if AutoKey, AllSubTypesOf or GraphOf no longer sorted their elements deterministically 
         var builder = MessagePackSerializer.DefaultOptions.Configure()
@@ -231,7 +233,7 @@ public class MessagePackSerializerOptionsBuilderTests
         var keytable = builder.Versioning.ConfigurationDescription;
         // not Environment.NewLine to prevent issues between the platform where the approved file was saved being different from the one the test is executed on 
         var asText = string.Join('\n', keytable);
-        return Verify(asText);
+        Approvals.Verify(asText);
     }
 
     [Test]

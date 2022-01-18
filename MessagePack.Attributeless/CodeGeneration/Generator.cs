@@ -56,5 +56,22 @@ namespace MessagePack.Attributeless.CodeGeneration
         public string IdentifierTypeName => Type.Name;
         public string Namespace { get; set; }
         public Type Type { get; set; }
+
+        public string WriterMethod
+        {
+            get
+            {
+                var targetType = Type.GetEnumUnderlyingType();
+                if (targetType == typeof(sbyte)) return "WriteInt8((sbyte) value)";
+                if (targetType == typeof(short)) return "WriteInt16((short) value)";
+                if (targetType == typeof(int)) return "WriteInt32((int) value)";
+                if (targetType == typeof(long)) return "WriteInt64((long) value)";
+                if (targetType == typeof(byte)) return "WriteUInt8((byte) value)";
+                if (targetType == typeof(ushort)) return "WriteUInt16((ushort) value)";
+                if (targetType == typeof(uint)) return "WriteUInt32((uint) value)";
+                if (targetType == typeof(ulong)) return "WriteUInt64((ulong) value)";
+                throw new NotImplementedException();
+            }
+        }
     }
 }

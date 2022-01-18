@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using ApprovalTests;
+using FluentAssertions;
 using MessagePack.Attributeless.CodeGeneration;
+using NUnit.Framework;
 
 namespace MessagePack.Attributeless.Tests.CodeGeneration;
 
@@ -26,7 +28,7 @@ public class GeneratorTests
     }
 
     [Test]
-    public Task Generate_enum()
+    public void Generate_enum()
     {
         var config = MessagePackSerializer.DefaultOptions.Configure()
             .GraphOf<Samples.Leg>()
@@ -34,7 +36,7 @@ public class GeneratorTests
 
         var result = new Generator().Generate(config);
 
-        return Verify(result);
+        Approvals.Verify(result);
     }
 
     [Test]

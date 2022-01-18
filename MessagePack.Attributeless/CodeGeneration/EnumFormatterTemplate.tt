@@ -10,6 +10,7 @@ namespace <#= Namespace #>
 	{
 		public <#= FullTypeName #> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 		{
+			writer.<#= WriterMethod #>;
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 
