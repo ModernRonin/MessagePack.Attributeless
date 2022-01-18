@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ApprovalTests;
 using FluentAssertions;
@@ -206,5 +207,23 @@ public class TypeExtensionsTests
     public void GetReferencedUserTypes_with_self_referential_structure()
     {
         typeof(Node).GetReferencedUserTypes().Should().Equal(typeof(Node));
+    }
+
+    [Test]
+    public void HasCompiledMessagePackFormatter_is_true_for_certain_open_generic_collections()
+    {
+        typeof(List<>).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(IList<>).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(IDictionary<,>).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(ImmutableArray<>).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(ImmutableDictionary<,>).HasCompiledMessagePackFormatter().Should().BeTrue();
+    }
+
+    [Test]
+    public void HasCompiledMessagePackFormatter_is_true_for_primitives()
+    {
+        typeof(bool).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(int).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(ImmutableArray<>).HasCompiledMessagePackFormatter().Should().BeTrue();
     }
 }
