@@ -48,7 +48,20 @@ namespace MessagePack.Attributeless.CodeGeneration
                 };
                 result.Append(template.TransformText());
             }
-            // generate for propertymapped
+
+            foreach (var (type, formatter) in configuration.PropertyMappedTypes)
+            {
+                var template = new ConcreteTypeTemplate
+                {
+                    Namespace = _namespace,
+                    Type = type,
+                    Mappings = formatter.Mappings.OrderBy(kvp => kvp.Value)
+                        .Select(kvp => kvp.Key)
+                        .Select(p => (p.Name, p.PropertyType.FullName.Replace('+', '.')))
+                        .ToArray()
+                };
+                result.Append(template.TransformText());
+            }
 
             return result.ToString();
 

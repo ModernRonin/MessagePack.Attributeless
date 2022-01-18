@@ -30,7 +30,7 @@ namespace MessagePack.Attributeless.Formatters
                 if (!_map.ContainsRight(key))
                 {
                     throw new MessagePackSerializationException(
-                        $"Encountered unknown property key {key} for {typeof(T).Name} - was this serialized with a differrent configuration?");
+                        $"Encountered unknown property key {key} for {typeof(T).Name} - was this serialized with a different configuration?");
                 }
 
                 var property = _map.LeftFor(key);

@@ -3,3 +3,41 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+namespace <#= Namespace #> 
+{
+	using MessagePack.Formatters;
+
+	public class <#= IdentifierTypeName #>Formatter: IMessagePackFormatter<<#= FullTypeName #>>
+	{
+		public <#= FullTypeName #> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+		{
+			if (reader.TryReadNil()) return default;
+
+			return new <#= FullTypeName #>
+			{
+				<# foreach (var (name, type) in Mappings) { #>
+				<#= name #> = deserialize<<#= type #>>();
+				<# } #>
+			}
+
+			T deserialize<T>() where T: <#= FullTypeName #> 
+				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
+
+		}
+		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
+		{ 
+			if (value == null)
+			{
+				writer.WriteNil();
+				return;
+			}
+
+			<# foreach (var (name, _) in Mappings) { #>
+			serialize(result.<#= name #>);
+			<# } #>
+
+			void serialize<T>(T what) where T: <#= FullTypeName #>
+				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
+		}
+	}
+}

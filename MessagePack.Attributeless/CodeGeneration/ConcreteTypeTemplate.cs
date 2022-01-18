@@ -28,6 +28,116 @@ namespace MessagePack.Attributeless.CodeGeneration
         /// </summary>
         public override string TransformText()
         {
+            this.Write("namespace ");
+            
+            #line 6 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
+            
+            #line default
+            #line hidden
+            this.Write(" \r\n{\r\n\tusing MessagePack.Formatters;\r\n\r\n\tpublic class ");
+            
+            #line 10 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(IdentifierTypeName));
+            
+            #line default
+            #line hidden
+            this.Write("Formatter: IMessagePackFormatter<");
+            
+            #line 10 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write(">\r\n\t{\r\n\t\tpublic ");
+            
+            #line 12 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write(" Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)\r" +
+                    "\n\t\t{\r\n\t\t\tif (reader.TryReadNil()) return default;\r\n\r\n\t\t\treturn new ");
+            
+            #line 16 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t{\r\n\t\t\t\t");
+            
+            #line 18 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+ foreach (var (name, type) in Mappings) { 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\t\t");
+            
+            #line 19 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(name));
+            
+            #line default
+            #line hidden
+            this.Write(" = deserialize<");
+            
+            #line 19 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type));
+            
+            #line default
+            #line hidden
+            this.Write(">();\r\n\t\t\t\t");
+            
+            #line 20 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\t}\r\n\r\n\t\t\tT deserialize<T>() where T: ");
+            
+            #line 23 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write(" \r\n\t\t\t\t=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref rea" +
+                    "der, options);\r\n\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
+            
+            #line 27 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\tif (value == null)\r\n\t\t\t{" +
+                    "\r\n\t\t\t\twriter.WriteNil();\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\t");
+            
+            #line 35 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+ foreach (var (name, _) in Mappings) { 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\tserialize(result.");
+            
+            #line 36 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(name));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n\t\t\t");
+            
+            #line 37 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\tvoid serialize<T>(T what) where T: ");
+            
+            #line 39 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\ConcreteTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t\t\t\t=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what," +
+                    " options);\r\n\t\t}\r\n\t}\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }

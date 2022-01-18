@@ -91,8 +91,8 @@ namespace MessagePack.Attributeless.CodeGeneration
             
             #line default
             #line hidden
-            this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException(\r\n                    $\"En" +
-                    "countered unknown type key {key} for ");
+            this.Write("\r\n\t\t\t}\r\n\t\t\tthrow new MessagePackSerializationException(\r\n\t\t\t\t\t$\"Encountered unkno" +
+                    "wn type key {key} for ");
             
             #line 34 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
@@ -107,18 +107,16 @@ namespace MessagePack.Attributeless.CodeGeneration
             
             #line default
             #line hidden
-            this.Write(" \r\n            \t=> return options.Resolver.GetFormatterWithVerify<T>().Deserializ" +
-                    "e(ref reader, options);\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writ" +
-                    "er, ");
+            this.Write(" \r\n\t\t\t\t=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref rea" +
+                    "der, options);\r\n\t\t}\r\n\t\tpublic void Serialize(ref MessagePackWriter writer, ");
             
             #line 39 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FullTypeName));
             
             #line default
             #line hidden
-            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\tif (value == null)\r\n    " +
-                    "        {\r\n                writer.WriteNil();\r\n                return;\r\n        " +
-                    "    }\r\n\r\n\t\t\tswitch (value)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
+            this.Write(" value, MessagePackSerializerOptions options) \r\n\t\t{ \r\n\t\t\tif (value == null)\r\n\t\t\t{" +
+                    "\r\n\t\t\t\twriter.WriteNil();\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t\tswitch (value)\r\n\t\t\t{\t\t\t\r\n\t\t\t\t");
             
             #line 49 "C:\Projects\Github\MessagePackExtras\MessagePack.Attributeless\CodeGeneration\BaseTypeTemplate.tt"
 

@@ -31,18 +31,18 @@ namespace <#= Namespace #>
 
 			}
 			throw new MessagePackSerializationException(
-                    $"Encountered unknown type key {key} for <#= FullTypeName #> - was this serialized with a different configuration?");
+					$"Encountered unknown type key {key} for <#= FullTypeName #> - was this serialized with a different configuration?");
 			
 			T deserialize<T>() where T: <#= FullTypeName #> 
-            	=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
+				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
 		}
 		public void Serialize(ref MessagePackWriter writer, <#= FullTypeName #> value, MessagePackSerializerOptions options) 
 		{ 
 			if (value == null)
-            {
-                writer.WriteNil();
-                return;
-            }
+			{
+				writer.WriteNil();
+				return;
+			}
 
 			switch (value)
 			{			

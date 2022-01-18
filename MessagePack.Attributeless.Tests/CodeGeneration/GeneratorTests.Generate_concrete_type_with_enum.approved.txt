@@ -13,4 +13,39 @@
 			writer.WriteInt32(value);
 		}
 	}
+}namespace Generated 
+{
+	using MessagePack.Formatters;
+
+	public class LegFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Leg>
+	{
+		public MessagePack.Attributeless.Tests.Samples.Leg Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+		{
+			if (reader.TryReadNil()) return default;
+
+			return new MessagePack.Attributeless.Tests.Samples.Leg
+			{
+								NumberOfToes = deserialize<System.Byte>();
+								Side = deserialize<MessagePack.Attributeless.Tests.Samples.Side>();
+							}
+
+			T deserialize<T>() where T: MessagePack.Attributeless.Tests.Samples.Leg 
+				=> return options.Resolver.GetFormatterWithVerify<T>().Deserialize(ref reader, options);
+
+		}
+		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Leg value, MessagePackSerializerOptions options) 
+		{ 
+			if (value == null)
+			{
+				writer.WriteNil();
+				return;
+			}
+
+						serialize(result.NumberOfToes);
+						serialize(result.Side);
+			
+			void serialize<T>(T what) where T: MessagePack.Attributeless.Tests.Samples.Leg
+				=> options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
+		}
+	}
 }
