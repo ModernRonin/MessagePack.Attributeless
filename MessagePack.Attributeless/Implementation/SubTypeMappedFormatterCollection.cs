@@ -39,7 +39,7 @@ namespace MessagePack.Attributeless.Implementation
             {
                 var formatter = _subTypeMappedTypes.Values.FirstOrDefault(f => f.GetType() == formatterType);
                 if (formatter != default) return formatter;
-                formatter = (ISubTypeFormatter) Activator.CreateInstance(formatterType);
+                formatter = (ISubTypeFormatter)Activator.CreateInstance(formatterType);
                 _subTypeMappedTypes.Add(baseType, formatter);
                 return formatter;
             }
