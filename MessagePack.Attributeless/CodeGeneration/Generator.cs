@@ -43,7 +43,7 @@ namespace MessagePack.Attributeless.CodeGeneration
                 {
                     Namespace = _namespace,
                     Type = baseType,
-                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.FullName.Replace('+', '.'),
+                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.SafeFullName(),
                         t => t.Value)
                 };
                 result.Append(template.TransformText());
@@ -57,7 +57,7 @@ namespace MessagePack.Attributeless.CodeGeneration
                     Type = type,
                     Mappings = formatter.Mappings.OrderBy(kvp => kvp.Value)
                         .Select(kvp => kvp.Key)
-                        .Select(p => (p.Name, p.PropertyType.FullName.Replace('+', '.')))
+                        .Select(p => (p.Name, p.PropertyType.SafeFullName()))
                         .ToArray()
                 };
                 result.Append(template.TransformText());

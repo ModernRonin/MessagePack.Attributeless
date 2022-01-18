@@ -41,8 +41,9 @@ namespace MessagePack.Attributeless.Implementation
                 if (result.Contains(type)) return;
 
                 if (type.IsConstructedGenericType)
-                    foreach (var t in type.GenericTypeArguments)
-                        add(t);
+                {
+                    foreach (var t in type.GenericTypeArguments) add(t);
+                }
 
                 if (type.IsArray)
                 {
@@ -83,6 +84,8 @@ namespace MessagePack.Attributeless.Implementation
             self != baseType && baseType.IsAssignableFrom(self);
 
         public static bool IsIndexed(this PropertyInfo self) => self.GetIndexParameters().Any();
+
+        public static string SafeFullName(this Type self) => self.FullName.Replace('+', '.');
 
         public static IEnumerable<PropertyInfo> SerializeableProperties(this Type self) =>
             self.GetProperties().Where(p => p.CanWrite && !p.IsIndexed());
