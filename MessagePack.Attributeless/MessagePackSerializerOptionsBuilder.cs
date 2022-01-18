@@ -13,14 +13,6 @@ namespace MessagePack.Attributeless
     /// </summary>
     public sealed class MessagePackSerializerOptionsBuilder
     {
-        static readonly IMessagePackFormatter[] _nativeFormatters =
-        {
-            NativeDateTimeArrayFormatter.Instance,
-            NativeDateTimeFormatter.Instance,
-            NativeDecimalFormatter.Instance,
-            NativeGuidFormatter.Instance
-        };
-
         readonly MessagePackSerializerOptions _options;
 
         public MessagePackSerializerOptionsBuilder(MessagePackSerializerOptions options,
@@ -99,7 +91,6 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptions Build()
         {
             var formatters = Configuration.Formatters.ToList();
-            if (Configuration.DoesUseNativeResolvers) formatters.AddRange(_nativeFormatters);
             var composite = CompositeResolver.Create(formatters.ToArray(),
                 new[] { _options.Resolver });
             return _options.WithResolver(composite);

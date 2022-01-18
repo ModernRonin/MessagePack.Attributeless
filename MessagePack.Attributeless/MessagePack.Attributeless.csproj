@@ -52,6 +52,10 @@
 	    <Generator>TextTemplatingFilePreprocessor</Generator>
 	    <LastGenOutput>EnumFormatterTemplate.cs</LastGenOutput>
 	  </None>
+	  <None Update="CodeGeneration\ResolverTemplate.tt">
+	    <Generator>TextTemplatingFilePreprocessor</Generator>
+	    <LastGenOutput>ResolverTemplate.cs</LastGenOutput>
+	  </None>
 	</ItemGroup>
 	<ItemGroup>
 	  <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -76,6 +80,11 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>EnumFormatterTemplate.tt</DependentUpon>
+	  </Compile>
+	  <Compile Update="CodeGeneration\ResolverTemplate.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ResolverTemplate.tt</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

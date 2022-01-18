@@ -7,6 +7,14 @@ namespace MessagePack.Attributeless.Implementation
 {
     public sealed class Configuration
     {
+        static readonly IMessagePackFormatter[] _nativeFormatters =
+        {
+            NativeDateTimeArrayFormatter.Instance,
+            NativeDateTimeFormatter.Instance,
+            NativeDecimalFormatter.Instance,
+            NativeGuidFormatter.Instance
+        };
+
         readonly bool _doImplicitlyAutokeySubtypes;
 
         readonly Dictionary<Type, IMessagePackFormatter> _overrides =
@@ -32,16 +40,18 @@ namespace MessagePack.Attributeless.Implementation
             get
             {
                 foreach (var (type, formatter) in SubTypeMappedTypes)
-                {
-                    if (!_overrides.ContainsKey(type)) yield return formatter;
-                }
+                    if (!_overrides.ContainsKey(type))
+                        yield return formatter;
 
                 foreach (var (type, formatter) in PropertyMappedTypes)
-                {
-                    if (!_overrides.ContainsKey(type)) yield return formatter;
-                }
+                    if (!_overrides.ContainsKey(type))
+                        yield return formatter;
 
                 foreach (var (_, formatter) in _overrides) yield return formatter;
+                if (DoesUseNativeResolvers)
+                {
+                    foreach (var formatter in _nativeFormatters) yield return formatter;
+                }
             }
         }
 

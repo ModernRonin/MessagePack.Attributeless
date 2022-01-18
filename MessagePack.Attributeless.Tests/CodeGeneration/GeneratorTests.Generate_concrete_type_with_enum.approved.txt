@@ -1,5 +1,16 @@
 ﻿namespace Generated 
 {
+	public static class MessagePackSerializerOptionsExtensions
+	{
+		public MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
+			{
+								new LegFormatter(),
+								new SideFormatter(),
+							}, { self.Resolver });
+	}
+}namespace Generated 
+{
 	using MessagePack.Formatters;
 
 	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>

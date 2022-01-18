@@ -27,14 +27,19 @@ namespace MessagePack.Attributeless.CodeGeneration
             }
 
             // arriving here means all types without formatter are enum types
-            var templates = new IEnumerable<AFormatterTemplate>[]
+            var templates = new List<AFormatterTemplate>();
+            templates.AddRange(typesWithoutFormatter.Select(enumTemplate));
+            templates.AddRange(configuration.SubTypeMappedTypes.Select(baseTemplate));
+            templates.AddRange(configuration.PropertyMappedTypes.Select(concreteTemplate));
+            var builder = new StringBuilder();
+            builder.Append(new ResolverTemplate
             {
-                typesWithoutFormatter.Select(enumTemplate),
-                configuration.SubTypeMappedTypes.Select(baseTemplate),
-                configuration.PropertyMappedTypes.Select(concreteTemplate)
-            }.SelectMany(x => x);
-
-            return templates.Aggregate(new StringBuilder(), (b, t) => b.Append(t.TransformText())).ToString();
+                Namespace = _namespace,
+                Formatters = allTypes.Where(t => !t.HasCompiledMessagePackFormatter())
+                    .Select(t => $"{t.Name}Formatter")
+                    .ToArray()
+            }.TransformText());
+            return templates.Aggregate(builder, (b, t) => b.Append(t.TransformText())).ToString();
 
             bool hasNoFormatter(Type type)
             {
