@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MessagePack.Attributeless.Implementation;
@@ -11,7 +12,6 @@ namespace MessagePack.Attributeless.CodeGeneration
 
         public string Generate(Configuration configuration)
         {
-            var result = new StringBuilder();
             var allTypes = configuration.PropertyMappedTypes.AllTypes()
                 .Concat(configuration.SubTypeMappedTypes.AllTypes())
                 .SelectMany(TypeExtensions.WithTypeArguments)
@@ -26,44 +26,15 @@ namespace MessagePack.Attributeless.CodeGeneration
                     $"{nameof(configuration)} is incomplete - the following types are neither mapped nor handled by MessagePack natively nor enums: {unhandled}");
             }
 
-            // arriving here means all types without formatter are enum types:
-            foreach (var type in typesWithoutFormatter)
+            // arriving here means all types without formatter are enum types
+            var templates = new IEnumerable<AFormatterTemplate>[]
             {
-                var template = new EnumFormatterTemplate
-                {
-                    Namespace = _namespace,
-                    Type = type
-                };
-                result.Append(template.TransformText());
-            }
+                typesWithoutFormatter.Select(enumTemplate),
+                configuration.SubTypeMappedTypes.Select(baseTemplate),
+                configuration.PropertyMappedTypes.Select(concreteTemplate)
+            }.SelectMany(x => x);
 
-            foreach (var (baseType, formatter) in configuration.SubTypeMappedTypes)
-            {
-                var template = new BaseTypeTemplate
-                {
-                    Namespace = _namespace,
-                    Type = baseType,
-                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.SafeFullName(),
-                        t => t.Value)
-                };
-                result.Append(template.TransformText());
-            }
-
-            foreach (var (type, formatter) in configuration.PropertyMappedTypes)
-            {
-                var template = new ConcreteTypeTemplate
-                {
-                    Namespace = _namespace,
-                    Type = type,
-                    Mappings = formatter.Mappings.OrderBy(kvp => kvp.Value)
-                        .Select(kvp => kvp.Key)
-                        .Select(p => (p.Name, p.PropertyType.SafeFullName()))
-                        .ToArray()
-                };
-                result.Append(template.TransformText());
-            }
-
-            return result.ToString();
+            return templates.Aggregate(new StringBuilder(), (b, t) => b.Append(t.TransformText())).ToString();
 
             bool hasNoFormatter(Type type)
             {
@@ -71,6 +42,39 @@ namespace MessagePack.Attributeless.CodeGeneration
                 if (configuration.PropertyMappedTypes.Select(kvp => kvp.Key).Contains(type)) return false;
                 if (configuration.SubTypeMappedTypes.Select(kvp => kvp.Key).Contains(type)) return false;
                 return true;
+            }
+
+            EnumFormatterTemplate enumTemplate(Type type) =>
+                new EnumFormatterTemplate
+                {
+                    Namespace = _namespace,
+                    Type = type
+                };
+
+            BaseTypeTemplate baseTemplate(KeyValuePair<Type, ISubTypeFormatter> kvp)
+            {
+                var (baseType, formatter) = kvp;
+                return new BaseTypeTemplate
+                {
+                    Namespace = _namespace,
+                    Type = baseType,
+                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.SafeFullName(),
+                        t => t.Value)
+                };
+            }
+
+            ConcreteTypeTemplate concreteTemplate(KeyValuePair<Type, IPropertyFormatter> kvp)
+            {
+                var (type, formatter) = kvp;
+                return new ConcreteTypeTemplate
+                {
+                    Namespace = _namespace,
+                    Type = type,
+                    Mappings = formatter.Mappings.OrderBy(m => m.Value)
+                        .Select(m => m.Key)
+                        .Select(p => (p.Name, p.PropertyType.SafeFullName()))
+                        .ToArray()
+                };
             }
         }
     }
