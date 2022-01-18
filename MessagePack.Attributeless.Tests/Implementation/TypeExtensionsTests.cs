@@ -226,4 +226,31 @@ public class TypeExtensionsTests
         typeof(int).HasCompiledMessagePackFormatter().Should().BeTrue();
         typeof(ImmutableArray<>).HasCompiledMessagePackFormatter().Should().BeTrue();
     }
+
+    [Test]
+    public void
+        WithGenericArguments_for_generic_type_returns_types_generic_definition_and_the_arguments_of_the_type() =>
+        typeof(List<Samples.Arm>).WithGenericArguments()
+            .Should()
+            .BeEquivalentTo(new[]
+            {
+                typeof(Samples.Arm),
+                typeof(List<>)
+            });
+
+    [Test]
+    public void WithGenericArguments_for_non_generic_type_returns_type() =>
+        typeof(Samples.Arm).WithGenericArguments().Should().Equal(typeof(Samples.Arm));
+
+    [Test]
+    public void WithGenericArguments_works_with_nested_generic_types() =>
+        typeof(IDictionary<string, IList<Samples.Arm>>).WithGenericArguments()
+            .Should()
+            .BeEquivalentTo(new[]
+            {
+                typeof(Samples.Arm),
+                typeof(string),
+                typeof(IDictionary<,>),
+                typeof(IList<>)
+            });
 }

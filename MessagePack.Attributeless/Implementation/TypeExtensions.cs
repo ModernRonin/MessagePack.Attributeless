@@ -87,6 +87,14 @@ namespace MessagePack.Attributeless.Implementation
         public static IEnumerable<PropertyInfo> SerializeableProperties(this Type self) =>
             self.GetProperties().Where(p => p.CanWrite && !p.IsIndexed());
 
+        public static IEnumerable<Type> WithGenericArguments(this Type self)
+        {
+            return self.IsConstructedGenericType
+                ? self.GenericTypeArguments.SelectMany(WithGenericArguments)
+                    .Append(self.GetGenericTypeDefinition())
+                : new[] { self };
+        }
+
         static Assembly[] GetAssemblies(Type type, Assembly[] assemblies) =>
             assemblies.Length == 0 ? new[] { type.Assembly } : assemblies;
     }
