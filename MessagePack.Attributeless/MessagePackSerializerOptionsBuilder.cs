@@ -21,16 +21,14 @@ namespace MessagePack.Attributeless
             NativeGuidFormatter.Instance
         };
 
-        readonly Configuration _configuration;
-
         readonly MessagePackSerializerOptions _options;
 
         public MessagePackSerializerOptionsBuilder(MessagePackSerializerOptions options,
             bool doImplicitlyAutokeySubtypes)
         {
             _options = options;
-            _configuration = new Configuration(doImplicitlyAutokeySubtypes);
-            Versioning = new Versioning(_configuration);
+            Configuration = new Configuration(doImplicitlyAutokeySubtypes);
+            Versioning = new Versioning(Configuration);
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptionsBuilder AddNativeFormatters()
         {
-            _configuration.DoesUseNativeResolvers = true;
+            Configuration.DoesUseNativeResolvers = true;
             return this;
         }
 
@@ -78,7 +76,7 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptionsBuilder AutoKeyed(Type type)
         {
-            _configuration.AddAutoKeyed(type);
+            Configuration.AddAutoKeyed(type);
             return this;
         }
 
@@ -100,10 +98,10 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptions Build()
         {
-            var formatters = _configuration.Formatters.ToList();
-            if (_configuration.DoesUseNativeResolvers) formatters.AddRange(_nativeFormatters);
+            var formatters = Configuration.Formatters.ToList();
+            if (Configuration.DoesUseNativeResolvers) formatters.AddRange(_nativeFormatters);
             var composite = CompositeResolver.Create(formatters.ToArray(),
-                new[] {_options.Resolver});
+                new[] { _options.Resolver });
             return _options.WithResolver(composite);
         }
 
@@ -160,7 +158,7 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptionsBuilder Ignore(Type type, Func<PropertyInfo, bool> predicate)
         {
-            _configuration.PropertyMappedTypes.Ignore(type, predicate);
+            Configuration.PropertyMappedTypes.Ignore(type, predicate);
             return this;
         }
 
@@ -186,7 +184,7 @@ namespace MessagePack.Attributeless
         public MessagePackSerializerOptionsBuilder OverrideFormatter(Type targetType, Type formatterType)
         {
             var formatter = Activator.CreateInstance(formatterType);
-            _configuration.Override(targetType, (IMessagePackFormatter) formatter);
+            Configuration.Override(targetType, (IMessagePackFormatter)formatter);
             return this;
         }
 
@@ -203,7 +201,7 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptionsBuilder SubType(Type baseType, Type subType)
         {
-            _configuration.AddSubType(baseType, subType);
+            Configuration.AddSubType(baseType, subType);
             return this;
         }
 
@@ -213,6 +211,11 @@ namespace MessagePack.Attributeless
         /// </summary>
         public MessagePackSerializerOptionsBuilder SubType<TBase, TSub>() where TSub : TBase, new() =>
             SubType(typeof(TBase), typeof(TSub));
+
+        /// <summary>
+        ///     The configuration built up internally. Usually, you should not interact with this directly.
+        /// </summary>
+        public Configuration Configuration { get; }
 
         /// <summary>
         ///     Returns information you can use to detect changes of the configuration, for example if you rename types or

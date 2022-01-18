@@ -35,6 +35,11 @@ public class TypeExtensionsTests
         public List<Element> Elements { get; set; }
     }
 
+    class TypeUsingExternalType
+    {
+        public TestActionAttribute ExternallyTyped { get; set; }
+    }
+
     class ContainsNullable
     {
         public int? Count { get; set; }
@@ -115,6 +120,18 @@ public class TypeExtensionsTests
             {
                 type,
                 typeof(Element)
+            });
+    }
+
+    [Test]
+    public void GetReferencedUserTypes_with_external_type()
+    {
+        typeof(TypeUsingExternalType).GetReferencedUserTypes()
+            .Should()
+            .BeEquivalentTo(new[]
+            {
+                typeof(TypeUsingExternalType),
+                typeof(TestActionAttribute)
             });
     }
 
@@ -210,6 +227,13 @@ public class TypeExtensionsTests
     }
 
     [Test]
+    public void HasCompiledMessagePackFormatter_is_true_for_arrays()
+    {
+        typeof(bool[]).HasCompiledMessagePackFormatter().Should().BeTrue();
+        typeof(int[]).HasCompiledMessagePackFormatter().Should().BeTrue();
+    }
+
+    [Test]
     public void HasCompiledMessagePackFormatter_is_true_for_certain_open_generic_collections()
     {
         typeof(List<>).HasCompiledMessagePackFormatter().Should().BeTrue();
@@ -228,9 +252,13 @@ public class TypeExtensionsTests
     }
 
     [Test]
+    public void WithTypeArguments_for_array_types_returns_element_type() =>
+        typeof(Samples.Arm[]).WithTypeArguments().Should().Equal(typeof(Samples.Arm));
+
+    [Test]
     public void
-        WithGenericArguments_for_generic_type_returns_types_generic_definition_and_the_arguments_of_the_type() =>
-        typeof(List<Samples.Arm>).WithGenericArguments()
+        WithTypeArguments_for_generic_type_returns_types_generic_definition_and_the_arguments_of_the_type() =>
+        typeof(List<Samples.Arm>).WithTypeArguments()
             .Should()
             .BeEquivalentTo(new[]
             {
@@ -239,12 +267,12 @@ public class TypeExtensionsTests
             });
 
     [Test]
-    public void WithGenericArguments_for_non_generic_type_returns_type() =>
-        typeof(Samples.Arm).WithGenericArguments().Should().Equal(typeof(Samples.Arm));
+    public void WithTypeArguments_for_non_generic_type_returns_type() =>
+        typeof(Samples.Arm).WithTypeArguments().Should().Equal(typeof(Samples.Arm));
 
     [Test]
-    public void WithGenericArguments_works_with_nested_generic_types() =>
-        typeof(IDictionary<string, IList<Samples.Arm>>).WithGenericArguments()
+    public void WithTypeArguments_works_with_nested_generic_types() =>
+        typeof(IDictionary<string, IList<Samples.Arm[]>>).WithTypeArguments()
             .Should()
             .BeEquivalentTo(new[]
             {
