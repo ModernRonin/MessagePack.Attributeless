@@ -41,9 +41,8 @@ namespace MessagePack.Attributeless.Implementation
                 if (result.Contains(type)) return;
 
                 if (type.IsConstructedGenericType)
-                {
-                    foreach (var t in type.GenericTypeArguments) add(t);
-                }
+                    foreach (var t in type.GenericTypeArguments)
+                        add(t);
 
                 if (type.IsArray)
                 {
@@ -96,7 +95,8 @@ namespace MessagePack.Attributeless.Implementation
         }
 
         public static IEnumerable<PropertyInfo> SerializeableProperties(this Type self) =>
-            self.GetProperties().Where(p => p.CanWrite && !p.IsIndexed());
+            self.GetProperties()
+                .Where(p => p.CanWrite && !p.IsIndexed() && p.GetSetMethod()?.IsPublic == true);
 
         public static IEnumerable<Type> WithTypeArguments(this Type self) =>
             self.IsConstructedGenericType

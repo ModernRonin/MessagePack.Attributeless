@@ -39,6 +39,22 @@ public class TypeExtensionsTests
         public TestActionAttribute ExternallyTyped { get; set; }
     }
 
+    class SerializableProperties
+    {
+        public int this[int i]
+        {
+            get => 0;
+            set => value = i;
+        }
+
+        public int Number { get; set; }
+        public int PrivateWriteNumber { get; private set; }
+        public int ProtectedWriteNumber { get; protected set; }
+
+        public int ReadonlyNumber { get; } = 13;
+        public string Text { get; set; }
+    }
+
     class ContainsNullable
     {
         public int? Count { get; set; }
@@ -273,6 +289,15 @@ public class TypeExtensionsTests
     [Test]
     public void SafeFullName_of_a_non_nested_type() =>
         typeof(StringBuilder).SafeFullName().Should().Be("System.Text.StringBuilder");
+
+    [Test]
+    public void SerializableProperties_includes_only_public_writeable_nonindexed_properties()
+    {
+        typeof(SerializableProperties).SerializeableProperties()
+            .Select(p => p.Name)
+            .Should()
+            .BeEquivalentTo("Number", "Text");
+    }
 
     [Test]
     public void WithTypeArguments_for_array_types_returns_element_type() =>
