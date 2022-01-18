@@ -33,6 +33,23 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="System.CodeDom" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="CodeGeneration\EnumFormatterTemplate.tt">
+	    <Generator>TextTemplatingFilePreprocessor</Generator>
+	    <LastGenOutput>EnumFormatterTemplate.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="CodeGeneration\EnumFormatterTemplate.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>EnumFormatterTemplate.tt</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<Import Project="release.history" />

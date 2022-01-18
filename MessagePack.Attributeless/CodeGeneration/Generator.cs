@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using MessagePack.Attributeless.Implementation;
 
 namespace MessagePack.Attributeless.CodeGeneration
@@ -8,6 +9,7 @@ namespace MessagePack.Attributeless.CodeGeneration
     {
         public string Generate(Configuration configuration)
         {
+            var result = new StringBuilder();
             var allTypes = configuration.PropertyMappedTypes.AllTypes()
                 .Concat(configuration.SubTypeMappedTypes.AllTypes())
                 .SelectMany(TypeExtensions.WithTypeArguments)
@@ -21,11 +23,22 @@ namespace MessagePack.Attributeless.CodeGeneration
                 throw new ArgumentException(
                     $"{nameof(configuration)} is incomplete - the following types are neither mapped nor handled by MessagePack natively nor enums: {unhandled}");
             }
+
+            // arriving here means all types without formatter are enum types:
+            foreach (var type in typesWithoutFormatter)
+            {
+                var template = new EnumFormatterTemplate
+                {
+                    Type = type,
+                    Namespace = "Generated"
+                };
+                result.Append(template.TransformText());
+            }
             // generate for enums
             // generate for subtyped
             // generate for propertymapped
 
-            return "";
+            return result.ToString();
 
             bool hasNoFormatter(Type type)
             {
@@ -35,5 +48,13 @@ namespace MessagePack.Attributeless.CodeGeneration
                 return true;
             }
         }
+    }
+
+    public partial class EnumFormatterTemplate
+    {
+        public string FullTypeName => Type.FullName.Replace('+', '.');
+        public string IdentifierTypeName => Type.Name;
+        public string Namespace { get; set; }
+        public Type Type { get; set; }
     }
 }

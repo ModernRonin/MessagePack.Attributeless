@@ -1,0 +1,13 @@
+﻿namespace Generated 
+{
+
+	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
+	{
+		public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+		{
+		}
+		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
+		{ 
+		}
+	}
+}

@@ -1,4 +1,7 @@
 ﻿using System;
+using ApprovalTests;
+using ApprovalTests.Reporters;
+using ApprovalTests.Reporters.ContinuousIntegration;
 using FluentAssertions;
 using MessagePack.Attributeless.CodeGeneration;
 using NUnit.Framework;
@@ -6,6 +9,7 @@ using NUnit.Framework;
 namespace MessagePack.Attributeless.Tests.CodeGeneration;
 
 [TestFixture]
+[UseReporter(typeof(NCrunchReporter))]
 public class GeneratorTests
 {
     class BadType
@@ -25,6 +29,18 @@ public class GeneratorTests
         var action = () => underTest.Generate(config);
 
         action.Should().NotThrow();
+    }
+
+    [Test]
+    public void Generate_enum()
+    {
+        var config = MessagePackSerializer.DefaultOptions.Configure()
+            .GraphOf<Samples.Leg>()
+            .Configuration;
+
+        var result = new Generator().Generate(config);
+
+        Approvals.Verify(result);
     }
 
     [Test]
