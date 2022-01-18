@@ -53,6 +53,26 @@ namespace Generated
                 return;
             }
 
+			switch (value)
+			{			
+				
+				case MessagePack.Attributeless.Tests.Samples.Arm t: serialize(t, 0);
+				
+				
+				case MessagePack.Attributeless.Tests.Samples.Leg t: serialize(t, 1);
+				
+				
+				case MessagePack.Attributeless.Tests.Samples.Wing t: serialize(t, 2);
+				
+				
+			}
+			throw new MessagePackSerializationException($"Missing configuration for subtype {value.GetType().Name} of MessagePack.Attributeless.Tests.Samples.IExtremity");
+			
+			void serialize<T>(T what, int key) where T: MessagePack.Attributeless.Tests.Samples.IExtremity
+			{
+				writer.Write(key);
+				options.Resolver.GetFormatterWithVerify<T>().Serialize(ref writer, what, options);
+			}
 		}
 	}
 }
