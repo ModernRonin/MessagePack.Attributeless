@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<WarningLevel>5</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PackageProjectUrl>https://github.com/ModernRonin/MessagePack.Attributeless</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ModernRonin/MessagePack.Attributeless</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<Title>MessagePack.Attributeless.CompileTime</Title>
+		<PackageTags>messagepack, no attributes, attributeless, fluent, polymorphy</PackageTags>
+		<PackageLicenseExpression>CC-BY-SA-4.0</PackageLicenseExpression>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<Authors>Modern Ronin</Authors>
+		<Description>Configure your types for serialization with MessagePack via fluent builder, creating serializers at compile-time, without any attributes</Description>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(NCrunch)' != '1'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeBuildOutput>true</IncludeBuildOutput>
+	</PropertyGroup>
+	<ItemGroup>
+		 <!--Package the generator in the analyzer directory of the nuget package--> 
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		 <!--Package the compile-time dependency alongside the generator assembly--> 
+		<None Include="$(PkgFluid_Core)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Fluid.Core" Version="2.2.14" PrivateAssets="all" GeneratePathProperty="true"/>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MessagePack.Attributeless\MessagePack.Attributeless.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<Import Project="..\\MessagePack.Attributeless\release.history" />
+</Project>

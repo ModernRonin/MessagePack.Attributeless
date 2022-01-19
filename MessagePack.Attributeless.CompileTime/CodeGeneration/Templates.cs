@@ -1,9 +1,9 @@
 ﻿using System;
 using Fluid;
+using MessagePack.Attributeless.CompileTime.Properties;
 using MessagePack.Attributeless.Implementation;
-using MessagePack.Attributeless.Properties;
 
-namespace MessagePack.Attributeless.CodeGeneration
+namespace MessagePack.Attributeless.CompileTime.CodeGeneration
 {
     public class Templates
     {

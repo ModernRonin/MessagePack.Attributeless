@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using FluentAssertions;
-using MessagePack.Attributeless.CodeGeneration;
+﻿using FluentAssertions;
+using MessagePack.Attributeless.CompileTime.CodeGeneration;
 using MessagePack.Attributeless.Implementation;
+using MessagePack.Attributeless.Tests;
 using NUnit.Framework;
 
-namespace MessagePack.Attributeless.Tests.CodeGeneration;
+namespace MessagePack.Attributeless.CompileTime.Tests.CodeGeneration;
 
 [TestFixture]
 public class GenerationExtensionsTests
@@ -22,15 +22,15 @@ public class GenerationExtensionsTests
         var result = input.AllTypes().ToArray();
 
         result.Should()
-        .BeEquivalentTo(new[]
-        {
-            typeof(Samples.Arm),
-            typeof(Samples.Leg),
-            typeof(Samples.Wing),
-            typeof(Samples.Side),
-            typeof(byte),
-            typeof(int)
-        });
+            .BeEquivalentTo(new[]
+            {
+                typeof(Samples.Arm),
+                typeof(Samples.Leg),
+                typeof(Samples.Wing),
+                typeof(Samples.Side),
+                typeof(byte),
+                typeof(int)
+            });
     }
 
     [Test]

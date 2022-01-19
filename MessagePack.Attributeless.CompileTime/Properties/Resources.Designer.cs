@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MessagePack.Attributeless.Properties {
+namespace MessagePack.Attributeless.CompileTime.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace MessagePack.Attributeless.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MessagePack.Attributeless.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MessagePack.Attributeless.CompileTime.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,21 @@ namespace MessagePack.Attributeless.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter&lt;{{FullTypeName}}&gt;
+        ///{
+        ///		
+        ///	public {{FullTypeName}} Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        ///	{
+        ///		if (reader.TryReadNil()) return default;
+        ///
+        ///		var key = reader.ReadInt32();
+        ///		switch (key)
+        ///		{			
+        ///			{% for subType in SubTypes -%}
+        ///			case {{subType.Key}}: return options.Resolver.GetFormatterWithVerify&lt;{{subType.Type}}&gt;().Deserialize(ref reader, options);
+        ///			{% endfor -%}				
+        ///		}
+        ///		throw new Mess [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BaseTypeFormatter_template {
             get {
@@ -76,7 +90,7 @@ namespace MessagePack.Attributeless.Properties {
         ///	using MessagePack.Formatters;
         ///	using MessagePack.Resolvers;
         ///
-        ///	{{code}}
+        ///	{{Code}}
         ///}.
         /// </summary>
         internal static string Common_template {
@@ -86,7 +100,20 @@ namespace MessagePack.Attributeless.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter{{FullTypeName}}
+        ///{
+        ///	public {{FullTypeName}} Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        ///	{
+        ///		if (reader.TryReadNil()) return default;
+        ///
+        ///		return new {{FullTypeName}}
+        ///		{
+        ///			{% for property in Properties -%} 
+        ///			{{property.Name}} = options.Resolver.GetFormatterWithVerify&lt;{{property.Type}}&gt;().Deserialize(ref reader, options),
+        ///			{% endfor -%}
+        ///		};
+        ///	}
+        ///	public void Serialize(ref MessagePackWriter w [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ConcreteTypeFormatter_template {
             get {
@@ -95,7 +122,18 @@ namespace MessagePack.Attributeless.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter&lt;{{FullTypeName}}&gt;
+        ///{
+        ///	public {{FullTypeName}} Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        ///	{
+        ///		return ({{FullTypeName}}) reader.{{ReaderMethod}};
+        ///	}
+        ///	public void Serialize(ref MessagePackWriter writer, {{FullTypeName}} value, MessagePackSerializerOptions options) 
+        ///	{ 
+        ///		writer.{{WriterMethod}};
+        ///	}
+        ///}
+        ///.
         /// </summary>
         internal static string EnumFormatter_template {
             get {
@@ -109,11 +147,12 @@ namespace MessagePack.Attributeless.Properties {
         ///	public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
         ///		=&gt; self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
         ///		{
-        ///			&lt;# foreach (var formatter in Formatters) { #&gt;
-        ///			new &lt;#= formatter #&gt;(),
-        ///			&lt;# } #&gt;
+        ///			{% for formatter in Formatters -%}
+        ///			new {{formatter}}(),
+        ///			{% endfor -%}
         ///		}, new[] { self.Resolver }));
-        ///}.
+        ///}
+        ///.
         /// </summary>
         internal static string Extensions_template {
             get {

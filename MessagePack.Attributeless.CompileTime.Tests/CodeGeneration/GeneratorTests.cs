@@ -1,9 +1,10 @@
 ﻿using ApprovalTests;
 using FluentAssertions;
-using MessagePack.Attributeless.CodeGeneration;
+using MessagePack.Attributeless.CompileTime.CodeGeneration;
+using MessagePack.Attributeless.Tests;
 using NUnit.Framework;
 
-namespace MessagePack.Attributeless.Tests.CodeGeneration;
+namespace MessagePack.Attributeless.CompileTime.Tests.CodeGeneration;
 
 [TestFixture]
 public class GeneratorTests

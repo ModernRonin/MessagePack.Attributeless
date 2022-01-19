@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MessagePack.Attributeless.Implementation;
 
-namespace MessagePack.Attributeless.CodeGeneration
+namespace MessagePack.Attributeless.CompileTime.CodeGeneration
 {
     public static class GenerationExtensions
     {

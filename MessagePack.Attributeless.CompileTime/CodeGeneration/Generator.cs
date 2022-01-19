@@ -5,7 +5,7 @@ using System.Text;
 using Fluid;
 using MessagePack.Attributeless.Implementation;
 
-namespace MessagePack.Attributeless.CodeGeneration
+namespace MessagePack.Attributeless.CompileTime.CodeGeneration
 {
     public class Generator
     {
