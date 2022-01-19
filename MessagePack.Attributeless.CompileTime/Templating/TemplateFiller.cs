@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
+using System.Linq;
 using System.Text;
 
 namespace MessagePack.Attributeless.CompileTime.Templating
@@ -11,83 +12,153 @@ namespace MessagePack.Attributeless.CompileTime.Templating
     /// </summary>
     public class TemplateFiller
     {
+        readonly Stack<Dictionary<string, object>> _contextStack = new Stack<Dictionary<string, object>>();
+        readonly StringBuilder _result = new StringBuilder();
+        int _loopIndex = -1;
+
         public string Fill(string template, object variables)
         {
-            var stack = new Stack<object>();
-            stack.Push(variables);
-            object context() => stack.Peek();
-
-            object getProperty(string name)
-            {
-                var ctx = context();
-                var property = ctx.GetType().GetProperty(name);
-                return property.GetValue(ctx);
-            }
+            PushContext(variables);
 
             var lines = template.Split(new[]
             {
                 '\n',
                 '\r'
             }, StringSplitOptions.RemoveEmptyEntries);
-            var result = new StringBuilder();
-
-            foreach (var line in lines)
+            var lineNumber = 0;
+            var startOfLoopLineNumber = -1;
+            var lastLoopIndex = -1;
+            while (lineNumber < lines.Length && !IsInLoop)
             {
+                var line = lines[lineNumber];
                 var trimmed = line.Trim();
                 if (trimmed.StartsWith("{%"))
                 {
-                    var loopDef = trimmed.After("{%").Before("-%}").Before("%}").Trim();
-                    var parts = loopDef.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    switch (parts.Length)
+                    var collectionLength = ProcessDirective(trimmed);
+                    if (IsInLoop)
                     {
-                        case 4 when parts[0] == "for" && parts[2] == "in":
+                        _loopIndex = 0;
+                        lastLoopIndex = collectionLength - 1;
+                        startOfLoopLineNumber = lineNumber;
+                    }
+                    else
+                    {
+                        if (_loopIndex == lastLoopIndex)
                         {
-                            IDictionary<string, object> ctx = new ExpandoObject();
-                            ctx[parts[1]] = getProperty(parts[3]);
-                            stack.Push(ctx);
-                            break;
+                            _loopIndex = -1;
+                            startOfLoopLineNumber = -1;
+                            lastLoopIndex = -1;
                         }
-                        case 1 when parts[0] == "endfor":
-                            stack.Pop();
-                            break;
-                        default: throw new TemplateException($"don't know directive '{loopDef}'");
+                        else
+                        {
+                            ++_loopIndex;
+                            lineNumber = startOfLoopLineNumber;
+                        }
                     }
                 }
-                else
-                {
-                    var open = 0;
-                    var currentVariable = string.Empty;
-                    foreach (var c in line)
-                    {
-                        switch (c, open)
-                        {
-                            case ('{', 2): throw new TemplateException("too many {");
-                            case ('{', _):
-                                ++open;
-                                break;
-                            case ('}', 2):
-                                --open;
-                                break;
-                            case ('}', 1):
-                                open = 0;
-                                result.Append(getProperty(currentVariable)?.ToString() ?? string.Empty);
-                                currentVariable = string.Empty;
-                                break;
-                            case ('}', _): throw new TemplateException("too many }");
-                            case (_, 2):
-                                currentVariable += c;
-                                break;
-                            default:
-                                result.Append(c);
-                                break;
-                        }
-                    }
+                else ProcessLine(line);
 
-                    result.AppendLine();
+                ++lineNumber;
+            }
+
+            return _result.ToString();
+        }
+
+        object GetProperty(string name)
+        {
+            var isNested = name.Contains(".");
+            if (isNested != IsInLoop)
+                throw new TemplateException($"Cannot access nested variable '{name}' outside of loop");
+
+            var (source, key) = IsInLoop
+                ? ((Dictionary<string, object>)CurrentContext[_loopIndex.ToString()], name.After("."))
+                : (CurrentContext, name);
+
+            if (!source.ContainsKey(key))
+                throw new TemplateException($"Unknown variable '{name}' in current context: {source}");
+
+            return source[key];
+        }
+
+        void PopContext() => _contextStack.Pop();
+
+        int ProcessDirective(string line)
+        {
+            if (IsInLoop) throw new TemplateException("nested loops are not supported");
+            var loopDef = line.After("{%").Before("-%}").Before("%}").Trim();
+            var parts = loopDef.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            switch (parts.Length)
+            {
+                case 4 when parts[0] == "for" && parts[2] == "in":
+                {
+                    var collectionPropertyName = parts[3];
+                    var collection = GetProperty(collectionPropertyName) as IEnumerable;
+                    if (collection == null)
+                        throw new TemplateException($"'{collectionPropertyName}' is not enumerable");
+                    return PushCollectionContext(collection);
+                }
+                case 1 when parts[0] == "endfor":
+                    PopContext();
+                    return 0;
+                default: throw new TemplateException($"don't know directive '{loopDef}'");
+            }
+        }
+
+        void ProcessLine(string line)
+        {
+            const byte text = 0;
+            const byte openBrace = 1;
+            const byte invariable = 2;
+            const byte closeBrace = 3;
+            byte state = text;
+            var currentVariable = string.Empty;
+            foreach (var c in line)
+            {
+                switch (c, state)
+                {
+                    case ('{', invariable): throw new TemplateException("too many {");
+                    case ('{', text):
+                        state = openBrace;
+                        break;
+                    case ('{', openBrace):
+                        state = invariable;
+                        break;
+                    case ('}', invariable):
+                        state = closeBrace;
+                        break;
+                    case ('}', closeBrace):
+                        _result.Append(GetProperty(currentVariable)?.ToString() ?? string.Empty);
+                        currentVariable = string.Empty;
+                        state = text;
+                        break;
+                    case (_, invariable):
+                        currentVariable += c;
+                        break;
+                    default:
+                        state = text;
+                        _result.Append(c);
+                        break;
                 }
             }
 
-            return result.ToString();
+            _result.AppendLine();
         }
+
+        int PushCollectionContext(IEnumerable collection)
+        {
+            var dictionary = new Dictionary<string, object>();
+            var i = 0;
+            foreach (var element in collection) dictionary[i++.ToString()] = ToDictionary(element);
+            _contextStack.Push(dictionary);
+            return i;
+        }
+
+        void PushContext(object what) => _contextStack.Push(ToDictionary(what));
+
+        static Dictionary<string, object> ToDictionary(object what) =>
+            what.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(what));
+
+        Dictionary<string, object> CurrentContext => _contextStack.Peek();
+        bool IsInLoop => _loopIndex >= 0;
     }
 }

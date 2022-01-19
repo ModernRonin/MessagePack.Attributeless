@@ -22,7 +22,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MessagePack.Attributeless.CompileTime.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -77,7 +77,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///		}
         ///		throw new Mess [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string BaseTypeFormatter_template {
+        public static string BaseTypeFormatter_template {
             get {
                 return ResourceManager.GetString("BaseTypeFormatter.template", resourceCulture);
             }
@@ -93,7 +93,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///	{{Code}}
         ///}.
         /// </summary>
-        internal static string Common_template {
+        public static string Common_template {
             get {
                 return ResourceManager.GetString("Common.template", resourceCulture);
             }
@@ -115,7 +115,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///	}
         ///	public void Serialize(ref MessagePackWriter w [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ConcreteTypeFormatter_template {
+        public static string ConcreteTypeFormatter_template {
             get {
                 return ResourceManager.GetString("ConcreteTypeFormatter.template", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///}
         ///.
         /// </summary>
-        internal static string EnumFormatter_template {
+        public static string EnumFormatter_template {
             get {
                 return ResourceManager.GetString("EnumFormatter.template", resourceCulture);
             }
@@ -154,16 +154,30 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
         ///}
         ///.
         /// </summary>
-        internal static string Extensions_template {
+        public static string Extensions_template {
             get {
                 return ResourceManager.GetString("Extensions.template", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to namespace {{Namespace}}
+        ///{
+        ///	using MessagePack;
+        ///
+        ///	public partial class {{Name}}
+        ///	{
+        ///		public MessagePackSerializerOptions Options { get; }= MessagePackSerializerOptions.Standard.WithResolver(
+        ///			CompositeResolver.Create(new IMessagePackFormatter[]
+        ///			{
+        ///				{% for formatter in Formatters -%}
+        ///				new {{formatter}}(),
+        ///				{% endfor -%}
+        ///			}, new[] { self.Resolver }));
+        ///	}
+        ///}.
         /// </summary>
-        internal static string PartialClass_template {
+        public static string PartialClass_template {
             get {
                 return ResourceManager.GetString("PartialClass.template", resourceCulture);
             }
