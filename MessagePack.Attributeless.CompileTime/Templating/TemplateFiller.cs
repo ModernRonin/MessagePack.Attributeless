@@ -110,7 +110,7 @@ namespace MessagePack.Attributeless.CompileTime.Templating
             const byte openBrace = 1;
             const byte invariable = 2;
             const byte closeBrace = 3;
-            byte state = text;
+            var state = text;
             var currentVariable = string.Empty;
             foreach (var c in line)
             {
@@ -140,6 +140,15 @@ namespace MessagePack.Attributeless.CompileTime.Templating
                         break;
                 }
             }
+
+            var last = state switch
+            {
+                closeBrace => '}',
+                openBrace => '{',
+                invariable => throw new TemplateException($"unfinished variable '{currentVariable}'"),
+                _ => (char)0
+            };
+            if (last != (char)0) _result.Append(last);
 
             _result.AppendLine();
         }
