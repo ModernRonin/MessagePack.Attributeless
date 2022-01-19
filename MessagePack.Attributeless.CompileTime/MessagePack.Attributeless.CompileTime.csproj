@@ -4,6 +4,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<WarningLevel>5</WarningLevel>
+		<IsRoslynComponent>true</IsRoslynComponent>
 	</PropertyGroup>
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/ModernRonin/MessagePack.Attributeless</PackageProjectUrl>

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "MessagePack.Attributeless.CompileTime": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\MessagePack.Attributeless.CompileTime.IntegrationTests\\MessagePack.Attributeless.CompileTime.IntegrationTests.csproj"
+    }
+  }
+}
