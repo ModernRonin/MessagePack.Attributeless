@@ -1,0 +1,26 @@
+public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter{{FullTypeName}}
+{
+	public {{FullTypeName}} Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+	{
+		if (reader.TryReadNil()) return default;
+
+		return new {{FullTypeName}}
+		{
+			{% for mapping in Mappings %}
+			{{mapping.name}} = options.Resolver.GetFormatterWithVerify<{{mapping.type}}>().Deserialize(ref reader, options),
+			{% endfor %}
+		};
+	}
+	public void Serialize(ref MessagePackWriter writer, {{FullTypeName}} value, MessagePackSerializerOptions options) 
+	{ 
+		if (value == null)
+		{
+			writer.WriteNil();
+			return;
+		}
+
+		{% for mapping in Mappings %}
+		options.Resolver.GetFormatterWithVerify<{{mapping.type}}>().Serialize(ref writer, value.{{mapping.name}}, options);
+		{% endfor %}
+	}
+}

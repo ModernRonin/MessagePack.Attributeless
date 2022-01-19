@@ -1,0 +1,10 @@
+public static class MessagePackSerializerOptionsExtensions
+{
+	public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+		=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
+		{
+			{% for formatter in Formatter %}
+			new {{formatter}}(),
+			{% endfor %}
+		}, new[] { self.Resolver }));
+}
