@@ -35,7 +35,7 @@ namespace MessagePack.Attributeless.CompileTime.Templating
                 if (trimmed.StartsWith("{%"))
                 {
                     var collectionLength = ProcessDirective(trimmed);
-                    if (IsInLoop)
+                    if (collectionLength > 0)
                     {
                         _loopIndex = 0;
                         lastLoopIndex = collectionLength - 1;
