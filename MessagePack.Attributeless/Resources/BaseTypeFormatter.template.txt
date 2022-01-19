@@ -8,9 +8,9 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter<{{FullTypeNa
 		var key = reader.ReadInt32();
 		switch (key)
 		{			
-			{% for subType in SubTypes %}
+			{% for subType in SubTypes -%}
 			case {{subType.Key}}: return options.Resolver.GetFormatterWithVerify<{{subType.Type}}>().Deserialize(ref reader, options);
-			{% endfor %}				
+			{% endfor -%}				
 		}
 		throw new MessagePackSerializationException(
 				$"Encountered unknown type key {key} for {{FullTypeName}} - was this serialized with a different configuration?");
@@ -25,12 +25,12 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter<{{FullTypeNa
 
 		switch (value)
 		{			
-			{% for subType in SubTypes %}
+			{% for subType in SubTypes -%}
 			case {{subType.Type}} t: 
-			writer.Write({{subType.Key}});
-			options.Resolver.GetFormatterWithVerify<{{subType.Type}}>().Serialize(ref writer, t, options);
-				return;
-			{% endfor %}				
+				writer.Write({{subType.Key}});
+				options.Resolver.GetFormatterWithVerify<{{subType.Type}}>().Serialize(ref writer, t, options);
+					return;
+			{% endfor -%}				
 		}
 		throw new MessagePackSerializationException($"Missing configuration for subtype {value.GetType().Name} of {{FullTypeName}}");
 	}
