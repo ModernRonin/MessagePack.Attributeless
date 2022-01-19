@@ -14,9 +14,11 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
         public void Execute(GeneratorExecutionContext context)
         {
             var attributeSymbol = context.Compilation.GetTypeByMetadataName(_graphAttributeName);
-            var infos = context.Compilation.SyntaxTrees.Select(extractSerializerInfos);
-
-            
+            var infos = context.Compilation.SyntaxTrees.SelectMany(extractSerializerInfos);
+            foreach (var (serializer, serializationTypes) in infos)
+            {
+                serializationTypes
+            }
             //context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
 
             (INamedTypeSymbol Serializer, INamedTypeSymbol[] RootTypesToGenerateFor)[] extractSerializerInfos(

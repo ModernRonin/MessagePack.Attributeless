@@ -159,5 +159,14 @@ namespace MessagePack.Attributeless.CompileTime.Properties {
                 return ResourceManager.GetString("Extensions.template", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PartialClass_template {
+            get {
+                return ResourceManager.GetString("PartialClass.template", resourceCulture);
+            }
+        }
     }
 }

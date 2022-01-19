@@ -1,0 +1,15 @@
+namespace {{Namespace}}
+{
+	using MessagePack;
+
+	public partial class {{Name}}
+	{
+		public MessagePackSerializerOptions Options { get; }= MessagePackSerializerOptions.Standard.WithResolver(
+			CompositeResolver.Create(new IMessagePackFormatter[]
+			{
+				{% for formatter in Formatters -%}
+				new {{formatter}}(),
+				{% endfor -%}
+			}, new[] { self.Resolver }));
+	}
+}
