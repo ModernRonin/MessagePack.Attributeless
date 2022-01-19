@@ -14,24 +14,34 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
         public void Execute(GeneratorExecutionContext context)
         {
             var attributeSymbol = context.Compilation.GetTypeByMetadataName(_graphAttributeName);
-            var codeFiles = context.Compilation.SyntaxTrees;
+            var infos = context.Compilation.SyntaxTrees.Select(extractSerializerInfos);
 
-            foreach (var codeFile in codeFiles)
+            
+            //context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
+
+            (INamedTypeSymbol Serializer, INamedTypeSymbol[] RootTypesToGenerateFor)[] extractSerializerInfos(
+                SyntaxTree codeFile)
             {
                 var semanticModel = context.Compilation.GetSemanticModel(codeFile);
-                var classesWithAttributes = codeFile
+                // pre-filtering with syntactic model because that's faster than the semantic model
+                return codeFile
                     .GetRoot()
                     .DescendantNodes()
                     .OfType<ClassDeclarationSyntax>()
-                    .Where(c => c.DescendantNodes().OfType<AttributeSyntax>().Any());
+                    .Where(c => c.DescendantNodes().OfType<AttributeSyntax>().Any())
+                    .Select(extract)
+                    .ToArray();
 
-                foreach (var declaredClass in classesWithAttributes)
+                (INamedTypeSymbol Serializer, INamedTypeSymbol[] RootTypesToGenerateFor) extract(
+                    ClassDeclarationSyntax declaredClass)
                 {
-                    var rootTypesToGenerateFor = semanticModel.GetDeclaredSymbol(declaredClass)
+                    var classSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
+                    var rootTypesToGenerateFor = classSymbol
                         .GetAttributes()
                         .Where(isOurAttribute)
                         .SelectMany(typeArguments)
                         .ToArray();
+                    return (classSymbol, rootTypesToGenerateFor);
                 }
 
                 bool isOurAttribute(AttributeData attribute) =>
@@ -43,7 +53,6 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
                         .Select(c => c.Value)
                         .Cast<INamedTypeSymbol>();
             }
-            //context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
         }
 
         public void Initialize(GeneratorInitializationContext context) { }
