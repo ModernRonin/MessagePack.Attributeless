@@ -16,6 +16,7 @@ public partial class MySerializer
 }
 
 [TestFixture]
+// ReSharper disable once TestFileNameWarning
 public class SourceGeneratorTests
 {
     [Test]
