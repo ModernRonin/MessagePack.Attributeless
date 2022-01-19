@@ -18,8 +18,11 @@
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\MessagePack.Attributeless.CompileTime\MessagePack.Attributeless.CompileTime.csproj"/>
+	  <ProjectReference Include="..\MessagePack.Attributeless.CompileTime\MessagePack.Attributeless.CompileTime.csproj" />
 	  <ProjectReference Include="..\MessagePack.Attributeless.Tests\MessagePack.Attributeless.Tests.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Templating\" />
 	</ItemGroup>
 
 </Project>
