@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MessagePack.Attributeless.CompileTime.CodeGeneration
 {
@@ -10,6 +12,7 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
     public class SourceGenerator : ISourceGenerator
     {
         static readonly string _graphAttributeName = typeof(SerializeGraphAttribute).FullName;
+        readonly Templates _templates = new Templates();
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -17,9 +20,18 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
             var infos = context.Compilation.SyntaxTrees.SelectMany(extractSerializerInfos);
             foreach (var (serializer, serializationTypes) in infos)
             {
-                serializationTypes
+                var source = SourceText.From(new PartialClassContext
+                {
+                    Formatters = new[]
+                    {
+                        "BlaFormatter",
+                        "BluFormatter"
+                    },
+                    Name = serializer.ToDisplayString(),
+                    Namespace = serializer.ContainingNamespace.ToDisplayString()
+                }.RenderTo(_templates.PartialClass), Encoding.UTF8);
+                context.AddSource($"{serializer.Name}.Generated", source);
             }
-            //context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
 
             (INamedTypeSymbol Serializer, INamedTypeSymbol[] RootTypesToGenerateFor)[] extractSerializerInfos(
                 SyntaxTree codeFile)
@@ -57,6 +69,6 @@ namespace MessagePack.Attributeless.CompileTime.CodeGeneration
             }
         }
 
-        public void Initialize(GeneratorInitializationContext context) { }
+        public void Initialize(GeneratorInitializationContext context) => _templates.LoadTemplates();
     }
 }
