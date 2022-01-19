@@ -4,6 +4,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<WarningLevel>5</WarningLevel>
+		<LangVersion>8</LangVersion>
 		<IsRoslynComponent>true</IsRoslynComponent>
 	</PropertyGroup>
 	<PropertyGroup>
@@ -37,7 +38,7 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="Fluid.Core" Version="2.2.14" PrivateAssets="all" GeneratePathProperty="true"/>
+		<PackageReference Include="Fluid.Core" Version="2.2.14" PrivateAssets="all" GeneratePathProperty="true" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\MessagePack.Attributeless\MessagePack.Attributeless.csproj" />
