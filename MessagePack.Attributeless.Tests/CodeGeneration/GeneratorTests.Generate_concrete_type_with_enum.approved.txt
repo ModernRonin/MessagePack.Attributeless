@@ -1,64 +1,60 @@
-﻿
-namespace Generated 
+﻿namespace Generated
 {
 	using MessagePack;
 	using MessagePack.Formatters;
 	using MessagePack.Resolvers;
 
 	public static class MessagePackSerializerOptionsExtensions
-	{
-		public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
-			=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
-			{
-								new LegFormatter(),
-								new SideFormatter(),
-							}, new[] { self.Resolver }));
-	}
-}namespace Generated 
 {
-	using MessagePack;
-	using MessagePack.Formatters;
-	using MessagePack.Resolvers;
-
-	public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
-	{
-		public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+	public static MessagePackSerializerOptions Add(this MessagePackSerializerOptions self)
+		=> self.WithResolver(CompositeResolver.Create(new IMessagePackFormatter[]
 		{
-			return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32();
-		}
-		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
-		{ 
-			writer.WriteInt32((int) value);
-		}
-	}
-}namespace Generated 
+			
+			new LegFormatter(),
+			
+			new SideFormatter(),
+			
+		}, new[] { self.Resolver }));
+}public class SideFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Side>
 {
-	using MessagePack;
-	using MessagePack.Formatters;
-	using MessagePack.Resolvers;
-
-	public class LegFormatter: IMessagePackFormatter<MessagePack.Attributeless.Tests.Samples.Leg>
+	public MessagePack.Attributeless.Tests.Samples.Side Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
 	{
-		public MessagePack.Attributeless.Tests.Samples.Leg Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
-		{
-			if (reader.TryReadNil()) return default;
-
-			return new MessagePack.Attributeless.Tests.Samples.Leg
-			{
-								NumberOfToes = options.Resolver.GetFormatterWithVerify<System.Byte>().Deserialize(ref reader, options),
-								Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
-							};
-		}
-		public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Leg value, MessagePackSerializerOptions options) 
-		{ 
-			if (value == null)
-			{
-				writer.WriteNil();
-				return;
-			}
-
-						options.Resolver.GetFormatterWithVerify<System.Byte>().Serialize(ref writer, value.NumberOfToes, options);
-						options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
-					}
+		return (MessagePack.Attributeless.Tests.Samples.Side) reader.ReadInt32();
 	}
+	public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Side value, MessagePackSerializerOptions options) 
+	{ 
+		writer.WriteInt32((int) value);
+	}
+}
+public class LegFormatter: IMessagePackFormatterMessagePack.Attributeless.Tests.Samples.Leg
+{
+	public MessagePack.Attributeless.Tests.Samples.Leg Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+	{
+		if (reader.TryReadNil()) return default;
+
+		return new MessagePack.Attributeless.Tests.Samples.Leg
+		{
+			
+			NumberOfToes = options.Resolver.GetFormatterWithVerify<System.Byte>().Deserialize(ref reader, options),
+			
+			Side = options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Deserialize(ref reader, options),
+			
+		};
+	}
+	public void Serialize(ref MessagePackWriter writer, MessagePack.Attributeless.Tests.Samples.Leg value, MessagePackSerializerOptions options) 
+	{ 
+		if (value == null)
+		{
+			writer.WriteNil();
+			return;
+		}
+
+		
+		options.Resolver.GetFormatterWithVerify<System.Byte>().Serialize(ref writer, value.NumberOfToes, options);
+		
+		options.Resolver.GetFormatterWithVerify<MessagePack.Attributeless.Tests.Samples.Side>().Serialize(ref writer, value.Side, options);
+		
+	}
+}
+
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fluid;
 using MessagePack.Attributeless.Implementation;
 
 namespace MessagePack.Attributeless.CodeGeneration
@@ -27,19 +28,31 @@ namespace MessagePack.Attributeless.CodeGeneration
             }
 
             // arriving here means all types without formatter are enum types
-            var templates = new List<AFormatterTemplate>();
-            templates.AddRange(typesWithoutFormatter.Select(enumTemplate));
-            templates.AddRange(configuration.SubTypeMappedTypes.Select(baseTemplate));
-            templates.AddRange(configuration.PropertyMappedTypes.Select(concreteTemplate));
-            var builder = new StringBuilder();
-            builder.Append(new ResolverTemplate
+            var templates = new Templates();
+            templates.LoadTemplates();
+            var buffer = new StringBuilder();
+
+            buffer.Append(templates.ExtensionsType.Render(new TemplateContext(new ExtensionsContext
             {
-                Namespace = _namespace,
                 Formatters = allTypes.Where(t => !t.HasCompiledMessagePackFormatter())
                     .Select(t => $"{t.Name}Formatter")
                     .ToArray()
-            }.TransformText());
-            return templates.Aggregate(builder, (b, t) => b.Append(t.TransformText())).ToString();
+            })));
+
+            foreach (var ctx in typesWithoutFormatter.Select(enumTypeContext))
+                buffer.Append(templates.EnumType.Render(ctx));
+
+            foreach (var ctx in configuration.SubTypeMappedTypes.Select(abstractTypeContext))
+                buffer.Append(templates.AbstractType.Render(ctx));
+
+            foreach (var ctx in configuration.PropertyMappedTypes.Select(concreteTypeContext))
+                buffer.Append(templates.ConcreteType.Render(ctx));
+
+            return templates.Common.Render(new TemplateContext(new CommonContext
+            {
+                Namespace = _namespace,
+                Code = buffer.ToString()
+            }));
 
             bool hasNoFormatter(Type type)
             {
@@ -49,37 +62,43 @@ namespace MessagePack.Attributeless.CodeGeneration
                 return true;
             }
 
-            EnumFormatterTemplate enumTemplate(Type type) =>
-                new EnumFormatterTemplate
-                {
-                    Namespace = _namespace,
-                    Type = type
-                };
+            TemplateContext enumTypeContext(Type type) =>
+                new TemplateContext(new EnumTypeContext { Type = type });
 
-            BaseTypeTemplate baseTemplate(KeyValuePair<Type, ISubTypeFormatter> kvp)
+            TemplateContext abstractTypeContext(KeyValuePair<Type, ISubTypeFormatter> kvp)
             {
                 var (baseType, formatter) = kvp;
-                return new BaseTypeTemplate
+                var options = new TemplateOptions();
+                options.MemberAccessStrategy.Register<SubTypeContext>();
+                return new TemplateContext(new AbstractTypeContext
                 {
-                    Namespace = _namespace,
                     Type = baseType,
-                    Mappings = formatter.Mappings.ToDictionary(t => t.Key.SafeFullName(),
-                        t => t.Value)
-                };
+                    SubTypes = formatter.Mappings.Select(t => new SubTypeContext
+                        {
+                            Type = t.Key.SafeFullName(),
+                            Key = t.Value
+                        })
+                        .ToArray()
+                }, options);
             }
 
-            ConcreteTypeTemplate concreteTemplate(KeyValuePair<Type, IPropertyFormatter> kvp)
+            TemplateContext concreteTypeContext(KeyValuePair<Type, IPropertyFormatter> kvp)
             {
                 var (type, formatter) = kvp;
-                return new ConcreteTypeTemplate
+                var options = new TemplateOptions();
+                options.MemberAccessStrategy.Register<PropertyContext>();
+                return new TemplateContext(new ConcreteTypeContext
                 {
-                    Namespace = _namespace,
                     Type = type,
-                    Mappings = formatter.Mappings.OrderBy(m => m.Value)
+                    Properties = formatter.Mappings.OrderBy(m => m.Value)
                         .Select(m => m.Key)
-                        .Select(p => (p.Name, p.PropertyType.SafeFullName()))
+                        .Select(p => new PropertyContext
+                        {
+                            Name = p.Name,
+                            Type = p.PropertyType.SafeFullName()
+                        })
                         .ToArray()
-                };
+                }, options);
             }
         }
     }

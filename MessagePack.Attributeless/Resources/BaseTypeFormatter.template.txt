@@ -8,8 +8,8 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter<{{FullTypeNa
 		var key = reader.ReadInt32();
 		switch (key)
 		{			
-			{% for kvp in Mappings %}
-			case {{kvp.Value}}: return options.Resolver.GetFormatterWithVerify<{{kvp.Key}}>().Deserialize(ref reader, options);
+			{% for subType in SubTypes %}
+			case {{subType.Key}}: return options.Resolver.GetFormatterWithVerify<{{subType.Type}}>().Deserialize(ref reader, options);
 			{% endfor %}				
 		}
 		throw new MessagePackSerializationException(
@@ -25,10 +25,10 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter<{{FullTypeNa
 
 		switch (value)
 		{			
-			{% for kvp in Mappings %}
-			case {{kvp.Key}} t: 
-			writer.Write({{kvp.Value}});
-			options.Resolver.GetFormatterWithVerify<{{kvp.Key}}>().Serialize(ref writer, t, options);
+			{% for subType in SubTypes %}
+			case {{subType.Type}} t: 
+			writer.Write({{subType.Key}});
+			options.Resolver.GetFormatterWithVerify<{{subType.Type}}>().Serialize(ref writer, t, options);
 				return;
 			{% endfor %}				
 		}

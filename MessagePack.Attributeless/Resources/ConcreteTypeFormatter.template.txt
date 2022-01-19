@@ -6,8 +6,8 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter{{FullTypeNam
 
 		return new {{FullTypeName}}
 		{
-			{% for mapping in Mappings %}
-			{{mapping.name}} = options.Resolver.GetFormatterWithVerify<{{mapping.type}}>().Deserialize(ref reader, options),
+			{% for property in Properties %}
+			{{property.Name}} = options.Resolver.GetFormatterWithVerify<{{property.Type}}>().Deserialize(ref reader, options),
 			{% endfor %}
 		};
 	}
@@ -19,8 +19,8 @@ public class {{IdentifierTypeName}}Formatter: IMessagePackFormatter{{FullTypeNam
 			return;
 		}
 
-		{% for mapping in Mappings %}
-		options.Resolver.GetFormatterWithVerify<{{mapping.type}}>().Serialize(ref writer, value.{{mapping.name}}, options);
+		{% for property in Properties %}
+		options.Resolver.GetFormatterWithVerify<{{property.Type}}>().Serialize(ref writer, value.{{property.Name}}, options);
 		{% endfor %}
 	}
 }

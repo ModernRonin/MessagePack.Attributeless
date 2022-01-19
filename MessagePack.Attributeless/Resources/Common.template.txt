@@ -4,5 +4,5 @@ namespace {{Namespace}}
 	using MessagePack.Formatters;
 	using MessagePack.Resolvers;
 
-	{{code}}
+	{{Code}}
 }
