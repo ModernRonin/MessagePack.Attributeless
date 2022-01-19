@@ -1,5 +1,4 @@
-﻿using Generated;
-using MessagePack.Attributeless.Tests;
+﻿using MessagePack.Attributeless.Tests;
 using NUnit.Framework;
 
 namespace MessagePack.Attributeless.CompileTime.IntegrationTests;
@@ -22,6 +21,6 @@ public class SourceGeneratorTests
     [Test]
     public void Show()
     {
-        Assert.Fail(Debug.Diagnostics);
+        //Assert.Fail(Debug.Diagnostics);
     }
 }

@@ -1,67 +1,51 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace MessagePack.Attributeless.CompileTime.CodeGeneration
 {
     [Generator]
     public class SourceGenerator : ISourceGenerator
     {
+        static readonly string _graphAttributeName = typeof(SerializeGraphAttribute).FullName;
+
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is SyntaxReceiver receiver)) return;
+            var attributeSymbol = context.Compilation.GetTypeByMetadataName(_graphAttributeName);
+            var codeFiles = context.Compilation.SyntaxTrees;
 
-            var buffer = new StringBuilder(@"
-using System;
-namespace Generated
-{
-    public static class Debug
-    {
-        public static string Diagnostics 
-        {
-        get
-        {
-            return ");
+            foreach (var codeFile in codeFiles)
+            {
+                var semanticModel = context.Compilation.GetSemanticModel(codeFile);
+                var classesWithAttributes = codeFile
+                    .GetRoot()
+                    .DescendantNodes()
+                    .OfType<ClassDeclarationSyntax>()
+                    .Where(c => c.DescendantNodes().OfType<AttributeSyntax>().Any());
 
-            var classIds = string.Join(", ", receiver.Classes.Select(c => c.Identifier.ToString()));
-            buffer.Append($"\"{classIds}\";");
-            buffer.Append(@"
-        }
-        }
-    }
-}");
+                foreach (var declaredClass in classesWithAttributes)
+                {
+                    var rootTypesToGenerateFor = semanticModel.GetDeclaredSymbol(declaredClass)
+                        .GetAttributes()
+                        .Where(isOurAttribute)
+                        .SelectMany(typeArguments)
+                        .ToArray();
+                }
 
-            // inject the created source into the users compilation
-            context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
+                bool isOurAttribute(AttributeData attribute) =>
+                    attribute?.AttributeClass?.Name == attributeSymbol?.Name;
 
-            //var sourceText =
-            //    SourceText.From(receiver.Attributes.FirstOrDefault()?.ToString() ?? "nothing found",
-            //        Encoding.UTF8);
-            //context.AddSource("bla.txt", sourceText);
-        }
-
-        public void Initialize(GeneratorInitializationContext context) =>
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-    }
-
-    public class SyntaxReceiver : ISyntaxReceiver
-    {
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-        {
-            if (!(syntaxNode is ClassDeclarationSyntax klass)) return;
-            if (klass.AttributeLists.Count == 0) return;
-
-            Classes.Add(klass);
-            Attributes = klass.AttributeLists.SelectMany(x => x.Attributes)
-                .Where(a => a.Name.ToString() == "MessagePack.Attributeless.SerializeGraphAttribute")
-                .ToArray();
+                IEnumerable<INamedTypeSymbol> typeArguments(AttributeData attribute) =>
+                    attribute.ConstructorArguments.First()
+                        .Values.OfType<TypedConstant>()
+                        .Select(c => c.Value)
+                        .Cast<INamedTypeSymbol>();
+            }
+            //context.AddSource("Debug.Generated", SourceText.From(buffer.ToString(), Encoding.UTF8));
         }
 
-        public AttributeSyntax[] Attributes { get; private set; }
-
-        public List<ClassDeclarationSyntax> Classes { get; } = new List<ClassDeclarationSyntax>();
+        public void Initialize(GeneratorInitializationContext context) { }
     }
 }
