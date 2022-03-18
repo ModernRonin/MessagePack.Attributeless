@@ -33,7 +33,7 @@ But Typeless comes with some disadvantages, as described above. Luckily, the sec
 
 So I set about trying and finding a better way for these scenarios in my free time. If I'd succeed, I could eventually replace usage at work, if I didn't, I would have wasted my own time and not my client's.
 
-Attributeless is the result of my experiment, and by now it has reached the point where I can use it to replace Typeless even in my client's project.
+Attributeless is the result of my experiment.
 
 
 ## Release History
